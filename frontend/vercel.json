@@ -1,5 +1,5 @@
 {
-  "buildCommand": "node node_modules/next/dist/bin/next build",
+  "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "installCommand": "npm install",
   "framework": "nextjs",
