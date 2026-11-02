@@ -469,7 +469,7 @@ function ProductConfig({ onRefresh }: { onRefresh: () => void }) {
 // Main admin dashboard
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [tab, setTab] = useState<'orders' | 'products' | 'analytics'>('orders');
+  const [tab, setTab] = useState<'orders' | 'products' | 'analytics' | 'feedback'>('orders');
   const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
   const [sheetsUrl, setSheetsUrl] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -490,6 +490,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     { key: 'orders', label: '📦 Orders' },
     { key: 'products', label: '⚙️ Products' },
     { key: 'analytics', label: '📊 Analytics' },
+    { key: 'feedback', label: '⭐ Feedback' },
   ];
 
   return (
@@ -540,6 +541,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         {tab === 'orders' && <OrdersTable key={refreshKey} onSelectOrder={setSelectedOrder} />}
         {tab === 'products' && <ProductConfig onRefresh={refresh} />}
         {tab === 'analytics' && <AnalyticsTab />}
+        {tab === 'feedback' && <FeedbackTab />}
       </div>
 
       {selectedOrder && (
@@ -553,9 +555,116 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   );
 }
 
+// ── Feedback Management Tab ────────────────────────────────────
+interface AdminFeedback {
+  id: string; name: string; rating: number; message: string; isApproved: boolean; createdAt: string;
+}
+
+function FeedbackTab() {
+  const [feedbacks, setFeedbacks] = useState<AdminFeedback[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<'all' | 'approved' | 'pending'>('all');
+
+  const load = async () => {
+    setLoading(true);
+    try {
+      const q = filter === 'all' ? '' : filter === 'approved' ? '?approved=true' : '?approved=false';
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://backend-oi9e.onrender.com'}/api/admin/feedback${q}`, { credentials: 'include' });
+      const data = await res.json();
+      setFeedbacks(Array.isArray(data) ? data : []);
+    } catch { toast.error('Failed to load feedbacks'); }
+    finally { setLoading(false); }
+  };
+
+  useEffect(() => { load(); }, [filter]);
+
+  const toggle = async (id: string, current: boolean) => {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://backend-oi9e.onrender.com'}/api/admin/feedback/${id}`, {
+        method: 'PATCH', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isApproved: !current }),
+      });
+      toast.success(current ? 'Feedback hidden' : 'Feedback approved & shown!');
+      load();
+    } catch { toast.error('Failed to update'); }
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm('Delete this feedback permanently?')) return;
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://backend-oi9e.onrender.com'}/api/admin/feedback/${id}`, { method: 'DELETE', credentials: 'include' });
+      toast.success('Feedback deleted');
+      load();
+    } catch { toast.error('Failed to delete'); }
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Filter tabs */}
+      <div className="bg-white rounded-2xl shadow p-4 flex gap-2 flex-wrap items-center justify-between">
+        <h3 className="font-black text-[#582A00] text-lg">Customer Feedback</h3>
+        <div className="flex gap-2">
+          {(['all', 'approved', 'pending'] as const).map((f) => (
+            <button key={f} onClick={() => setFilter(f)}
+              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${filter === f ? 'bg-[#C42F2C] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+              {f === 'all' ? 'All' : f === 'approved' ? 'Shown on Site' : 'Pending Approval'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="text-center py-12 text-gray-400">Loading feedbacks...</div>
+      ) : feedbacks.length === 0 ? (
+        <div className="text-center py-12 text-gray-400">No feedbacks found.</div>
+      ) : (
+        <div className="grid gap-3">
+          {feedbacks.map((fb) => (
+            <div key={fb.id} className="bg-white rounded-xl shadow-sm p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+              {/* Status dot */}
+              <div className={`w-3 h-3 rounded-full shrink-0 mt-1 sm:mt-0 ${fb.isApproved ? 'bg-green-500' : 'bg-yellow-400'}`} title={fb.isApproved ? 'Shown on site' : 'Pending'} />
+
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <span className="font-bold text-sm text-[#582A00]">{fb.name}</span>
+                  <div className="flex gap-0.5">
+                    {[1,2,3,4,5].map((i) => (
+                      <svg key={i} className="w-3 h-3" viewBox="0 0 24 24" fill={i <= fb.rating ? '#FFAA2B' : '#E5E7EB'} aria-hidden="true">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    ))}
+                  </div>
+                  <span className="text-xs text-gray-400">{new Date(fb.createdAt).toLocaleDateString('en-IN')}</span>
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${fb.isApproved ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                    {fb.isApproved ? 'Shown on site' : 'Pending'}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 line-clamp-2">{fb.message}</p>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-2 shrink-0">
+                <button onClick={() => toggle(fb.id, fb.isApproved)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${fb.isApproved ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' : 'bg-green-100 text-green-700 hover:bg-green-200'}`}>
+                  {fb.isApproved ? 'Hide' : 'Approve'}
+                </button>
+                <button onClick={() => remove(fb.id)}
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold bg-red-100 text-red-600 hover:bg-red-200 transition-all">
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // Analytics
-function AnalyticsTab() {
-  const [chartData, setChartData] = useState<unknown[]>([]);
+function AnalyticsTab() {  const [chartData, setChartData] = useState<unknown[]>([]);
 
   useEffect(() => {
     api.adminCharts().then((raw) => {

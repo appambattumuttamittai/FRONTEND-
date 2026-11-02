@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import HeroSlider from '@/components/HeroSlider';
 import MarqueeBand from '@/components/MarqueeBand';
 import ProductsSection from '@/components/ProductsSection';
-import GallerySection from '@/components/GallerySection';
+import FeedbackSection from '@/components/FeedbackSection';
 import PickupSection from '@/components/PickupSection';
 import WhatsAppCTA from '@/components/WhatsAppCTA';
 import Footer from '@/components/Footer';
@@ -25,7 +25,7 @@ export default function HomePage() {
         <HeroSlider />
         <MarqueeBand />
         <ProductsSection />
-        <GallerySection />
+        <FeedbackSection />
         <PickupSection />
         <WhatsAppCTA />
       </main>
