@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { Toaster } from 'react-hot-toast';
 import { LanguageProvider } from '@/context/LanguageContext';
 
 export const metadata: Metadata = {
@@ -10,50 +9,13 @@ export const metadata: Metadata = {
     template: '%s | Appambattu Mutta Mittai',
   },
   description:
-    'Appambattu Mutta Mittai – the original traditional Tamil Nadu egg sweet from Meenambur, Villupuram. 100% pure ingredients: milk, egg, cashew nut paste, sugar. Soft • Fresh • Delicious. Order for pickup today.',
-  keywords: [
-    'mutta mittai', 'முட்டை மிட்டாய்', 'egg sweet', 'Villupuram sweets',
-    'Appambattu Mutta Mittai', 'அப்பம்பட்டு முட்டை மிட்டாய்',
-    'Tamil Nadu traditional sweet', 'Meenambur sweet', 'egg candy Tamil Nadu',
-    'mutta candy', 'traditional egg sweet India',
-  ],
-  authors: [{ name: 'Appambattu Mutta Mittai' }],
-  creator: 'Appambattu Mutta Mittai',
+    'Appambattu Mutta Mittai – authentic traditional egg sweet from Meenambur, Villupuram, Tamil Nadu. Made with milk, egg, cashew nut paste and sugar. Pickup only.',
+  keywords: ['mutta mittai', 'egg sweet', 'tamil sweet', 'villupuram', 'appambattu', 'traditional sweet'],
   openGraph: {
     type: 'website',
-    locale: 'ta_IN',
-    alternateLocale: 'en_IN',
+    locale: 'en_IN',
     url: 'https://appambattumuttamittai.com',
     siteName: 'Appambattu Mutta Mittai',
-    title: 'Appambattu Mutta Mittai | Traditional Egg Sweet | முட்டை மிட்டாய்',
-    description:
-      'Order traditional Mutta Mittai – made with milk, egg, cashew nut paste & sugar. Pickup from Meenambur, Appambattu, Villupuram.',
-    images: [
-      {
-        url: '/images/brochure-main.jpeg',
-        width: 1200,
-        height: 630,
-        alt: 'Appambattu Mutta Mittai – Traditional Egg Sweet',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Appambattu Mutta Mittai | முட்டை மிட்டாய்',
-    description: 'Traditional Tamil Nadu egg sweet. Pickup from Meenambur, Villupuram.',
-    images: ['/images/brochure-main.jpeg'],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true },
-  },
-  alternates: {
-    canonical: 'https://appambattumuttamittai.com',
-    languages: {
-      'en-IN': 'https://appambattumuttamittai.com',
-      'ta-IN': 'https://appambattumuttamittai.com',
-    },
   },
 };
 
@@ -63,25 +25,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;600;700;900&family=Exo+2:wght@700;800;900&display=swap"
+          rel="stylesheet"
+        />
       </head>
-      <body style={{ fontFamily: "'Inter', sans-serif" }}>
-        <LanguageProvider>
-          {children}
-          <Toaster
-            position="top-center"
-            toastOptions={{
-              style: {
-                background: '#063D20',
-                color: '#FFF4DD',
-                fontWeight: 600,
-                borderRadius: '12px',
-              },
-              success: { iconTheme: { primary: '#F5B51B', secondary: '#063D20' } },
-              error: { iconTheme: { primary: '#E95012', secondary: '#fff' } },
-            }}
-          />
-        </LanguageProvider>
+      <body>
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );

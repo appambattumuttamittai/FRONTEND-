@@ -8,6 +8,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // New warm amber/brown palette
+        'brand-dark': '#582A00',
+        'brand-primary': '#C42F2C',
+        'brand-amber': '#D97706',
+        'brand-gold': '#F5B51B',
+        'brand-bg': '#FFF8F0',
+        'brand-cream': '#FFF4DD',
+        'brand-text': '#3D1E08',
+        // Legacy (kept for old order/admin pages that may still reference them)
         'forest-green': '#063D20',
         'deep-green': '#0A512B',
         'sweet-orange': '#E95012',
@@ -17,13 +26,13 @@ module.exports = {
       },
       fontFamily: {
         tamil: ['Noto Sans Tamil', 'sans-serif'],
+        exo: ['Exo 2', 'sans-serif'],
       },
       animation: {
-        float: 'float 4s ease-in-out infinite',
-        'float-slow': 'floatSlow 5s ease-in-out infinite',
-        sparkle: 'sparkle 2s ease-in-out infinite',
         shimmer: 'shimmer 1.5s infinite',
         'wp-pulse': 'wpPulse 2s infinite',
+        'marquee-left': 'marqueeLeft 28s linear infinite',
+        'marquee-right': 'marqueeRight 28s linear infinite',
       },
     },
   },

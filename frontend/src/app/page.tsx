@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import Header from '@/components/Header';
-import HeroSection from '@/components/HeroSection';
+import HeroSlider from '@/components/HeroSlider';
+import MarqueeBand from '@/components/MarqueeBand';
 import ProductsSection from '@/components/ProductsSection';
-import WhyUsSection from '@/components/WhyUsSection';
-import IngredientsSection from '@/components/IngredientsSection';
 import GallerySection from '@/components/GallerySection';
 import PickupSection from '@/components/PickupSection';
 import WhatsAppCTA from '@/components/WhatsAppCTA';
@@ -22,11 +21,10 @@ export default function HomePage() {
     <>
       <LocalBusinessSchema />
       <Header />
-      <main>
-        <HeroSection />
+      <main className="mobile-nav-spacer">
+        <HeroSlider />
+        <MarqueeBand />
         <ProductsSection />
-        <WhyUsSection />
-        <IngredientsSection />
         <GallerySection />
         <PickupSection />
         <WhatsAppCTA />

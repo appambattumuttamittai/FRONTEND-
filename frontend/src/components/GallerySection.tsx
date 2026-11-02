@@ -1,83 +1,79 @@
-'use client';
-import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { useLanguage } from '@/context/LanguageContext';
+import Link from 'next/link';
 
-const images = [
-  { src: '/images/brochure-main.jpeg', alt: 'Appambattu Mutta Mittai official brochure – traditional egg sweet from Villupuram', span: 'col-span-2 row-span-2' },
-  { src: '/images/product-box.jpeg', alt: 'Mutta Mittai in branded gold tin box – product packaging', span: '' },
-  { src: '/images/shop-counter.jpeg', alt: 'Appambattu Mutta Mittai shop counter at station – One Station One Product', span: '' },
-  { src: '/images/shop-display.jpeg', alt: 'Mutta Mittai shop display with colorful traditional fabric', span: 'col-span-2' },
+const galleryImages = [
+  { src: '/images/gallery-1.jpg', alt: 'Appambattu Mutta Mittai — close-up texture', span: 'md:col-span-2 md:row-span-2' },
+  { src: '/images/gallery-2.jpg', alt: 'Fresh batch of Mutta Mittai sweet', span: '' },
+  { src: '/images/gallery-3.jpg', alt: 'Traditional preparation process', span: '' },
+  { src: '/images/gallery-4.jpg', alt: 'Sweet packaging — gift ready', span: '' },
+  { src: '/images/gallery-5.jpg', alt: 'Mutta Mittai served on a plate', span: '' },
 ];
 
 export default function GallerySection() {
-  const { t } = useLanguage();
-
   return (
-    <section className="py-20 bg-gradient-to-br from-[#3A1C10] to-[#063D20]" aria-labelledby="gallery-heading">
-      <div className="container mx-auto px-4 max-w-6xl">
-        <motion.div
-          className="text-center mb-14"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          <h2 id="gallery-heading" className="text-4xl md:text-5xl font-black text-[#FFF4DD] mb-2">
-            {t('gallery.title')}
+    <section className="py-20" style={{ background: '#FFF8F0' }} aria-labelledby="gallery-heading">
+      {/* Story banner with background image */}
+      <div className="relative overflow-hidden mb-16" style={{ minHeight: 320 }}>
+        <Image
+          src="/images/story-bg.jpg"
+          alt="Appambattu Mutta Mittai — our story"
+          fill
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(88,42,0,0.88) 0%, rgba(196,47,44,0.65) 60%, rgba(88,42,0,0.5) 100%)' }} />
+        <div className="relative z-10 flex flex-col items-center justify-center min-h-[320px] text-center px-4 py-16">
+          <span className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: '#D97706' }}>Our Story</span>
+          <h2
+            id="gallery-heading"
+            className="font-black text-white mb-4"
+            style={{ fontFamily: "'Exo 2', sans-serif", fontSize: 'clamp(1.8rem, 4vw, 3rem)' }}
+          >
+            Crafted with Tradition
           </h2>
-          <div className="w-24 h-1 bg-[#F5B51B] mx-auto rounded-full" />
-        </motion.div>
-
-        {/* Mobile: vertical stack */}
-        <div className="md:hidden flex flex-col gap-4">
-          {images.map((img, i) => (
-            <motion.div
-              key={i}
-              className="relative rounded-3xl overflow-hidden shadow-2xl"
-              style={{ height: i === 0 ? '280px' : '200px' }}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-            >
-              <Image src={img.src} alt={img.alt} fill className="object-cover" sizes="100vw" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-            </motion.div>
-          ))}
+          <p className="text-white/75 max-w-lg text-base leading-relaxed mb-6">
+            Appambattu Mutta Mittai is an authentic egg sweet made from a generations-old recipe —
+            using pure milk, farm-fresh eggs, cashew paste and unrefined sugar. Every bite tells a story.
+          </p>
+          <p className="font-bold mb-8" style={{ color: '#D97706', fontFamily: "'Noto Sans Tamil', sans-serif" }}>
+            பாரம்பரிய செய்முறை — தலைமுறை தொட்டு வரும் ருசி
+          </p>
+          <Link
+            href="/order"
+            className="inline-flex items-center gap-2 px-7 py-3 bg-[#C42F2C] text-white rounded-full font-bold hover:bg-[#a82624] transition-all shadow-xl"
+          >
+            Order Now
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
         </div>
+      </div>
 
-        {/* Desktop: grid */}
-        <div className="hidden md:grid grid-cols-4 grid-rows-2 gap-4 h-[500px]">
-          {images.map((img, i) => (
-            <motion.div
+      {/* Gallery grid */}
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="text-center mb-10">
+          <h3 className="text-3xl md:text-4xl font-black section-title-line" style={{ color: '#582A00', fontFamily: "'Exo 2', sans-serif" }}>
+            Our Gallery
+          </h3>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 md:grid-rows-2 gap-3 md:gap-4" style={{ minHeight: 380 }}>
+          {galleryImages.map((img, i) => (
+            <div
               key={i}
-              className={`relative rounded-3xl overflow-hidden shadow-2xl group ${img.span}`}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
+              className={`relative overflow-hidden rounded-2xl ${img.span}`}
+              style={{ minHeight: i === 0 ? 280 : 180 }}
             >
               <Image
                 src={img.src}
                 alt={img.alt}
                 fill
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-                sizes="(max-width: 1200px) 50vw, 600px"
+                className="object-cover hover:scale-105 transition-transform duration-500"
+                sizes="(max-width: 768px) 50vw, 25vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
-            </motion.div>
+            </div>
           ))}
         </div>
-
-        {/* Caption */}
-        <motion.p
-          className="text-center text-[#FFF4DD]/60 text-sm mt-6"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-        >
-          ✨ Proudly selected for &quot;One Station One Product&quot; — A Tamil Nadu Railway Initiative
-        </motion.p>
       </div>
     </section>
   );
