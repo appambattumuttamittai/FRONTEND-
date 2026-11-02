@@ -76,7 +76,7 @@ export default function GallerySection() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          ✨ Proudly selected for "One Station One Product" — A Tamil Nadu Railway Initiative
+          ✨ Proudly selected for &quot;One Station One Product&quot; — A Tamil Nadu Railway Initiative
         </motion.p>
       </div>
     </section>

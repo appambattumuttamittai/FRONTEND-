@@ -17,7 +17,7 @@ export default function RefundPage() {
             </section>
             <section>
               <h2 className="text-xl font-bold text-[#063D20] mb-2">Order Confirmation</h2>
-              <p>Your order is confirmed only after an admin manually verifies your GPay payment. Clicking "I have Paid" does not automatically confirm your order — it places it under review. You will be notified via WhatsApp once confirmed.</p>
+              <p>Your order is confirmed only after an admin manually verifies your GPay payment. Clicking &quot;I have Paid&quot; does not automatically confirm your order — it places it under review. You will be notified via WhatsApp once confirmed.</p>
             </section>
             <section>
               <h2 className="text-xl font-bold text-[#063D20] mb-2">Refund Policy</h2>
