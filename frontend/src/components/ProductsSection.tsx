@@ -12,10 +12,10 @@ const weightLabels: Record<string, { en: string; ta: string }> = {
 };
 
 const productImages = [
-  '/images/sweet-product.png',
-  '/images/sweet-product.png',
-  '/images/sweet-product.png',
-  '/images/sweet-product.png',
+  '/images/product-p1.png',
+  '/images/product-p2.png',
+  '/images/product-p3.jpg',
+  '/images/product-p4.jpg',
 ];
 
 function StarRating() {
@@ -51,9 +51,9 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
           className={`object-cover transition-transform duration-500 ${hovered ? 'scale-[1.09]' : 'scale-100'}`}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />
-        {/* Pickup badge */}
+        {/* Order badge */}
         <div className="absolute top-3 right-3 bg-[#C42F2C] text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow">
-          Pickup Only
+          Order Now
         </div>
         {/* Hover CTA overlay — desktop */}
         <div
@@ -141,7 +141,7 @@ export default function ProductsSection() {
         <div className="text-center mb-14">
           <span className="inline-block text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full mb-4"
             style={{ background: 'rgba(196,47,44,0.08)', color: '#C42F2C' }}>
-            Pickup Only — Meenambur, Villupuram
+            Pickup & Home Delivery — Villupuram
           </span>
           <h2
             id="products-heading"
@@ -195,10 +195,12 @@ export default function ProductsSection() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
           </div>
-          <h3 className="text-white font-black text-xl md:text-2xl mb-2">Pickup in Store Only</h3>
+          <h3 className="text-white font-black text-xl md:text-2xl mb-2">Pickup & Home Delivery</h3>
           <p className="text-white/70 text-base">
-            Courier service is currently unavailable. Collect from{' '}
-            <strong className="text-[#D97706]">Meenambur, Appambattu, Villupuram</strong>.
+            Collect from{' '}
+            <strong className="text-[#D97706]">Villupuram Railway Station, 1st Platform</strong>.
+            {' '}Home delivery available within{' '}
+            <strong className="text-[#D97706]">Villupuram</strong>.
           </p>
           <p className="text-white/50 mt-1 text-sm" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>
             குரியர் சேவை இல்லை — மீனம்பூர், அப்பம்பட்டு, விழுப்புரம் இல் மட்டும் பிக்கப்

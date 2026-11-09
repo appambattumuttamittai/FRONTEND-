@@ -30,13 +30,13 @@ export default function Footer() {
             </p>
             <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold"
               style={{ borderColor: 'rgba(217,119,6,0.4)', color: '#D97706' }}>
-              One Station · One Product
+              Villupuram Railway Station
             </div>
           </div>
 
           {/* Contact & Pickup */}
           <div>
-            <h3 className="font-bold text-base mb-4" style={{ color: '#D97706' }}>Contact &amp; Pickup</h3>
+            <h3 className="font-bold text-base mb-4" style={{ color: '#D97706' }}>Location &amp; Delivery</h3>
             <div className="space-y-3 text-sm">
               <div className="flex items-start gap-2">
                 <svg className="w-4 h-4 mt-0.5 shrink-0" style={{ color: '#D97706' }} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -44,10 +44,20 @@ export default function Footer() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 <div>
-                  <p style={{ color: 'rgba(255,248,240,0.75)' }}>Meenambur, Appambattu, Villupuram</p>
+                  <p style={{ color: 'rgba(255,248,240,0.85)' }}>Villupuram Railway Station, 1st Platform</p>
+                  <p className="text-xs" style={{ color: 'rgba(255,248,240,0.65)' }}>Villupuram, Tamil Nadu</p>
                   <p className="text-xs mt-0.5" style={{ color: 'rgba(255,248,240,0.4)', fontFamily: "'Noto Sans Tamil', sans-serif" }}>
-                    மீனம்பூர், அப்பம்பட்டு, விழுப்புரம்
+                    வில்லுபுரம் ரயில் நிலையம், முதல் தளம்
                   </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <svg className="w-4 h-4 mt-0.5 shrink-0" style={{ color: '#D97706' }} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <div>
+                  <p style={{ color: 'rgba(255,248,240,0.75)' }}>Home Delivery</p>
+                  <p className="text-xs" style={{ color: 'rgba(255,248,240,0.45)' }}>Within Villupuram area only</p>
                 </div>
               </div>
               <a
@@ -62,9 +72,6 @@ export default function Footer() {
                 </svg>
                 +91 78719 49015 (WhatsApp)
               </a>
-              <p className="text-xs" style={{ color: 'rgba(255,248,240,0.4)' }}>
-                Pickup in Store Only — No Courier Service
-              </p>
             </div>
           </div>
 
@@ -104,7 +111,7 @@ export default function Footer() {
           className="pt-6 flex flex-col md:flex-row justify-between items-center gap-2 text-xs"
           style={{ borderTop: '1px solid rgba(255,248,240,0.1)', color: 'rgba(255,248,240,0.35)' }}
         >
-          <p>© {year} Appambattu Mutta Mittai. All rights reserved.</p>
+          <p>&copy; {year} Appambattu Mutta Mittai. All rights reserved.</p>
           <p>Made with care in Villupuram, Tamil Nadu</p>
         </div>
       </div>

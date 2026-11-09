@@ -469,7 +469,7 @@ function ProductConfig({ onRefresh }: { onRefresh: () => void }) {
 // Main admin dashboard
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [tab, setTab] = useState<'orders' | 'products' | 'analytics' | 'feedback'>('orders');
+  const [tab, setTab] = useState<'orders' | 'products' | 'analytics' | 'feedback' | 'content'>('orders');
   const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
   const [sheetsUrl, setSheetsUrl] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -491,6 +491,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     { key: 'products', label: '⚙️ Products' },
     { key: 'analytics', label: '📊 Analytics' },
     { key: 'feedback', label: '⭐ Feedback' },
+    { key: 'content', label: '🖼️ Site Content' },
   ];
 
   return (
@@ -542,6 +543,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         {tab === 'products' && <ProductConfig onRefresh={refresh} />}
         {tab === 'analytics' && <AnalyticsTab />}
         {tab === 'feedback' && <FeedbackTab />}
+        {tab === 'content' && <SiteContentTab />}
       </div>
 
       {selectedOrder && (
@@ -659,6 +661,107 @@ function FeedbackTab() {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+// Site Content Tab
+function SiteContentTab() {
+  const productSlots = [
+    { label: '250 gm', file: 'product-p1.png' },
+    { label: '500 gm', file: 'product-p2.png' },
+    { label: '750 gm', file: 'product-p3.jpg' },
+    { label: '1 kg', file: 'product-p4.jpg' },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <h2 className="text-xl font-black" style={{ color: '#582A00' }}>Site Content Management</h2>
+
+      {/* Hero Video */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-amber-100">
+        <h3 className="font-bold text-lg mb-2" style={{ color: '#582A00' }}>Hero Background Video</h3>
+        <p className="text-sm text-gray-500 mb-3">
+          Current hero video: <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">public/videos/hero-bg-main.mp4</code>.
+          Replace this file on the server to change the homepage background video.
+        </p>
+        <div className="rounded-xl overflow-hidden bg-gray-900 relative" style={{ aspectRatio: '16/7', maxHeight: 240 }}>
+          <video
+            src="/videos/hero-bg-main.mp4"
+            className="w-full h-full object-cover opacity-80"
+            muted
+            loop
+            autoPlay
+            playsInline
+          />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="bg-black/50 text-white text-xs font-bold px-3 py-1.5 rounded-full">Live Preview</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Product Images */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-amber-100">
+        <h3 className="font-bold text-lg mb-2" style={{ color: '#582A00' }}>Product Card Images</h3>
+        <p className="text-sm text-gray-500 mb-4">
+          Each product card uses a dedicated image file in <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">public/images/</code>.
+          Replace the file on the server to update the image for that pack size.
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {productSlots.map((slot) => (
+            <div key={slot.file} className="rounded-xl overflow-hidden border border-amber-100 bg-amber-50">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`/images/${slot.file}`}
+                alt={slot.label}
+                className="w-full aspect-square object-cover"
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
+              <div className="p-2 text-center">
+                <div className="font-black text-xs" style={{ color: '#582A00' }}>{slot.label}</div>
+                <div className="text-[10px] text-gray-400 mt-0.5 break-all">{slot.file}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Store Info */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-amber-100">
+        <h3 className="font-bold text-lg mb-4" style={{ color: '#582A00' }}>Store Information</h3>
+        <div className="space-y-3 text-sm">
+          {[
+            { label: 'Location', value: 'Villupuram Railway Station, 1st Platform, Villupuram, Tamil Nadu' },
+            { label: 'WhatsApp', value: '+91 78719 49015' },
+            { label: 'Delivery', value: 'Home delivery within Villupuram only. Pickup at Railway Station for all others.' },
+          ].map((row) => (
+            <div key={row.label} className="flex items-start gap-3">
+              <span className="font-semibold w-28 shrink-0 text-gray-500">{row.label}:</span>
+              <span className="text-gray-800">{row.value}</span>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-amber-700 mt-4 bg-amber-50 rounded-xl p-3 border border-amber-100">
+          To change store information, update Footer.tsx, PickupSection.tsx and Header.tsx in the frontend source code and redeploy.
+        </p>
+      </div>
+
+      {/* Slider Images */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-amber-100">
+        <h3 className="font-bold text-lg mb-2" style={{ color: '#582A00' }}>Hero Slider Images (Fallback)</h3>
+        <p className="text-sm text-gray-500 mb-4">
+          These images are used as a poster/fallback when the video cannot play. Files: <code className="bg-gray-100 px-1 rounded text-xs">slider-1.png</code>, <code className="bg-gray-100 px-1 rounded text-xs">slider-2.png</code>, <code className="bg-gray-100 px-1 rounded text-xs">slider-3.png</code>
+        </p>
+        <div className="grid grid-cols-3 gap-3">
+          {['slider-1.png', 'slider-2.png', 'slider-3.png'].map((f) => (
+            <div key={f} className="rounded-xl overflow-hidden border border-amber-100">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={`/images/${f}`} alt={f} className="w-full aspect-video object-cover" />
+              <div className="p-1.5 text-center text-[10px] text-gray-400">{f}</div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

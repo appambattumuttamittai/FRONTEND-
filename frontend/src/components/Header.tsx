@@ -1,16 +1,9 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 
 export default function Header() {
-  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 40);
-    window.addEventListener('scroll', handler, { passive: true });
-    return () => window.removeEventListener('scroll', handler);
-  }, []);
 
   const navLinks = [
     { label: 'Home', href: '/' },
@@ -22,7 +15,7 @@ export default function Header() {
 
   return (
     <>
-      {/* ── Promo bar ── */}
+      {/* ── Single promo marquee bar (ONE row only) ── */}
       <div className="promo-bar overflow-hidden py-2" aria-label="Promotional announcements">
         <div className="sw-row-left flex items-center gap-12 whitespace-nowrap w-max">
           {[...Array(6)].map((_, i) => (
@@ -35,70 +28,77 @@ export default function Header() {
               <span className="text-white/50">◆</span>
               <span>Safe &amp; Hygienic Packaging</span>
               <span className="text-white/50">◆</span>
-              <span>Pickup Only — Meenambur, Villupuram</span>
+              <span>Home Delivery: Villupuram Only</span>
+              <span className="text-white/50">◆</span>
+              <span>Villupuram Railway Station ◆ 1st Platform</span>
               <span className="text-white/50">◆</span>
             </span>
           ))}
         </div>
       </div>
 
-      {/* ── Floating pill navbar ── */}
-      <div className="fixed top-3 left-0 right-0 z-[100] px-4 pointer-events-none">
-        <div
-          className={`sweets-header-pill pointer-events-auto transition-all duration-300 ${
-            scrolled ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
-          } flex items-center justify-between px-4 py-2.5 mx-auto max-w-5xl`}
-        >
+      {/* ── Single sticky navbar ── */}
+      <nav
+        className="sticky top-0 z-50 bg-[#FFF8F0]/96 backdrop-blur border-b border-[#C42F2C]/10"
+        aria-label="Main navigation"
+      >
+        <div className="container mx-auto px-4 max-w-6xl flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 shrink-0" aria-label="Appambattu Mutta Mittai - Home">
-            <div className="w-8 h-8 rounded-full bg-[#C42F2C] flex items-center justify-center shadow">
-              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white" aria-hidden="true">
+          <Link href="/" className="flex items-center gap-2.5" aria-label="Appambattu Mutta Mittai - Home">
+            <div className="w-9 h-9 rounded-full bg-[#C42F2C] flex items-center justify-center shadow shrink-0">
+              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white" aria-hidden="true">
                 <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 3a3 3 0 110 6 3 3 0 010-6zm0 14.2a7.2 7.2 0 01-6-3.22c.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08a7.2 7.2 0 01-6 3.22z"/>
               </svg>
             </div>
-            <span className="font-black text-[#582A00] text-sm leading-tight hidden sm:block">
-              Appambattu<br />
-              <span className="text-[#C42F2C]">Mutta Mittai</span>
-            </span>
+            <div className="leading-tight">
+              <div className="font-black text-[#582A00] text-sm">Appambattu</div>
+              <div className="font-black text-[#C42F2C] text-sm">Mutta Mittai</div>
+            </div>
           </Link>
 
           {/* Desktop nav links */}
-          <nav className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
-                className="px-4 py-1.5 text-sm font-semibold text-[#582A00] hover:text-[#C42F2C] rounded-full hover:bg-[#C42F2C]/8 transition-all"
+                className="px-4 py-2 text-sm font-semibold text-[#582A00] hover:text-[#C42F2C] rounded-full hover:bg-[#C42F2C]/8 transition-all"
               >
                 {link.label}
               </Link>
             ))}
-          </nav>
+          </div>
 
-          {/* CTA buttons */}
-          <div className="flex items-center gap-2">
+          {/* Desktop CTA */}
+          <div className="hidden md:flex items-center gap-2">
             <a
               href={waLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366] text-white rounded-full text-xs font-bold hover:bg-[#20bb5a] transition-colors wp-pulse"
+              className="flex items-center gap-2 px-4 py-2 bg-[#25D366] text-white rounded-full text-sm font-bold hover:bg-[#20bb5a] transition-colors wp-pulse"
               aria-label="Order on WhatsApp"
             >
-              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.126.554 4.126 1.523 5.862L0 24l6.344-1.493A11.948 11.948 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.87 0-3.63-.48-5.17-1.33l-.37-.21-3.77.89.9-3.68-.23-.38A9.952 9.952 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
               </svg>
               WhatsApp
             </a>
             <Link
               href="/order"
-              className="px-4 py-1.5 bg-[#C42F2C] text-white rounded-full text-sm font-bold hover:bg-[#a82624] transition-colors shadow-sm"
+              className="px-5 py-2 bg-[#C42F2C] text-white rounded-full text-sm font-bold hover:bg-[#a82624] transition-colors shadow"
             >
               Order Now
             </Link>
-            {/* Mobile hamburger */}
+          </div>
+
+          {/* Mobile: Order button + Hamburger */}
+          <div className="flex md:hidden items-center gap-2">
+            <Link href="/order" className="px-4 py-1.5 bg-[#C42F2C] text-white rounded-full text-sm font-bold">
+              Order
+            </Link>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="md:hidden p-2 rounded-full hover:bg-[#C42F2C]/10 transition-colors"
+              className="p-2 rounded-full hover:bg-[#C42F2C]/10 transition-colors"
               aria-label={menuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={menuOpen}
             >
@@ -111,9 +111,9 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile dropdown */}
+        {/* Mobile dropdown menu */}
         {menuOpen && (
-          <div className="sweets-header-pill pointer-events-auto mt-2 mx-auto max-w-5xl px-4 py-4 flex flex-col gap-2">
+          <div className="md:hidden border-t border-[#C42F2C]/10 bg-[#FFF8F0] px-4 py-4 flex flex-col gap-2">
             {navLinks.map((link) => (
               <Link
                 key={link.label}
@@ -135,84 +135,18 @@ export default function Header() {
             </a>
           </div>
         )}
-      </div>
-
-      {/* ── Static top bar (always visible before scroll) ── */}
-      <nav className="sticky top-0 z-50 bg-[#FFF8F0]/95 backdrop-blur border-b border-[#C42F2C]/10 px-4 md:hidden" aria-label="Mobile navigation">
-        <div className="flex items-center justify-between h-14">
-          <Link href="/" className="flex items-center gap-2" aria-label="Home">
-            <div className="w-7 h-7 rounded-full bg-[#C42F2C] flex items-center justify-center">
-              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white" aria-hidden="true">
-                <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 3a3 3 0 110 6 3 3 0 010-6zm0 14.2a7.2 7.2 0 01-6-3.22c.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08a7.2 7.2 0 01-6 3.22z"/>
-              </svg>
-            </div>
-            <span className="font-black text-[#582A00] text-sm">Mutta Mittai</span>
-          </Link>
-          <Link href="/order" className="px-4 py-1.5 bg-[#C42F2C] text-white rounded-full text-sm font-bold">
-            Order
-          </Link>
-        </div>
-      </nav>
-
-      {/* ── Desktop always-visible navbar ── */}
-      <nav className="hidden md:block sticky top-0 z-50 bg-[#FFF8F0]/95 backdrop-blur border-b border-[#C42F2C]/10 px-4" aria-label="Main navigation">
-        <div className="container mx-auto max-w-6xl flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-3" aria-label="Appambattu Mutta Mittai - Home">
-            <div className="w-9 h-9 rounded-full bg-[#C42F2C] flex items-center justify-center shadow">
-              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white" aria-hidden="true">
-                <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 3a3 3 0 110 6 3 3 0 010-6zm0 14.2a7.2 7.2 0 01-6-3.22c.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08a7.2 7.2 0 01-6 3.22z"/>
-              </svg>
-            </div>
-            <div>
-              <div className="font-black text-[#582A00] text-sm leading-tight">Appambattu</div>
-              <div className="font-black text-[#C42F2C] text-sm leading-tight">Mutta Mittai</div>
-            </div>
-          </Link>
-
-          <div className="flex items-center gap-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="px-4 py-2 text-sm font-semibold text-[#582A00] hover:text-[#C42F2C] rounded-full hover:bg-[#C42F2C]/8 transition-all"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <a
-              href={waLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 bg-[#25D366] text-white rounded-full text-sm font-bold hover:bg-[#20bb5a] transition-colors wp-pulse"
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.126.554 4.126 1.523 5.862L0 24l6.344-1.493A11.948 11.948 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.87 0-3.63-.48-5.17-1.33l-.37-.21-3.77.89.9-3.68-.23-.38A9.952 9.952 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
-              </svg>
-              WhatsApp
-            </a>
-            <Link
-              href="/order"
-              className="px-5 py-2 bg-[#C42F2C] text-white rounded-full text-sm font-bold hover:bg-[#a82624] transition-colors shadow"
-            >
-              Order Now
-            </Link>
-          </div>
-        </div>
       </nav>
 
       {/* ── Mobile bottom nav ── */}
       <nav className="fixed bottom-0 inset-x-0 z-50 bg-white border-t border-[#C42F2C]/15 md:hidden" aria-label="Mobile bottom navigation">
         <div className="flex items-center justify-around h-16">
-          <Link href="/" className="flex flex-col items-center gap-1 text-[#582A00] hover:text-[#C42F2C] transition-colors">
+          <Link href="/" className="flex flex-col items-center gap-1 text-[#582A00]">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
             <span className="text-[10px] font-semibold">Home</span>
           </Link>
-          <Link href="/order" className="flex flex-col items-center gap-1 text-[#C42F2C]">
+          <Link href="/order" className="flex flex-col items-center gap-1">
             <div className="w-10 h-10 rounded-full bg-[#C42F2C] flex items-center justify-center shadow-lg -mt-4">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -220,13 +154,7 @@ export default function Header() {
             </div>
             <span className="text-[10px] font-semibold text-[#C42F2C]">Order</span>
           </Link>
-          <a
-            href={waLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex flex-col items-center gap-1 text-[#25D366]"
-            aria-label="WhatsApp"
-          >
+          <a href={waLink} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1 text-[#25D366]" aria-label="WhatsApp">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.126.554 4.126 1.523 5.862L0 24l6.344-1.493A11.948 11.948 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.87 0-3.63-.48-5.17-1.33l-.37-.21-3.77.89.9-3.68-.23-.38A9.952 9.952 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
             </svg>
