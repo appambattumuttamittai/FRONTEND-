@@ -1,6 +1,92 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+
+const promoMessages = [
+  "India's Original Muttai Mittai",
+  "100% Authentic Recipe",
+  "Fresh Batch Daily",
+  "Safe & Hygienic Packaging",
+  "Home Delivery: Villupuram Only",
+  "Villupuram Railway Station, 1st Platform",
+];
+
+function PromoBanner() {
+  const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setIndex((prev) => (prev + 1) % promoMessages.length);
+        setVisible(true);
+      }, 350);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div
+      className="promo-bar py-2.5 overflow-hidden"
+      aria-label="Promotional announcements"
+      aria-live="polite"
+    >
+      <div className="flex items-center justify-center gap-3 text-white text-xs font-semibold tracking-wide">
+        {/* Left dots */}
+        <span className="hidden sm:flex gap-1">
+          {promoMessages.map((_, i) => (
+            <span
+              key={i}
+              className="rounded-full transition-all duration-300"
+              style={{
+                width: i === index ? 16 : 5,
+                height: 5,
+                display: 'inline-block',
+                background: i === index ? '#F5B51B' : 'rgba(255,255,255,0.3)',
+              }}
+            />
+          ))}
+        </span>
+
+        {/* Diamond separator */}
+        <span className="text-[#F5B51B] text-[10px]">◆</span>
+
+        {/* Animated message */}
+        <span
+          style={{
+            opacity: visible ? 1 : 0,
+            transform: visible ? 'translateY(0)' : 'translateY(6px)',
+            transition: 'opacity 0.35s ease, transform 0.35s ease',
+            minWidth: 220,
+            textAlign: 'center',
+          }}
+        >
+          {promoMessages[index]}
+        </span>
+
+        {/* Diamond separator */}
+        <span className="text-[#F5B51B] text-[10px]">◆</span>
+
+        {/* Right dots mirror */}
+        <span className="hidden sm:flex gap-1">
+          {promoMessages.map((_, i) => (
+            <span
+              key={i}
+              className="rounded-full transition-all duration-300"
+              style={{
+                width: i === index ? 16 : 5,
+                height: 5,
+                display: 'inline-block',
+                background: i === index ? '#F5B51B' : 'rgba(255,255,255,0.3)',
+              }}
+            />
+          ))}
+        </span>
+      </div>
+    </div>
+  );
+}
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -15,27 +101,7 @@ export default function Header() {
 
   return (
     <>
-      {/* ── Single promo marquee bar (ONE row only) ── */}
-      <div className="promo-bar overflow-hidden py-2" aria-label="Promotional announcements">
-        <div className="sw-row-left flex items-center gap-12 whitespace-nowrap w-max">
-          {[...Array(6)].map((_, i) => (
-            <span key={i} className="flex items-center gap-8 text-white text-xs font-semibold tracking-wide">
-              <span>India&apos;s Original Muttai Mittai</span>
-              <span className="text-white/50">◆</span>
-              <span>100% Authentic Recipe</span>
-              <span className="text-white/50">◆</span>
-              <span>Fresh Batch Daily</span>
-              <span className="text-white/50">◆</span>
-              <span>Safe &amp; Hygienic Packaging</span>
-              <span className="text-white/50">◆</span>
-              <span>Home Delivery: Villupuram Only</span>
-              <span className="text-white/50">◆</span>
-              <span>Villupuram Railway Station ◆ 1st Platform</span>
-              <span className="text-white/50">◆</span>
-            </span>
-          ))}
-        </div>
-      </div>
+      <PromoBanner />
 
       {/* ── Single sticky navbar ── */}
       <nav

@@ -1,29 +1,100 @@
-import Link from 'next/link';
+'use client';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+
+const sliderImages = [
+  { src: '/images/shop-photo.jpg', alt: 'Couple enjoying Appambattu Mutta Mittai' },
+  { src: '/images/lifestyle-kids.jpg', alt: 'Children enjoying Appambattu Mutta Mittai' },
+  { src: '/images/lifestyle-family.jpg', alt: 'Three generations enjoying Appambattu Mutta Mittai together' },
+];
+
+function ImageSlider() {
+  const [current, setCurrent] = useState(0);
+  const [fading, setFading] = useState(false);
+
+  const goTo = useCallback((idx: number) => {
+    setFading(true);
+    setTimeout(() => {
+      setCurrent(idx);
+      setFading(false);
+    }, 400);
+  }, []);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      goTo((current + 1) % sliderImages.length);
+    }, 4000);
+    return () => clearInterval(id);
+  }, [current, goTo]);
+
+  return (
+    <div className="relative rounded-3xl overflow-hidden shadow-2xl" style={{ minHeight: 340 }}>
+      {/* Images */}
+      <div
+        className="absolute inset-0 transition-opacity duration-500"
+        style={{ opacity: fading ? 0 : 1 }}
+      >
+        <Image
+          src={sliderImages[current].src}
+          alt={sliderImages[current].alt}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 50vw"
+          priority={current === 0}
+        />
+      </div>
+
+      {/* Light bottom gradient only — no text overlay */}
+      <div
+        className="absolute inset-0"
+        style={{ background: 'linear-gradient(to top, rgba(88,42,0,0.35) 0%, transparent 45%)' }}
+      />
+
+      {/* Dot indicators */}
+      <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
+        {sliderImages.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goTo(i)}
+            aria-label={`Go to image ${i + 1}`}
+            className="rounded-full transition-all duration-300"
+            style={{
+              width: i === current ? 28 : 8,
+              height: 8,
+              background: i === current ? '#F5B51B' : 'rgba(255,255,255,0.6)',
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function PickupSection() {
   return (
     <section className="py-20" style={{ background: '#FFF8F0' }} aria-labelledby="pickup-heading">
       <div className="container mx-auto px-4 max-w-6xl">
+
+        {/* Tagline banner */}
+        <div className="text-center mb-12">
+          <p
+            className="font-black italic leading-snug mx-auto"
+            style={{
+              color: '#582A00',
+              fontSize: 'clamp(1.1rem, 2.5vw, 1.5rem)',
+              maxWidth: 600,
+              fontFamily: "'Exo 2', sans-serif",
+            }}
+          >
+            &ldquo;A timeless sweetness from Appambattu that melts in the mouth of all three generations&rdquo;
+          </p>
+          <div className="mt-3 w-16 h-1 mx-auto rounded-full" style={{ background: '#D97706' }} />
+        </div>
+
         <div className="grid md:grid-cols-2 gap-10 items-center">
-          {/* Image */}
-          <div className="relative rounded-3xl overflow-hidden shadow-2xl" style={{ minHeight: 320 }}>
-            <Image
-              src="/images/shop-photo.jpg"
-              alt="Villupuram Railway Station — Appambattu Mutta Mittai pickup location"
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
-            <div
-              className="absolute inset-0"
-              style={{ background: 'linear-gradient(to top, rgba(88,42,0,0.75) 0%, transparent 55%)' }}
-            />
-            <div className="absolute bottom-4 left-4 right-4">
-              <p className="text-white font-black text-lg">Villupuram Railway Station</p>
-              <p className="text-[#D97706] text-sm font-semibold">1st Platform, Villupuram, Tamil Nadu</p>
-            </div>
-          </div>
+          {/* 3-Image auto slider */}
+          <ImageSlider />
 
           {/* Content */}
           <div>
@@ -82,19 +153,9 @@ export default function PickupSection() {
                 border: '1px solid rgba(217,119,6,0.22)',
               }}
             >
-              <svg
-                className="w-4 h-4 mt-0.5 shrink-0"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z"
-                />
+              <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" />
               </svg>
               Home delivery available within Villupuram only. For other locations, please use pickup at Villupuram Railway Station.
             </div>
