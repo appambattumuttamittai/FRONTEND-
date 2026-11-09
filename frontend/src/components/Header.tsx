@@ -111,10 +111,15 @@ export default function Header() {
         <div className="container mx-auto px-4 max-w-6xl flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5" aria-label="Appambattu Mutta Mittai - Home">
-            <div className="w-9 h-9 rounded-full bg-[#C42F2C] flex items-center justify-center shadow shrink-0">
-              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white" aria-hidden="true">
-                <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 3a3 3 0 110 6 3 3 0 010-6zm0 14.2a7.2 7.2 0 01-6-3.22c.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08a7.2 7.2 0 01-6 3.22z"/>
-              </svg>
+            <div className="w-10 h-10 rounded-full overflow-hidden shadow shrink-0 border-2 border-[#C42F2C]/20">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images/logo.jpg"
+                alt="Appambattu Mutta Mittai Logo"
+                width={40}
+                height={40}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
             </div>
             <div className="leading-tight">
               <div className="font-black text-[#582A00] text-sm">Appambattu</div>

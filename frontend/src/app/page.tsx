@@ -7,6 +7,7 @@ import PickupSection from '@/components/PickupSection';
 import WhatsAppCTA from '@/components/WhatsAppCTA';
 import Footer from '@/components/Footer';
 import { LocalBusinessSchema } from '@/components/JsonLd';
+import LogoIntro from '@/components/LogoIntro';
 
 export const metadata: Metadata = {
   title: 'Appambattu Mutta Mittai | அப்பம்பட்டு முட்டை மிட்டாய் | Traditional Egg Sweet Villupuram',
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
+      <LogoIntro />
       <LocalBusinessSchema />
       <Header />
       <main className="mobile-nav-spacer">
