@@ -1,6 +1,5 @@
 'use client';
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useApp } from '@/context/AppContext';
 
@@ -52,14 +51,25 @@ const badges = [
 
 export default function ProductModal() {
   const { modalProduct, closeModal, addItem, cart } = useApp();
-  const [qty, setQty]     = useState(1);
-  const [added, setAdded] = useState(false);
+  const [qty, setQty]       = useState(1);
+  const [added, setAdded]   = useState(false);
+  const [activeImg, setActiveImg] = useState(0);
+  const [zoomed, setZoomed] = useState(false);
+
+  const galleryImages = [
+    '/images/product-main.jpg',
+    '/images/product-gallery-1.jpg',
+    '/images/product-gallery-2.jpg',
+    '/images/product-gallery-3.jpg',
+  ];
 
   /* reset state each time modal opens */
   useEffect(() => {
     if (modalProduct) {
       setQty(1);
       setAdded(false);
+      setActiveImg(0);
+      setZoomed(false);
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -127,19 +137,79 @@ export default function ProductModal() {
 
           <div className="flex flex-col md:flex-row">
 
-            {/* ── Left: image ── */}
-            <div
-              className="md:w-5/12 relative overflow-hidden rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none"
-              style={{ minHeight: 260, background: '#F5F5F5' }}
-            >
-              <Image
-                src="/images/product-main.jpg"
-                alt={label?.en || 'Appambattu Mutta Mittai'}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 40vw"
-                priority
-              />
+            {/* ── Left: image gallery ── */}
+            <div className="md:w-5/12 flex flex-col rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none overflow-hidden" style={{ background: '#F5F5F5' }}>
+
+              {/* Main image with zoom */}
+              <div
+                className="relative overflow-hidden flex-1"
+                style={{ minHeight: 240, cursor: zoomed ? 'zoom-out' : 'zoom-in' }}
+                onClick={() => setZoomed((z) => !z)}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={galleryImages[activeImg]}
+                  alt={label?.en || 'Appambattu Mutta Mittai'}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    transform: zoomed ? 'scale(1.65)' : 'scale(1)',
+                    transition: 'transform 0.35s ease',
+                    display: 'block',
+                    minHeight: 240,
+                  }}
+                />
+
+                {/* Zoom controls */}
+                <div className="absolute bottom-3 right-3 flex gap-1.5" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    onClick={() => setZoomed(true)}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-base"
+                    style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
+                    aria-label="Zoom in"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => setZoomed(false)}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-base"
+                    style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
+                    aria-label="Zoom out"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Thumbnail strip */}
+              <div className="flex gap-2 p-3 bg-white" style={{ borderTop: '1px solid rgba(196,47,44,0.1)' }}>
+                {galleryImages.map((src, i) => (
+                  <button
+                    key={i}
+                    onClick={() => { setActiveImg(i); setZoomed(false); }}
+                    className="rounded-lg overflow-hidden shrink-0 transition-all"
+                    style={{
+                      width: 52, height: 52,
+                      border: i === activeImg ? '2.5px solid #C42F2C' : '2.5px solid transparent',
+                      boxShadow: i === activeImg ? '0 0 0 1px rgba(196,47,44,0.3)' : 'none',
+                      outline: 'none',
+                    }}
+                    aria-label={`View product image ${i + 1}`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={src}
+                      alt={`Product view ${i + 1}`}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    />
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* ── Right: details ── */}

@@ -1,6 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useApp } from '@/context/AppContext';
+import CartDrawer from '@/components/CartDrawer';
 
 const promoMessages = [
   "India's Original Muttai Mittai",
@@ -90,6 +92,8 @@ function PromoBanner() {
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
+  const { cartCount } = useApp();
 
   const navLinks = [
     { label: 'Home', href: '/' },
@@ -145,7 +149,25 @@ export default function Header() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-2">
-            <a
+            <button
+              onClick={() => setCartDrawerOpen(true)}
+              className="relative p-2 rounded-full hover:bg-[#C42F2C]/10 transition-colors"
+              aria-label={`View cart (${cartCount} items)`}
+              style={{ color: '#582A00' }}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              {cartCount > 0 && (
+                <span
+                  className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white"
+                  style={{ background: '#C42F2C' }}
+                >
+                  {cartCount > 9 ? '9+' : cartCount}
+                </span>
+              )}
+            </button>
+            <aa
               href={waLink}
               target="_blank"
               rel="noopener noreferrer"
@@ -167,6 +189,24 @@ export default function Header() {
 
           {/* Mobile: Order button + Hamburger */}
           <div className="flex md:hidden items-center gap-2">
+            <button
+              onClick={() => setCartDrawerOpen(true)}
+              className="relative p-2 rounded-full hover:bg-[#C42F2C]/10 transition-colors"
+              aria-label={`View cart (${cartCount} items)`}
+              style={{ color: '#582A00' }}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              {cartCount > 0 && (
+                <span
+                  className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-black text-white"
+                  style={{ background: '#C42F2C' }}
+                >
+                  {cartCount > 9 ? '9+' : cartCount}
+                </span>
+              )}
+            </button>
             <Link href="/order" className="px-4 py-1.5 bg-[#C42F2C] text-white rounded-full text-sm font-bold">
               Order
             </Link>
@@ -236,6 +276,7 @@ export default function Header() {
           </a>
         </div>
       </nav>
+      <CartDrawer open={cartDrawerOpen} onClose={() => setCartDrawerOpen(false)} />
     </>
   );
 }
