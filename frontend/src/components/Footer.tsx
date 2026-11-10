@@ -179,7 +179,7 @@ export default function Footer() {
               <div className="flex flex-col gap-2.5">
                 {[
                   { label: 'Home', href: '/' },
-                  { label: 'Order Now', href: '/order' },
+                  { label: 'Order Now', href: '/#products' },
                   { label: 'Privacy Policy', href: '/privacy' },
                   { label: 'Terms & Conditions', href: '/terms' },
                   { label: 'Refund Policy', href: '/refund' },
