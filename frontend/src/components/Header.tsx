@@ -167,7 +167,7 @@ export default function Header() {
                 </span>
               )}
             </button>
-            <aa
+            <a
               href={waLink}
               target="_blank"
               rel="noopener noreferrer"
