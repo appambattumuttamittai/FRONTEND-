@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { LanguageProvider } from '@/context/LanguageContext';
+import ClientProviders from '@/components/ClientProviders';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://appambattumuttamittai.com'),
@@ -37,7 +38,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider>
+          <ClientProviders>{children}</ClientProviders>
+        </LanguageProvider>
       </body>
     </html>
   );
