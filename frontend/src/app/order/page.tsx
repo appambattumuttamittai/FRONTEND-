@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense, Fragment } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
@@ -31,28 +31,64 @@ function StepIndicator({ current, steps }: { current: number; steps: string[] })
   const { t } = useLanguage();
   const labels = ['order.step.name', 'order.step.phone', 'order.step.quantity', 'order.step.pickup', 'order.step.payment'];
   return (
-    <div className="flex items-center justify-center gap-1 mb-8 overflow-x-auto pb-2">
-      {steps.map((_, i) => (
-        <div key={i} className="flex items-center">
-          <div className={`flex flex-col items-center min-w-[60px]`}>
-            <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
-                i < current ? 'step-done' : i === current ? 'step-active' : 'step-pending'
-              }`}
-            >
-              {i < current ? '✓' : i + 1}
+    <div className="w-full max-w-lg mx-auto mb-8 px-1 sm:px-2">
+      {/* Stepper row: all 5 steps distributed across full width without overflow */}
+      <div className="flex items-start justify-between w-full">
+        {steps.map((_, i) => (
+          <Fragment key={i}>
+            {/* Step node */}
+            <div className="flex flex-col items-center shrink-0">
+              <motion.div
+                initial={false}
+                animate={{
+                  scale: i === current ? [1, 1.15, 1.08] : 1,
+                }}
+                transition={{ duration: 0.35, ease: 'easeOut' }}
+                className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-black text-xs sm:text-sm select-none transition-all duration-300 ${
+                  i < current
+                    ? 'bg-[#D97706] text-white shadow-sm'
+                    : i === current
+                    ? 'bg-[#C42F2C] text-white ring-4 ring-[#C42F2C]/25 shadow-lg'
+                    : 'bg-[#EAE0D2] text-[#582A00]/40 border border-[#582A00]/10'
+                }`}
+              >
+                {i < current ? '✓' : i + 1}
+              </motion.div>
+              <span
+                className={`text-[11px] sm:text-xs mt-1.5 text-center leading-tight transition-colors duration-300 hidden sm:block max-w-[70px] ${
+                  i === current
+                    ? 'text-[#582A00] font-black'
+                    : i < current
+                    ? 'text-[#D97706] font-semibold'
+                    : 'text-[#582A00]/40 font-medium'
+                }`}
+              >
+                {t(labels[i])}
+              </span>
             </div>
-            <span className={`text-xs mt-1 text-center w-16 leading-tight hidden sm:block ${
-              i === current ? 'text-[#063D20] font-semibold' : 'text-[#3A1C10]/50'
-            }`}>
-              {t(labels[i])}
-            </span>
-          </div>
-          {i < steps.length - 1 && (
-            <div className={`h-0.5 w-8 md:w-12 mx-1 rounded transition-all ${i < current ? 'bg-[#F5B51B]' : 'bg-gray-200'}`} />
-          )}
-        </div>
-      ))}
+
+            {/* Connecting progress line */}
+            {i < steps.length - 1 && (
+              <div className="flex-1 h-1 mx-1 sm:mx-2.5 bg-[#E5D7C3] rounded-full relative overflow-hidden mt-3.5 sm:mt-4.5">
+                <motion.div
+                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#D97706] to-[#C42F2C] rounded-full"
+                  initial={false}
+                  animate={{ width: i < current ? '100%' : '0%' }}
+                  transition={{ duration: 0.45, ease: 'easeInOut' }}
+                />
+              </div>
+            )}
+          </Fragment>
+        ))}
+      </div>
+
+      {/* Mobile-only current step label badge */}
+      <div className="sm:hidden text-center mt-3">
+        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#582A00] bg-white/80 px-3.5 py-1 rounded-full border border-[#582A00]/10 shadow-xs">
+          <span className="w-2 h-2 rounded-full bg-[#C42F2C] animate-pulse" />
+          Step {current + 1} of {steps.length}: <span className="text-[#C42F2C]">{t(labels[current])}</span>
+        </span>
+      </div>
     </div>
   );
 }
