@@ -103,6 +103,13 @@ export default function ProductModal() {
 
   return (
     <>
+      {/* Desktop: force image to fill left panel height */}
+      <style>{`
+        @media (min-width: 768px) {
+          .modal-img-wrap { height: auto !important; flex: 1 1 0 !important; min-height: 0; }
+        }
+      `}</style>
+
       {/* ── Backdrop ── */}
       <div
         className="fixed inset-0 z-[9000]"
@@ -135,15 +142,19 @@ export default function ProductModal() {
             </svg>
           </button>
 
-          <div className="flex flex-col md:flex-row md:min-h-[420px] md:items-stretch">
+          <div className="flex flex-col md:flex-row md:items-stretch" style={{ minHeight: 480 }}>
 
             {/* ── Left: image gallery ── */}
-            <div className="md:w-5/12 flex flex-col md:h-full rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none overflow-hidden" style={{ background: '#F5F5F5' }}>
+            <div className="md:w-5/12 flex flex-col rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none overflow-hidden" style={{ background: '#F5F5F5' }}>
 
-              {/* Main image with zoom — fixed height on mobile, flex-1 on desktop */}
+              {/* Main image with zoom — 180px on mobile, fills all remaining space on desktop */}
               <div
-                className="relative overflow-hidden flex-shrink-0 md:flex-1"
-                style={{ height: 180, cursor: zoomed ? 'zoom-out' : 'zoom-in' }}
+                className="modal-img-wrap relative overflow-hidden"
+                style={{
+                  height: 180,
+                  flex: '1 1 auto',
+                  cursor: zoomed ? 'zoom-out' : 'zoom-in',
+                }}
                 onClick={() => setZoomed((z) => !z)}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
