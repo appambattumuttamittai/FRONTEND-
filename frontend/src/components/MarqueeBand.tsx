@@ -11,7 +11,7 @@ const items = [
 
 export default function MarqueeBand() {
   return (
-    <div className="py-5 overflow-hidden" style={{ background: '#FFF8F0', borderTop: '1px solid rgba(196,47,44,0.08)', borderBottom: '1px solid rgba(196,47,44,0.08)' }} aria-hidden="true">
+    <div className="py-5 overflow-hidden" style={{ background: '#FFFFFF', borderTop: '1px solid rgba(196,47,44,0.08)', borderBottom: '1px solid rgba(196,47,44,0.08)' }} aria-hidden="true">
       {/* Row 1 — left */}
       <div className="relative flex mb-3">
         <div className="sw-row-left flex items-center gap-8 whitespace-nowrap w-max">

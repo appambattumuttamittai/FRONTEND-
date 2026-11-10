@@ -127,7 +127,7 @@ export default function HeroSlider() {
       {/* Wave SVG bottom */}
       <div className="absolute bottom-0 left-0 right-0 z-10">
         <svg viewBox="0 0 1440 80" className="wave-bottom" aria-hidden="true" preserveAspectRatio="none">
-          <path d="M0,50 C200,90 440,10 720,55 C980,90 1240,15 1440,50 L1440,80 L0,80 Z" fill="#FFF8F0" />
+          <path d="M0,50 C200,90 440,10 720,55 C980,90 1240,15 1440,50 L1440,80 L0,80 Z" fill="#FFFFFF" />
         </svg>
       </div>
     </section>

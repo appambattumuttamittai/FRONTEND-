@@ -72,7 +72,7 @@ body {
 
 /* ── Floating pill navbar ── */
 .sweets-header-pill {
-  background: rgba(255,248,240,0.96);
+  background: rgba(255,255,255,0.96);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 16px;
@@ -115,7 +115,7 @@ body {
   100% { background-position:  200% center; }
 }
 .shimmer {
-  background: linear-gradient(90deg, #f0e8df 25%, #e5d8cc 50%, #f0e8df 75%);
+  background: linear-gradient(90deg, #f5f5f5 25%, #e8e8e8 50%, #f5f5f5 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }

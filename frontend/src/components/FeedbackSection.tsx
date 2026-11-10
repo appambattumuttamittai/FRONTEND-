@@ -175,7 +175,7 @@ export default function FeedbackSection() {
             <h2
               id="feedback-heading"
               className="text-4xl md:text-5xl font-black mb-4"
-              style={{ color: '#FFF8F0', fontFamily: "'Exo 2', sans-serif", textShadow: '0 2px 20px rgba(0,0,0,0.4)' }}
+              style={{ color: '#FFFFFF', fontFamily: "'Exo 2', sans-serif", textShadow: '0 2px 20px rgba(0,0,0,0.4)' }}
             >
               Customer Reviews
             </h2>
@@ -231,7 +231,7 @@ export default function FeedbackSection() {
                       {fb.name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)}
                     </div>
                     <div>
-                      <p className="font-bold text-sm" style={{ color: '#FFF8F0' }}>{fb.name}</p>
+                      <p className="font-bold text-sm" style={{ color: '#FFFFFF' }}>{fb.name}</p>
                       <p className="text-[11px]" style={{ color: 'rgba(255,248,240,0.45)' }}>Verified Customer</p>
                     </div>
                     <svg className="w-5 h-5 ml-auto opacity-15" viewBox="0 0 24 24" fill="white" aria-hidden="true">
@@ -257,7 +257,7 @@ export default function FeedbackSection() {
             >
               <h3
                 className="text-2xl font-black mb-1"
-                style={{ color: '#FFF8F0', fontFamily: "'Exo 2', sans-serif" }}
+                style={{ color: '#FFFFFF', fontFamily: "'Exo 2', sans-serif" }}
               >
                 Leave Your Feedback
               </h3>
@@ -275,7 +275,7 @@ export default function FeedbackSection() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <p className="font-black text-lg mb-1" style={{ color: '#FFF8F0' }}>Thank you for your feedback!</p>
+                  <p className="font-black text-lg mb-1" style={{ color: '#FFFFFF' }}>Thank you for your feedback!</p>
                   <p className="text-sm" style={{ color: 'rgba(255,248,240,0.5)' }}>Your review is pending approval and will appear soon.</p>
                   <button
                     onClick={() => setSubmitted(false)}
@@ -303,7 +303,7 @@ export default function FeedbackSection() {
                       style={{
                         background: 'rgba(255,255,255,0.1)',
                         border: '1.5px solid rgba(255,255,255,0.2)',
-                        color: '#FFF8F0',
+                        color: '#FFFFFF',
                       }}
                       onFocus={(e) => (e.target.style.borderColor = '#FFAA2B')}
                       onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.2)')}
@@ -333,7 +333,7 @@ export default function FeedbackSection() {
                       style={{
                         background: 'rgba(255,255,255,0.1)',
                         border: '1.5px solid rgba(255,255,255,0.2)',
-                        color: '#FFF8F0',
+                        color: '#FFFFFF',
                       }}
                       onFocus={(e) => (e.target.style.borderColor = '#FFAA2B')}
                       onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.2)')}
