@@ -142,13 +142,9 @@ export default function ProductsSection() {
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
         <div className="text-center mb-14">
-          <span className="inline-block text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full mb-4"
-            style={{ background: 'rgba(196,47,44,0.08)', color: '#C42F2C' }}>
-            Pickup &amp; Home Delivery — Villupuram
-          </span>
           <h2
             id="products-heading"
-            className="text-4xl md:text-5xl font-black mb-4 section-title-line"
+            className="text-4xl md:text-5xl font-black mb-4 section-title-line text-center"
             style={{ color: '#582A00', fontFamily: "'Exo 2', sans-serif" }}
           >
             Our Sweet Collection
