@@ -47,6 +47,11 @@ export function removeCartItem(id: string): CartItem[] {
   return cart;
 }
 
+export function clearCart(): CartItem[] {
+  writeCart([]);
+  return [];
+}
+
 export function cartTotalCount(items: CartItem[]): number {
   return items.reduce((s, i) => s + i.quantity, 0);
 }

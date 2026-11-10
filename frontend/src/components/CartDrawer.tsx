@@ -305,7 +305,7 @@ export default function CartDrawer({ open, onClose }: Props) {
 
             {/* Place Order */}
             <Link
-              href="/order"
+              href="/order?from=cart"
               onClick={onClose}
               style={{
                 display: 'block',

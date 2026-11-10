@@ -3,7 +3,7 @@ import React, {
   createContext, useContext, useState, useEffect,
   useCallback, ReactNode,
 } from 'react';
-import { CartItem, readCart, upsertCartItem, removeCartItem, cartTotalCount } from '@/lib/cart';
+import { CartItem, readCart, upsertCartItem, removeCartItem, clearCart as clearCartStorage, cartTotalCount } from '@/lib/cart';
 
 export interface ProductForModal {
   id: string;
@@ -19,6 +19,7 @@ interface AppCtx {
   cartCount: number;
   addItem: (item: Omit<CartItem, 'addedAt'>) => void;
   removeItem: (id: string) => void;
+  clearCart: () => void;
   /* ── modal ── */
   modalProduct: ProductForModal | null;
   openModal: (p: ProductForModal) => void;
@@ -71,13 +72,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setCartCount(cartTotalCount(updated));
   }, []);
 
+  const clearCart = useCallback(() => {
+    const updated = clearCartStorage();
+    setCart(updated);
+    setCartCount(0);
+  }, []);
+
   const openModal  = useCallback((p: ProductForModal) => setModal(p), []);
   const closeModal = useCallback(() => setModal(null), []);
   const setProducts = useCallback((p: ProductForModal[]) => setProductsState(p), []);
 
   return (
     <Ctx.Provider value={{
-      cart, cartCount, addItem, removeItem,
+      cart, cartCount, addItem, removeItem, clearCart,
       modalProduct, openModal, closeModal,
       products, setProducts,
     }}>

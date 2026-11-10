@@ -6,17 +6,27 @@ import toast from 'react-hot-toast';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/context/LanguageContext';
+import { useApp } from '@/context/AppContext';
 import { api, Product } from '@/lib/api';
 
 // Steps (4 steps: Name -> Phone -> Pickup -> Payment)
 type Step = 'name' | 'phone' | 'pickup' | 'payment';
 const STEPS: Step[] = ['name', 'phone', 'pickup', 'payment'];
 
+export interface OrderItem {
+  id: string;
+  weight: string;
+  price: number;
+  quantity: number;
+}
+
 interface OrderState {
   name: string;
   phone: string;
   otpSessionId: string;
   phoneVerified: boolean;
+  items: OrderItem[];
+  orderSource: 'cart' | 'direct';
   selectedProduct: Product | null;
   street: string;
   city: string;
@@ -296,11 +306,30 @@ function PhoneStep({
 }
 
 // Step 3: Pickup details
-function PickupStep({ product, street, city, pincode, onStreet, onCity, onPincode, onNext, onBack }: {
+function PickupStep({
+  items,
+  orderSource,
+  product,
+  street,
+  city,
+  pincode,
+  onStreet,
+  onCity,
+  onPincode,
+  onNext,
+  onBack,
+}: {
+  items: OrderItem[];
+  orderSource: 'cart' | 'direct';
   product?: Product | null;
-  street: string; city: string; pincode: string;
-  onStreet: (v: string) => void; onCity: (v: string) => void; onPincode: (v: string) => void;
-  onNext: () => void; onBack: () => void;
+  street: string;
+  city: string;
+  pincode: string;
+  onStreet: (v: string) => void;
+  onCity: (v: string) => void;
+  onPincode: (v: string) => void;
+  onNext: () => void;
+  onBack: () => void;
 }) {
   const { t } = useLanguage();
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -318,22 +347,40 @@ function PickupStep({ product, street, city, pincode, onStreet, onCity, onPincod
     onNext();
   };
 
+  const grandTotal = items.reduce((s, it) => s + it.price * it.quantity, 0);
+
   return (
     <div className="space-y-3.5">
       <h2 className="text-xl sm:text-2xl font-black text-[#063D20]">{t('order.step.pickup')}</h2>
 
-      {product && (
+      {items && items.length > 0 ? (
+        <div className="bg-[#FFF4DD] border border-[#582A00]/15 rounded-xl p-3 text-xs sm:text-sm">
+          <div className="flex items-center justify-between font-bold text-[#582A00] mb-2 pb-1.5 border-b border-[#582A00]/10">
+            <span>{orderSource === 'cart' ? '🛒 Cart Items' : '📦 Selected Order'}</span>
+            <span className="text-[#C42F2C] font-black text-sm">
+              Total: ₹{grandTotal}
+            </span>
+          </div>
+          <div className="space-y-1.5">
+            {items.map((it) => (
+              <div key={it.id} className="flex justify-between items-center text-[#582A00]">
+                <span>
+                  <strong className="text-[#C42F2C]">{it.weight}</strong>
+                  <span className="text-[#3A1C10]/60 ml-1.5 font-medium">× {it.quantity}</span>
+                </span>
+                <span className="font-bold">₹{it.price * it.quantity}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : product ? (
         <div className="flex items-center justify-between px-3.5 py-2.5 bg-[#FFF4DD] border border-[#582A00]/15 rounded-xl text-xs sm:text-sm">
           <span className="font-semibold text-[#582A00]">
             Selected Pack: <strong className="text-[#C42F2C]">{product.weight}</strong>
           </span>
           <span className="font-black text-[#582A00]">₹{product.price}</span>
         </div>
-      )}
-
-      <div className="bg-[#063D20]/5 border border-[#063D20]/20 rounded-xl p-2.5 text-xs sm:text-sm text-[#063D20]">
-        📍 {t('order.pickup.info')}
-      </div>
+      ) : null}
 
       <div>
         <label className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">{t('order.street.label')} *</label>
@@ -386,10 +433,11 @@ function PickupStep({ product, street, city, pincode, onStreet, onCity, onPincod
   );
 }
 
-// Step 5: Payment
-function PaymentStep({ orderState, onBack, onSuccess }: {
+// Step 4: Payment
+function PaymentStep({ orderState, onBack, onSuccess, onClearCart }: {
   orderState: OrderState; onBack: () => void;
   onSuccess: (orderId: string) => void;
+  onClearCart?: () => void;
 }) {
   const { t } = useLanguage();
   const router = useRouter();
@@ -405,11 +453,14 @@ function PaymentStep({ orderState, onBack, onSuccess }: {
   useEffect(() => {
     const create = async () => {
       try {
-        const prodId = orderState.selectedProduct?.id || '500gm';
+        const prodId = orderState.items[0]?.id || orderState.selectedProduct?.id || '500gm';
+        const totalQty = orderState.items.reduce((s, it) => s + it.quantity, 0) || 1;
         const result = await api.createOrder({
           customerName: orderState.name,
           phone: orderState.phone.replace(/\D/g, ''),
           productId: prodId,
+          quantity: totalQty,
+          items: orderState.items.map((it) => ({ productId: it.id, quantity: it.quantity })),
           otpSessionId: orderState.otpSessionId,
           streetAddress: orderState.street,
           city: orderState.city,
@@ -454,7 +505,10 @@ function PaymentStep({ orderState, onBack, onSuccess }: {
     setSubmitting(true);
     try {
       await api.iHavePaid(currentOrderId);
-      router.push(`/order/success?orderId=${currentOrderId}`);
+      if (orderState.orderSource === 'cart' && onClearCart) {
+        onClearCart();
+      }
+      onSuccess(currentOrderId);
     } catch (err: any) {
       toast.error(err.message || t('common.error'));
     } finally {
@@ -486,21 +540,49 @@ function PaymentStep({ orderState, onBack, onSuccess }: {
     );
   }
 
+  const grandTotal = orderState.totalAmount || orderState.items.reduce((s, it) => s + it.price * it.quantity, 0);
+
   return (
     <div className="space-y-5">
       <h2 className="text-2xl font-black text-[#063D20]">{t('order.step.payment')}</h2>
 
       {/* Order summary */}
-      <div className="bg-[#063D20] text-[#FFF4DD] rounded-2xl p-5">
-        <h3 className="text-[#F5B51B] font-bold text-sm mb-3">{t('order.summary')}</h3>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between"><span>Name</span><span className="font-semibold">{orderState.name}</span></div>
-          <div className="flex justify-between"><span>Product</span><span className="font-semibold">{orderState.selectedProduct?.weight}</span></div>
-          <div className="flex justify-between"><span>Pickup</span><span className="font-semibold">{orderState.city}</span></div>
+      <div className="bg-[#063D20] text-[#FFF4DD] rounded-2xl p-4 sm:p-5">
+        <h3 className="text-[#F5B51B] font-bold text-xs sm:text-sm mb-3">
+          {orderState.orderSource === 'cart' ? '🛒 Cart Order Summary' : '📦 Order Summary'}
+        </h3>
+        <div className="space-y-2 text-xs sm:text-sm">
+          <div className="flex justify-between">
+            <span className="text-[#FFF4DD]/80">Name</span>
+            <span className="font-semibold">{orderState.name}</span>
+          </div>
+
+          <div className="border-t border-[#FFF4DD]/15 pt-2 space-y-1.5">
+            {orderState.items && orderState.items.length > 0 ? (
+              orderState.items.map((it) => (
+                <div key={it.id} className="flex justify-between items-center">
+                  <span>
+                    {it.weight} <span className="text-[#F5B51B] font-semibold">× {it.quantity}</span>
+                  </span>
+                  <span className="font-semibold">₹{it.price * it.quantity}</span>
+                </div>
+              ))
+            ) : (
+              <div className="flex justify-between">
+                <span>{orderState.selectedProduct?.weight}</span>
+                <span className="font-semibold">₹{orderState.selectedProduct?.price}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-between border-t border-[#FFF4DD]/15 pt-2">
+            <span className="text-[#FFF4DD]/80">Delivery / Pickup</span>
+            <span className="font-semibold">{orderState.city}</span>
+          </div>
           <div className="border-t border-[#FFF4DD]/20 my-2" />
-          <div className="flex justify-between text-lg font-black">
+          <div className="flex justify-between text-base sm:text-lg font-black">
             <span>{t('order.total')}</span>
-            <span className="text-[#F5B51B]">₹{orderState.selectedProduct?.price}</span>
+            <span className="text-[#F5B51B]">₹{grandTotal}</span>
           </div>
         </div>
       </div>
@@ -570,6 +652,7 @@ function PaymentStep({ orderState, onBack, onSuccess }: {
 // Main order page
 function OrderPageContent() {
   const { t } = useLanguage();
+  const { cart, clearCart } = useApp();
   const searchParams = useSearchParams();
   const router = useRouter();
   const [step, setStep] = useState(0);
@@ -579,6 +662,8 @@ function OrderPageContent() {
     phone: '',
     otpSessionId: '',
     phoneVerified: false,
+    items: [],
+    orderSource: 'direct',
     selectedProduct: null,
     street: '',
     city: '',
@@ -605,21 +690,96 @@ function OrderPageContent() {
     api.getProducts().then((data) => {
       const prods = (data && data.length > 0) ? data : fallbackList;
       setProducts(prods);
+
       const preselect = searchParams.get('product');
-      const matched = matchProduct(prods, preselect);
-      if (matched && matched.inStock) {
-        setState((s) => ({ ...s, selectedProduct: matched }));
+      const qtyParam = parseInt(searchParams.get('qty') || '1', 10);
+      const quantity = isNaN(qtyParam) || qtyParam < 1 ? 1 : qtyParam;
+      const fromParam = searchParams.get('from');
+
+      // Check if user came from cart or if no direct product was requested but cart has items
+      const isFromCart = fromParam === 'cart' || (!preselect && cart && cart.length > 0);
+
+      if (isFromCart && cart && cart.length > 0) {
+        const orderItems: OrderItem[] = cart.map((c) => ({
+          id: c.id,
+          weight: c.weight,
+          price: c.price,
+          quantity: c.quantity,
+        }));
+        const total = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        setState((s) => ({
+          ...s,
+          items: orderItems,
+          orderSource: 'cart',
+          totalAmount: total,
+          selectedProduct: prods.find((p) => p.id === orderItems[0]?.id) || prods[0],
+        }));
+      } else if (preselect) {
+        const matched = matchProduct(prods, preselect) || fallbackList[1];
+        const orderItems: OrderItem[] = [{
+          id: matched.id,
+          weight: matched.weight,
+          price: matched.price,
+          quantity,
+        }];
+        setState((s) => ({
+          ...s,
+          items: orderItems,
+          orderSource: 'direct',
+          totalAmount: matched.price * quantity,
+          selectedProduct: matched,
+        }));
       } else {
         const defaultProd = prods.find((p) => p.inStock) || prods[0];
-        if (defaultProd) setState((s) => ({ ...s, selectedProduct: defaultProd }));
+        const orderItems: OrderItem[] = [{
+          id: defaultProd.id,
+          weight: defaultProd.weight,
+          price: defaultProd.price,
+          quantity: 1,
+        }];
+        setState((s) => ({
+          ...s,
+          items: orderItems,
+          orderSource: 'direct',
+          totalAmount: defaultProd.price,
+          selectedProduct: defaultProd,
+        }));
       }
     }).catch(() => {
       setProducts(fallbackList);
       const preselect = searchParams.get('product');
-      const matched = matchProduct(fallbackList, preselect);
-      setState((s) => ({ ...s, selectedProduct: matched || fallbackList[1] }));
+      const qtyParam = parseInt(searchParams.get('qty') || '1', 10);
+      const quantity = isNaN(qtyParam) || qtyParam < 1 ? 1 : qtyParam;
+      const fromParam = searchParams.get('from');
+      const isFromCart = fromParam === 'cart' || (!preselect && cart && cart.length > 0);
+
+      if (isFromCart && cart && cart.length > 0) {
+        const orderItems: OrderItem[] = cart.map((c) => ({
+          id: c.id,
+          weight: c.weight,
+          price: c.price,
+          quantity: c.quantity,
+        }));
+        const total = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        setState((s) => ({
+          ...s,
+          items: orderItems,
+          orderSource: 'cart',
+          totalAmount: total,
+          selectedProduct: fallbackList[0],
+        }));
+      } else {
+        const matched = matchProduct(fallbackList, preselect) || fallbackList[1];
+        setState((s) => ({
+          ...s,
+          items: [{ id: matched.id, weight: matched.weight, price: matched.price, quantity }],
+          orderSource: 'direct',
+          totalAmount: matched.price * quantity,
+          selectedProduct: matched,
+        }));
+      }
     });
-  }, [searchParams]);
+  }, [searchParams, cart]);
 
   const update = (key: keyof OrderState, value: unknown) =>
     setState((s) => ({ ...s, [key]: value }));
@@ -679,6 +839,8 @@ function OrderPageContent() {
                 )}
                 {step === 2 && (
                   <PickupStep
+                    items={state.items}
+                    orderSource={state.orderSource}
                     product={state.selectedProduct}
                     street={state.street}
                     city={state.city}
@@ -695,6 +857,7 @@ function OrderPageContent() {
                     orderState={state}
                     onBack={prevStep}
                     onSuccess={(id) => router.push(`/order/success?orderId=${id}`)}
+                    onClearCart={clearCart}
                   />
                 )}
               </motion.div>

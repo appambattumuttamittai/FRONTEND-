@@ -96,6 +96,8 @@ export interface CreateOrderInput {
   customerName: string;
   phone: string;
   productId: string;
+  quantity?: number;
+  items?: Array<{ productId: string; quantity: number }>;
   otpSessionId: string;
   streetAddress: string;
   city: string;

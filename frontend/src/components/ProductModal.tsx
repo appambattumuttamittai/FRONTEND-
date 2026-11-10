@@ -360,7 +360,7 @@ export default function ProductModal() {
                   {added ? 'Added to Cart!' : 'Add to Cart'}
                 </button>
                 <Link
-                  href={`/order?product=${modalProduct.id}`}
+                  href={`/order?product=${modalProduct.id}&qty=${qty}`}
                   onClick={closeModal}
                   className="w-full py-3 md:py-3.5 rounded-xl font-bold text-sm text-center block transition-all hover:-translate-y-0.5"
                   style={{ border: '2px solid #C42F2C', color: '#C42F2C', background: 'transparent' }}
