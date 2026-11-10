@@ -14,14 +14,29 @@ function SuccessContent() {
   const orderId = searchParams.get('orderId');
   const [order, setOrder] = useState<OrderDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [downloaded, setDownloaded] = useState(false);
+
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-oi9e.onrender.com';
 
   useEffect(() => {
     if (!orderId) { setLoading(false); return; }
     api.getOrder(orderId)
-      .then(setOrder)
+      .then((ord) => {
+        setOrder(ord);
+        // Automatically trigger PDF download once
+        if (!downloaded) {
+          setDownloaded(true);
+          const link = document.createElement('a');
+          link.href = `${apiUrl}/api/orders/${orderId}/invoice.pdf`;
+          link.download = `Invoice-${orderId.slice(-8).toUpperCase()}.pdf`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [orderId]);
+  }, [orderId, downloaded, apiUrl]);
 
   const statusColors: Record<string, string> = {
     PAYMENT_REVIEW: 'text-[#F5B51B]',
@@ -96,6 +111,17 @@ function SuccessContent() {
             <div className="mt-5 p-4 bg-[#F5B51B]/10 border border-[#F5B51B] rounded-xl text-sm text-center">
               {t('success.message')}
             </div>
+
+            {/* Direct Invoice PDF download button */}
+            {orderId && (
+              <a
+                href={`${apiUrl}/api/orders/${orderId}/invoice.pdf`}
+                download={`Invoice-${orderId.slice(-8).toUpperCase()}.pdf`}
+                className="mt-4 w-full flex items-center justify-center gap-2 py-3.5 bg-[#C42F2C] text-white rounded-xl font-black text-sm sm:text-base hover:bg-[#a82421] transition-all shadow-md"
+              >
+                📄 Download Invoice / Receipt (PDF)
+              </a>
+            )}
           </motion.div>
 
           <motion.div
@@ -120,17 +146,17 @@ function SuccessContent() {
             </Link>
           </motion.div>
 
-          {/* Pickup reminder */}
+          {/* Pickup & Delivery reminder */}
           <motion.div
             className="mt-8 bg-[#063D20] text-[#FFF4DD] rounded-2xl p-5 text-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
-            <p className="font-bold text-[#F5B51B] mb-1">📍 Remember: Pickup Only</p>
-            <p>Collect your Mutta Mittai from <strong>Meenambur, Appambattu, Villupuram</strong></p>
+            <p className="font-bold text-[#F5B51B] mb-1">📍 Pickup & Home Delivery Information</p>
+            <p>Store pickup available at <strong>Villupuram Railway Station (1st Platform)</strong>. Home delivery within Villupuram City.</p>
             <p className="text-[#FFF4DD]/60 mt-1" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>
-              மீனம்பூர், அப்பம்பட்டு, விழுப்புரம்-ல் பிக்கப் செய்யவும்
+              விழுப்புரம் ரயில் நிலையம் (1வது பிளாட்பாரம்) அல்லது விழுப்புரம் நகருக்குள் ஹோம் டெலிவரி.
             </p>
           </motion.div>
         </div>

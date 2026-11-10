@@ -45,6 +45,35 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ orderId }),
     }),
+  getRazorpayConfig: () =>
+    request<{ enabled: boolean; keyId: string }>('/api/payments/razorpay/config'),
+  createRazorpayOrder: (orderId: string) =>
+    request<{
+      success: boolean;
+      keyId: string;
+      razorpayOrderId: string;
+      amount: number;
+      currency: string;
+      orderId: string;
+      customerName: string;
+      phone: string;
+    }>('/api/payments/razorpay/create-order', {
+      method: 'POST',
+      body: JSON.stringify({ orderId }),
+    }),
+  verifyRazorpayPayment: (payload: {
+    orderId: string;
+    razorpayOrderId: string;
+    razorpayPaymentId: string;
+    razorpaySignature: string;
+  }) =>
+    request<{ success: boolean; orderId: string; status: string; message: string }>(
+      '/api/payments/razorpay/verify',
+      {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      }
+    ),
 
   // Config
   getQrUrl: () => request<{ url: string }>('/api/config/qr-url'),

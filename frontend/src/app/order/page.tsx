@@ -9,6 +9,19 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useApp } from '@/context/AppContext';
 import { api, Product } from '@/lib/api';
 
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined') return resolve(false);
+    if ((window as any).Razorpay) return resolve(true);
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
 // Steps (4 steps: Name -> Phone -> Pickup -> Payment)
 type Step = 'name' | 'phone' | 'pickup' | 'payment';
 const STEPS: Step[] = ['name', 'phone', 'pickup', 'payment'];
@@ -500,6 +513,82 @@ function PaymentStep({ orderState, onBack, onSuccess, onClearCart }: {
     return () => clearInterval(interval);
   }, [creating, expired]);
 
+  // Check Razorpay config on mount
+  const [showQrFallback, setShowQrFallback] = useState(false);
+
+  // Razorpay Pay Handler
+  const handleRazorpayPay = async () => {
+    if (!currentOrderId) return;
+    setSubmitting(true);
+    try {
+      const loaded = await loadRazorpayScript();
+      if (!loaded) {
+        toast.error('Failed to load Razorpay. Please check internet connection.');
+        setSubmitting(false);
+        return;
+      }
+
+      const rzOrder = await api.createRazorpayOrder(currentOrderId);
+
+      const options = {
+        key: rzOrder.keyId,
+        amount: rzOrder.amount,
+        currency: rzOrder.currency || 'INR',
+        name: 'Appampattu Mutta Mittai',
+        description: `Order #${currentOrderId.slice(-8).toUpperCase()}`,
+        image: '/images/logo.jpg',
+        order_id: rzOrder.razorpayOrderId,
+        prefill: {
+          name: orderState.name,
+          contact: orderState.phone.replace(/\D/g, ''),
+        },
+        theme: {
+          color: '#C42F2C',
+        },
+        handler: async (response: any) => {
+          try {
+            toast.loading('Verifying payment...', { id: 'rzp' });
+            await api.verifyRazorpayPayment({
+              orderId: currentOrderId,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+            });
+            toast.success('Payment verified!', { id: 'rzp' });
+            if (orderState.orderSource === 'cart' && onClearCart) {
+              onClearCart();
+            }
+            onSuccess(currentOrderId);
+          } catch (err: any) {
+            toast.error(err.message || 'Payment verification failed', { id: 'rzp' });
+          } finally {
+            setSubmitting(false);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setSubmitting(false);
+          },
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.on('payment.failed', (resp: any) => {
+        toast.error(resp.error?.description || 'Payment was unsuccessful');
+        setSubmitting(false);
+      });
+      rzp.open();
+    } catch (err: any) {
+      if (err.message === 'RAZORPAY_NOT_CONFIGURED' || err.message?.includes('not yet configured')) {
+        toast.error('Razorpay keys not yet added in Render backend environment variables.');
+        setShowQrFallback(true);
+      } else {
+        toast.error(err.message || 'Could not initiate Razorpay payment');
+      }
+      setSubmitting(false);
+    }
+  };
+
   const handlePaid = async () => {
     if (!currentOrderId) return;
     setSubmitting(true);
@@ -543,8 +632,8 @@ function PaymentStep({ orderState, onBack, onSuccess, onClearCart }: {
   const grandTotal = orderState.totalAmount || orderState.items.reduce((s, it) => s + it.price * it.quantity, 0);
 
   return (
-    <div className="space-y-5">
-      <h2 className="text-2xl font-black text-[#063D20]">{t('order.step.payment')}</h2>
+    <div className="space-y-4 sm:space-y-5">
+      <h2 className="text-xl sm:text-2xl font-black text-[#063D20]">{t('order.step.payment')}</h2>
 
       {/* Order summary */}
       <div className="bg-[#063D20] text-[#FFF4DD] rounded-2xl p-4 sm:p-5">
@@ -599,48 +688,74 @@ function PaymentStep({ orderState, onBack, onSuccess, onClearCart }: {
         <>
           {/* Timer */}
           <div className="text-center">
-            <p className="text-sm text-[#3A1C10]/60 mb-1">{t('order.payment.timer')}</p>
-            <div className={`text-4xl font-black tabular-nums ${urgent ? 'timer-urgent' : 'text-[#063D20]'}`}>
+            <p className="text-xs sm:text-sm text-[#3A1C10]/60 mb-1">{t('order.payment.timer')}</p>
+            <div className={`text-3xl sm:text-4xl font-black tabular-nums ${urgent ? 'timer-urgent' : 'text-[#063D20]'}`}>
               {formatTime(timeLeft)}
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+            <div className="w-full bg-gray-200 rounded-full h-1.5 sm:h-2 mt-2">
               <div
-                className={`h-2 rounded-full transition-all ${urgent ? 'bg-[#E95012]' : 'bg-[#063D20]'}`}
+                className={`h-full rounded-full transition-all ${urgent ? 'bg-[#E95012]' : 'bg-[#063D20]'}`}
                 style={{ width: `${(timeLeft / 90) * 100}%` }}
               />
             </div>
           </div>
 
-          {/* QR Code */}
-          <div className="text-center">
-            <p className="font-bold text-[#063D20] mb-3">{t('order.payment.scan')}</p>
-            <div className="inline-block p-3 bg-white rounded-3xl shadow-xl border-2 border-[#F5B51B]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={qrUrl}
-                alt="GPay QR code for payment – scan to pay for Mutta Mittai"
-                className="w-52 h-52 object-contain"
-                onError={(e) => { (e.target as HTMLImageElement).src = '/gpayQR.png'; }}
-              />
-            </div>
-            <p className="text-sm text-[#3A1C10]/60 mt-2">{t('order.payment.title')}</p>
-          </div>
-
-          {/* Warning */}
-          <div className="bg-[#F5B51B]/15 border border-[#F5B51B] rounded-xl p-4 text-sm">
-            <p className="text-[#3A1C10]">{t('order.payment.note')}</p>
-          </div>
-
-          {/* Paid button */}
+          {/* Primary CTA: Razorpay Payment Window */}
           <button
-            onClick={handlePaid}
+            onClick={handleRazorpayPay}
             disabled={submitting}
-            className="w-full py-3.5 sm:py-4 bg-[#25D366] text-white rounded-xl font-bold text-base sm:text-lg hover:bg-[#20bb5a] transition-all disabled:opacity-50 shadow-lg"
+            className="w-full py-3.5 sm:py-4 bg-[#C42F2C] text-white rounded-xl font-black text-base sm:text-lg hover:bg-[#a82421] transition-all disabled:opacity-50 shadow-lg flex items-center justify-center gap-2 cursor-pointer"
           >
-            {submitting ? t('common.loading') : `✅ ${t('order.payment.paid')}`}
+            {submitting ? (
+              <span className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Connecting to Razorpay...
+              </span>
+            ) : (
+              <span>💳 Pay ₹{grandTotal} with Razorpay</span>
+            )}
           </button>
 
-          <p className="text-center text-xs text-[#3A1C10]/50">
+          <p className="text-center text-xs text-[#582A00]/60">
+            Supports UPI (GPay, PhonePe, Paytm), Credit / Debit Cards & Netbanking
+          </p>
+
+          {/* Optional manual QR fallback toggle */}
+          <div className="pt-2 text-center">
+            <button
+              type="button"
+              onClick={() => setShowQrFallback((prev) => !prev)}
+              className="text-xs text-[#582A00]/70 underline hover:text-[#582A00] cursor-pointer"
+            >
+              {showQrFallback ? '▲ Hide Direct QR Scan' : '▼ Or scan direct GPay QR'}
+            </button>
+          </div>
+
+          {showQrFallback && (
+            <div className="space-y-3 pt-2">
+              <div className="text-center">
+                <div className="inline-block p-2 bg-white rounded-2xl shadow-md border border-[#F5B51B]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={qrUrl}
+                    alt="GPay QR code"
+                    className="w-44 h-44 object-contain mx-auto"
+                    onError={(e) => { (e.target as HTMLImageElement).src = '/gpayQR.png'; }}
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={handlePaid}
+                disabled={submitting}
+                className="w-full py-3 bg-[#25D366] text-white rounded-xl font-bold text-sm sm:text-base hover:bg-[#20bb5a] transition-all disabled:opacity-50 shadow cursor-pointer"
+              >
+                {submitting ? t('common.loading') : `✅ ${t('order.payment.paid')}`}
+              </button>
+            </div>
+          )}
+
+          <p className="text-center text-[11px] text-[#3A1C10]/50">
             Order ID: {currentOrderId.slice(-8).toUpperCase()}
           </p>
         </>
