@@ -161,13 +161,6 @@ export default function PickupSection() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Link
-                href="/order"
-                className="px-6 py-3 rounded-full font-bold text-sm text-white shadow transition-all hover:-translate-y-0.5"
-                style={{ background: '#C42F2C' }}
-              >
-                Order Now
-              </Link>
               <a
                 href="https://wa.me/917871949015"
                 target="_blank"

@@ -1,5 +1,50 @@
 'use client';
 import Link from 'next/link';
+import { useApp } from '@/context/AppContext';
+
+function PackSizes() {
+  const { openModal, products } = useApp();
+
+  const fallbackProducts = [
+    { id: '250gm', weight: '250gm', weightGrams: 250,  price: 150, inStock: true },
+    { id: '500gm', weight: '500gm', weightGrams: 500,  price: 300, inStock: true },
+    { id: '750gm', weight: '750gm', weightGrams: 750,  price: 450, inStock: true },
+    { id: '1kg',   weight: '1kg',   weightGrams: 1000, price: 600, inStock: true },
+  ];
+
+  const items = [
+    { label: '250 gm — Small',  id: '250gm' },
+    { label: '500 gm — Medium', id: '500gm' },
+    { label: '750 gm — Large',  id: '750gm' },
+    { label: '1 kg — Family',   id: '1kg'   },
+  ];
+
+  const handleClick = (id: string) => {
+    const found = products.find((p) => p.id === id)
+      || fallbackProducts.find((p) => p.id === id);
+    if (found) openModal(found);
+  };
+
+  return (
+    <div>
+      <h3 className="font-black text-[11px] tracking-widest uppercase mb-4" style={{ color: '#582A00' }}>
+        Pack Sizes
+      </h3>
+      <div className="flex flex-col gap-2.5">
+        {items.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => handleClick(item.id)}
+            className="text-sm transition-colors hover:text-[#C42F2C] text-left"
+            style={{ color: 'rgba(88,42,0,0.6)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -110,28 +155,7 @@ export default function Footer() {
             </div>
 
             {/* Pack Sizes */}
-            <div>
-              <h3 className="font-black text-[11px] tracking-widest uppercase mb-4" style={{ color: '#582A00' }}>
-                Pack Sizes
-              </h3>
-              <div className="flex flex-col gap-2.5">
-                {[
-                  { label: '250 gm — Small', href: '/order' },
-                  { label: '500 gm — Medium', href: '/order' },
-                  { label: '750 gm — Large', href: '/order' },
-                  { label: '1 kg — Family', href: '/order' },
-                ].map((item) => (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    className="text-sm transition-colors hover:text-[#C42F2C]"
-                    style={{ color: 'rgba(88,42,0,0.6)' }}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
+              <PackSizes />
 
             {/* Quick Links */}
             <div>

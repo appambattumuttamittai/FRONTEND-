@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+'use client';
 import Header from '@/components/Header';
 import HeroSlider from '@/components/HeroSlider';
 import ProductsSection from '@/components/ProductsSection';
@@ -8,17 +8,12 @@ import WhatsAppCTA from '@/components/WhatsAppCTA';
 import Footer from '@/components/Footer';
 import { LocalBusinessSchema } from '@/components/JsonLd';
 import LogoIntro from '@/components/LogoIntro';
-
-export const metadata: Metadata = {
-  title: 'Appambattu Mutta Mittai | அப்பம்பட்டு முட்டை மிட்டாய் | Traditional Egg Sweet Villupuram',
-  description:
-    'Appambattu Mutta Mittai — authentic traditional egg sweet at Villupuram Railway Station, 1st Platform. Home delivery available within Villupuram. Made with milk, egg, cashew nut paste and sugar. Order via WhatsApp: +91 7871949015',
-  alternates: { canonical: 'https://appambattumuttamittai.com' },
-};
+import { AppProvider } from '@/context/AppContext';
+import ProductModal from '@/components/ProductModal';
 
 export default function HomePage() {
   return (
-    <>
+    <AppProvider>
       <LogoIntro />
       <LocalBusinessSchema />
       <Header />
@@ -30,6 +25,8 @@ export default function HomePage() {
         <WhatsAppCTA />
       </main>
       <Footer />
-    </>
+      {/* Global product modal — rendered at root so any component can open it */}
+      <ProductModal />
+    </AppProvider>
   );
 }

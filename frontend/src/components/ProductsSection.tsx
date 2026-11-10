@@ -1,22 +1,15 @@
 'use client';
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 import { api, Product } from '@/lib/api';
+import { useApp } from '@/context/AppContext';
 
 const weightLabels: Record<string, { en: string; ta: string }> = {
-  '250gm': { en: '250 gm — Small Pack', ta: '250 கிராம் — சிறிய பேக்' },
+  '250gm': { en: '250 gm — Small Pack',  ta: '250 கிராம் — சிறிய பேக்' },
   '500gm': { en: '500 gm — Medium Pack', ta: '500 கிராம் — நடுத்தர பேக்' },
-  '750gm': { en: '750 gm — Large Pack', ta: '750 கிராம் — பெரிய பேக்' },
-  '1kg': { en: '1 kg — Family Pack', ta: '1 கிலோ — குடும்ப பேக்' },
+  '750gm': { en: '750 gm — Large Pack',  ta: '750 கிராம் — பெரிய பேக்' },
+  '1kg':   { en: '1 kg — Family Pack',   ta: '1 கிலோ — குடும்ப பேக்' },
 };
-
-const productImages = [
-  '/images/product-main.jpg',
-  '/images/product-main.jpg',
-  '/images/product-main.jpg',
-  '/images/product-main.jpg',
-];
 
 function StarRating() {
   return (
@@ -31,9 +24,17 @@ function StarRating() {
 }
 
 function ProductCard({ product, index }: { product: Product; index: number }) {
+  const { openModal } = useApp();
   const [hovered, setHovered] = useState(false);
   const label = weightLabels[product.weight];
-  const imgSrc = productImages[index % productImages.length];
+
+  const handleOpen = () => openModal({
+    id: product.id,
+    weight: product.weight,
+    weightGrams: product.weightGrams,
+    price: product.price,
+    inStock: product.inStock,
+  });
 
   return (
     <div
@@ -41,40 +42,36 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
       style={{ borderColor: 'rgba(196,47,44,0.12)', boxShadow: '0 4px 24px rgba(196,47,44,0.06)' }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={handleOpen}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleOpen(); }}
+      aria-label={`View details for ${label?.en || product.weight}`}
     >
       {/* Image */}
       <div className="relative aspect-square overflow-hidden bg-white">
         <Image
-          src={imgSrc}
+          src="/images/product-main.jpg"
           alt={`Appambattu Mutta Mittai ${product.weight}`}
           fill
           className={`object-cover transition-transform duration-500 ${hovered ? 'scale-[1.09]' : 'scale-100'}`}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />
-        {/* Order badge */}
-        <div className="absolute top-3 right-3 bg-[#C42F2C] text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow">
-          Order Now
-        </div>
-        {/* Hover CTA overlay — desktop */}
+        {/* Quick view overlay on hover — desktop */}
         <div
-          className="absolute bottom-0 left-0 right-0 p-3 transition-all duration-300 hidden md:block"
+          className="absolute inset-0 items-center justify-center hidden md:flex"
           style={{
-            transform: hovered ? 'translateY(0)' : 'translateY(100%)',
+            background: 'rgba(88,42,0,0.45)',
             opacity: hovered ? 1 : 0,
+            transition: 'opacity 0.3s ease',
           }}
         >
-          {product.inStock ? (
-            <Link
-              href={`/order?product=${product.id}`}
-              className="block text-center py-2.5 bg-[#C42F2C] text-white rounded-xl font-bold text-sm hover:bg-[#a82624] transition-colors shadow-lg"
-            >
-              Order Now
-            </Link>
-          ) : (
-            <div className="block text-center py-2.5 bg-gray-200 text-gray-400 rounded-xl font-bold text-sm cursor-not-allowed">
-              Out of Stock
-            </div>
-          )}
+          <span
+            className="px-5 py-2.5 rounded-full font-black text-xs text-white"
+            style={{ background: '#C42F2C', boxShadow: '0 4px 16px rgba(196,47,44,0.4)' }}
+          >
+            Add to Cart
+          </span>
         </div>
       </div>
 
@@ -97,42 +94,51 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
             </span>
           )}
         </div>
-        {/* Mobile always-visible CTA */}
-        {product.inStock ? (
-          <Link
-            href={`/order?product=${product.id}`}
-            className="md:hidden mt-3 block text-center py-2.5 bg-[#C42F2C] text-white rounded-xl font-bold text-sm"
-          >
-            Order Now
-          </Link>
-        ) : (
-          <div className="md:hidden mt-3 block text-center py-2.5 bg-gray-100 text-gray-400 rounded-xl font-bold text-sm cursor-not-allowed">
-            Out of Stock
-          </div>
-        )}
+        {/* Mobile tap hint */}
+        <div
+          className="md:hidden mt-3 w-full py-2.5 rounded-xl text-center font-bold text-sm text-white"
+          style={{ background: '#C42F2C' }}
+        >
+          Add to Cart
+        </div>
       </div>
     </div>
   );
 }
 
 export default function ProductsSection() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const { setProducts } = useApp();
+  const [products, setLocalProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   const fallback: Product[] = [
-    { id: '250gm', weight: '250gm', weightGrams: 250, price: 150, inStock: true },
-    { id: '500gm', weight: '500gm', weightGrams: 500, price: 300, inStock: true },
-    { id: '750gm', weight: '750gm', weightGrams: 750, price: 450, inStock: true },
-    { id: '1kg', weight: '1kg', weightGrams: 1000, price: 600, inStock: true },
+    { id: '250gm', weight: '250gm', weightGrams: 250,  price: 150, inStock: true },
+    { id: '500gm', weight: '500gm', weightGrams: 500,  price: 300, inStock: true },
+    { id: '750gm', weight: '750gm', weightGrams: 750,  price: 450, inStock: true },
+    { id: '1kg',   weight: '1kg',   weightGrams: 1000, price: 600, inStock: true },
   ];
 
   useEffect(() => {
     api.getProducts()
-      .then(setProducts)
-      .catch(() => { setError(true); setProducts(fallback); })
+      .then((data) => {
+        setLocalProducts(data);
+        /* store in context so Footer can open modals with correct prices */
+        setProducts(data.map((p) => ({
+          id: p.id, weight: p.weight,
+          weightGrams: p.weightGrams, price: p.price, inStock: p.inStock,
+        })));
+      })
+      .catch(() => {
+        setError(true);
+        setLocalProducts(fallback);
+        setProducts(fallback.map((p) => ({
+          id: p.id, weight: p.weight,
+          weightGrams: p.weightGrams, price: p.price, inStock: p.inStock,
+        })));
+      })
       .finally(() => setLoading(false));
-  }, []);
+  }, [setProducts]);
 
   return (
     <section id="products" className="py-20" style={{ background: '#FFFFFF' }} aria-labelledby="products-heading">
@@ -141,7 +147,7 @@ export default function ProductsSection() {
         <div className="text-center mb-14">
           <span className="inline-block text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full mb-4"
             style={{ background: 'rgba(196,47,44,0.08)', color: '#C42F2C' }}>
-            Pickup & Home Delivery — Villupuram
+            Pickup &amp; Home Delivery — Villupuram
           </span>
           <h2
             id="products-heading"
@@ -158,7 +164,7 @@ export default function ProductsSection() {
         {/* Product grid */}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((i) => (
+            {[1,2,3,4].map((i) => (
               <div key={i} className="rounded-[22px] overflow-hidden" style={{ border: '1px solid rgba(196,47,44,0.1)' }}>
                 <div className="aspect-square shimmer" />
                 <div className="p-4">
@@ -184,18 +190,20 @@ export default function ProductsSection() {
           </p>
         )}
 
-        {/* Pickup-only notice */}
+        {/* Pickup notice */}
         <div
           className="mt-14 rounded-3xl p-6 md:p-8 text-center"
           style={{ background: 'linear-gradient(135deg, #582A00 0%, #7a3800 100%)' }}
         >
           <div className="w-12 h-12 rounded-full bg-[#C42F2C] flex items-center justify-center mx-auto mb-4">
             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
           </div>
-          <h3 className="text-white font-black text-xl md:text-2xl mb-2">Pickup & Home Delivery</h3>
+          <h3 className="text-white font-black text-xl md:text-2xl mb-2">Pickup &amp; Home Delivery</h3>
           <p className="text-white/70 text-base">
             Collect from{' '}
             <strong className="text-[#D97706]">Villupuram Railway Station, 1st Platform</strong>.
