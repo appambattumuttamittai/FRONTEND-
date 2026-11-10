@@ -146,7 +146,7 @@ export default function Footer() {
                 MITTAI
               </h2>
               <p
-                className="text-xs leading-relaxed"
+                className="text-xs leading-relaxed hidden md:block"
                 style={{ color: 'rgba(88,42,0,0.5)', maxWidth: 220 }}
               >
                 Traditional Tamil Nadu egg sweet — made fresh daily.

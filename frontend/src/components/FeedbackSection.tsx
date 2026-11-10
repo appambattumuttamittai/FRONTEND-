@@ -400,7 +400,7 @@ export default function FeedbackSection() {
           {/* ── Leave a review form ───────────────────────── */}
           <div className="max-w-2xl mx-auto">
             <div
-              className="rounded-3xl p-6 md:p-10"
+              className="rounded-2xl p-4 md:p-10"
               style={{
                 background: 'rgba(255,255,255,0.1)',
                 border: '1px solid rgba(255,255,255,0.18)',
@@ -410,40 +410,40 @@ export default function FeedbackSection() {
               }}
             >
               <h3
-                className="text-xl md:text-2xl font-black mb-1"
+                className="text-lg md:text-2xl font-black mb-0.5"
                 style={{ color: '#FFFFFF', fontFamily: "'Exo 2', sans-serif" }}
               >
                 Leave Your Feedback
               </h3>
-              <p className="text-sm mb-6" style={{ color: 'rgba(255,248,240,0.5)' }}>
+              <p className="text-xs md:text-sm mb-4" style={{ color: 'rgba(255,248,240,0.5)' }}>
                 Your review will appear after approval. Thank you for sharing!
               </p>
 
               {submitted ? (
-                <div className="text-center py-8">
+                <div className="text-center py-6">
                   <div
-                    className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"
+                    className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3"
                     style={{ background: 'rgba(255,255,255,0.15)' }}
                   >
-                    <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <p className="font-black text-lg mb-1" style={{ color: '#FFFFFF' }}>Thank you for your feedback!</p>
-                  <p className="text-sm" style={{ color: 'rgba(255,248,240,0.5)' }}>Your review is pending approval and will appear soon.</p>
+                  <p className="font-black text-base mb-1" style={{ color: '#FFFFFF' }}>Thank you for your feedback!</p>
+                  <p className="text-xs" style={{ color: 'rgba(255,248,240,0.5)' }}>Your review is pending approval and will appear soon.</p>
                   <button
                     onClick={() => setSubmitted(false)}
-                    className="mt-4 text-sm font-semibold underline"
+                    className="mt-3 text-sm font-semibold underline"
                     style={{ color: '#FFAA2B' }}
                   >
                     Submit another review
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
+                <form onSubmit={handleSubmit} className="flex flex-col gap-3 md:gap-5" noValidate>
 
                   <div>
-                    <label className="block text-sm font-bold mb-1.5" style={{ color: 'rgba(255,248,240,0.8)' }}>
+                    <label className="block text-xs md:text-sm font-bold mb-1" style={{ color: 'rgba(255,248,240,0.8)' }}>
                       Your Name *
                     </label>
                     <input
@@ -452,7 +452,7 @@ export default function FeedbackSection() {
                       onChange={(e) => setForm({ ...form, name: e.target.value })}
                       placeholder="e.g. Ramesh Kumar"
                       maxLength={60}
-                      className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
+                      className="w-full px-3 py-2 md:px-4 md:py-3 rounded-xl text-sm outline-none transition-all"
                       style={{
                         background: 'rgba(255,255,255,0.1)',
                         border: '1.5px solid rgba(255,255,255,0.2)',
@@ -464,23 +464,23 @@ export default function FeedbackSection() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-bold mb-2" style={{ color: 'rgba(255,248,240,0.8)' }}>
+                    <label className="block text-xs md:text-sm font-bold mb-1" style={{ color: 'rgba(255,248,240,0.8)' }}>
                       Rating *
                     </label>
                     <StarInput value={form.rating} onChange={(v) => setForm({ ...form, rating: v })} />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-bold mb-1.5" style={{ color: 'rgba(255,248,240,0.8)' }}>
+                    <label className="block text-xs md:text-sm font-bold mb-1" style={{ color: 'rgba(255,248,240,0.8)' }}>
                       Your Review *
                     </label>
                     <textarea
                       value={form.message}
                       onChange={(e) => setForm({ ...form, message: e.target.value })}
                       placeholder="Tell others about your experience with Appambattu Mutta Mittai..."
-                      rows={4}
+                      rows={3}
                       maxLength={500}
-                      className="w-full px-4 py-3 rounded-xl text-sm resize-none outline-none transition-all"
+                      className="w-full px-3 py-2 md:px-4 md:py-3 rounded-xl text-sm resize-none outline-none transition-all"
                       style={{
                         background: 'rgba(255,255,255,0.1)',
                         border: '1.5px solid rgba(255,255,255,0.2)',
@@ -501,7 +501,7 @@ export default function FeedbackSection() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full py-3.5 rounded-full font-black text-white text-sm transition-all hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="w-full py-2.5 md:py-3.5 rounded-full font-black text-white text-sm transition-all hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
                     style={{ background: '#C42F2C', boxShadow: '0 6px 20px rgba(196,47,44,0.45)' }}
                   >
                     {submitting ? 'Submitting...' : 'Submit Feedback'}

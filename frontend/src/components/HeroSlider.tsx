@@ -32,17 +32,30 @@ export default function HeroSlider() {
         <source src="/videos/hero-bg.mp4" type="video/mp4" />
       </video>
 
-      {/* Dark gradient overlay */}
+      {/* Dark gradient overlay — mobile: lighter so video shows through more */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 md:hidden"
+        style={{
+          background:
+            'linear-gradient(100deg, rgba(88,42,0,0.52) 0%, rgba(88,42,0,0.28) 55%, rgba(88,42,0,0.10) 100%)',
+        }}
+      />
+      {/* Dark gradient overlay — desktop: original opacity */}
+      <div
+        className="absolute inset-0 hidden md:block"
         style={{
           background:
             'linear-gradient(100deg, rgba(88,42,0,0.84) 0%, rgba(88,42,0,0.48) 55%, rgba(88,42,0,0.22) 100%)',
         }}
       />
-      {/* Bottom fade */}
+      {/* Bottom fade — mobile: lighter */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 md:hidden"
+        style={{ background: 'linear-gradient(to top, rgba(88,42,0,0.35) 0%, transparent 50%)' }}
+      />
+      {/* Bottom fade — desktop: original */}
+      <div
+        className="absolute inset-0 hidden md:block"
         style={{ background: 'linear-gradient(to top, rgba(88,42,0,0.65) 0%, transparent 50%)' }}
       />
 

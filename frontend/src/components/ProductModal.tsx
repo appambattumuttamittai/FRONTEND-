@@ -113,13 +113,13 @@ export default function ProductModal() {
 
       {/* ── Panel ── */}
       <div
-        className="fixed inset-0 z-[9001] flex items-center justify-center p-4 md:p-6"
+        className="fixed inset-0 z-[9001] flex items-end md:items-center justify-center p-0 md:p-6"
         role="dialog"
         aria-modal="true"
         aria-label={label?.en || 'Product details'}
       >
         <div
-          className="relative bg-white rounded-3xl shadow-2xl w-full max-h-[92vh] overflow-y-auto"
+          className="relative bg-white w-full rounded-t-3xl md:rounded-3xl shadow-2xl max-h-[94vh] md:max-h-[92vh] overflow-y-auto"
           style={{ maxWidth: 760 }}
           onClick={(e) => e.stopPropagation()}
         >
@@ -142,8 +142,8 @@ export default function ProductModal() {
 
               {/* Main image with zoom */}
               <div
-                className="relative overflow-hidden flex-1"
-                style={{ minHeight: 240, cursor: zoomed ? 'zoom-out' : 'zoom-in' }}
+                className="relative overflow-hidden"
+                style={{ height: 180, cursor: zoomed ? 'zoom-out' : 'zoom-in', flexShrink: 0 }}
                 onClick={() => setZoomed((z) => !z)}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -154,32 +154,32 @@ export default function ProductModal() {
                     width: '100%',
                     height: '100%',
                     objectFit: 'cover',
+                    objectPosition: 'center',
                     transform: zoomed ? 'scale(1.65)' : 'scale(1)',
                     transition: 'transform 0.35s ease',
                     display: 'block',
-                    minHeight: 240,
                   }}
                 />
 
                 {/* Zoom controls */}
-                <div className="absolute bottom-3 right-3 flex gap-1.5" onClick={(e) => e.stopPropagation()}>
+                <div className="absolute bottom-2 right-2 flex gap-1" onClick={(e) => e.stopPropagation()}>
                   <button
                     onClick={() => setZoomed(true)}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-base"
+                    className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-white text-base"
                     style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
                     aria-label="Zoom in"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
                     </svg>
                   </button>
                   <button
                     onClick={() => setZoomed(false)}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-base"
+                    className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-white text-base"
                     style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
                     aria-label="Zoom out"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
                     </svg>
                   </button>
@@ -187,25 +187,40 @@ export default function ProductModal() {
               </div>
 
               {/* Thumbnail strip */}
-              <div className="flex gap-2 p-3 bg-white" style={{ borderTop: '1px solid rgba(196,47,44,0.1)' }}>
+              <div className="flex gap-1.5 px-3 py-2 bg-white" style={{ borderTop: '1px solid rgba(196,47,44,0.1)' }}>
                 {galleryImages.map((src, i) => (
                   <button
                     key={i}
                     onClick={() => { setActiveImg(i); setZoomed(false); }}
-                    className="rounded-lg overflow-hidden shrink-0 transition-all"
+                    aria-label={`View product image ${i + 1}`}
                     style={{
-                      width: 52, height: 52,
+                      width: 48,
+                      height: 48,
+                      minWidth: 48,
+                      maxWidth: 48,
+                      flexShrink: 0,
+                      flexGrow: 0,
+                      borderRadius: 8,
+                      overflow: 'hidden',
                       border: i === activeImg ? '2.5px solid #C42F2C' : '2.5px solid transparent',
                       boxShadow: i === activeImg ? '0 0 0 1px rgba(196,47,44,0.3)' : 'none',
                       outline: 'none',
+                      cursor: 'pointer',
+                      padding: 0,
+                      background: '#F0F0F0',
                     }}
-                    aria-label={`View product image ${i + 1}`}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={src}
                       alt={`Product view ${i + 1}`}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        objectPosition: 'center',
+                        display: 'block',
+                      }}
                     />
                   </button>
                 ))}
@@ -213,7 +228,7 @@ export default function ProductModal() {
             </div>
 
             {/* ── Right: details ── */}
-            <div className="md:w-7/12 p-6 md:p-8 flex flex-col gap-4">
+            <div className="md:w-7/12 p-3 md:p-8 flex flex-col gap-2 md:gap-4">
 
               {/* Brand + title */}
               <div>
@@ -228,7 +243,7 @@ export default function ProductModal() {
                 </h2>
                 {label?.ta && (
                   <p
-                    className="text-sm mt-0.5"
+                    className="text-sm mt-0.5 hidden md:block"
                     style={{ color: 'rgba(88,42,0,0.5)', fontFamily: "'Noto Sans Tamil', sans-serif" }}
                   >
                     {label.ta}
@@ -262,10 +277,10 @@ export default function ProductModal() {
 
               {/* Price box */}
               <div
-                className="rounded-2xl px-5 py-4"
+                className="rounded-2xl px-3 py-2 md:px-5 md:py-4"
                 style={{ background: 'rgba(196,47,44,0.04)', border: '1px solid rgba(196,47,44,0.1)' }}
               >
-                <p className="text-3xl font-black" style={{ color: '#C42F2C' }}>₹{modalProduct.price}</p>
+                <p className="text-2xl md:text-3xl font-black" style={{ color: '#C42F2C' }}>₹{modalProduct.price}</p>
                 <p className="text-xs mt-0.5" style={{ color: 'rgba(88,42,0,0.45)' }}>Inclusive of all taxes</p>
               </div>
 
@@ -307,11 +322,11 @@ export default function ProductModal() {
               </div>
 
               {/* CTA buttons */}
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2 md:gap-3">
                 <button
                   onClick={handleAdd}
                   disabled={!modalProduct.inStock}
-                  className="w-full py-3.5 rounded-xl font-black text-sm text-white transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3 md:py-3.5 rounded-xl font-black text-sm text-white transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     background:  added ? '#16a34a' : '#C42F2C',
                     boxShadow:   added ? '0 6px 20px rgba(22,163,74,0.3)' : '0 6px 20px rgba(196,47,44,0.35)',
@@ -323,15 +338,15 @@ export default function ProductModal() {
                 <Link
                   href={`/order?product=${modalProduct.id}`}
                   onClick={closeModal}
-                  className="w-full py-3.5 rounded-xl font-bold text-sm text-center block transition-all hover:-translate-y-0.5"
+                  className="w-full py-3 md:py-3.5 rounded-xl font-bold text-sm text-center block transition-all hover:-translate-y-0.5"
                   style={{ border: '2px solid #C42F2C', color: '#C42F2C', background: 'transparent' }}
                 >
                   Buy Now — Place Order
                 </Link>
               </div>
 
-              {/* Feature badges (SVG only, no emojis) */}
-              <div className="grid grid-cols-2 gap-2.5">
+              {/* Feature badges — hidden on mobile to keep buttons visible */}
+              <div className="hidden md:grid grid-cols-2 gap-2.5">
                 {badges.map((b) => (
                   <div
                     key={b.label}

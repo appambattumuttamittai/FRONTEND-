@@ -109,7 +109,7 @@ export default function Header() {
 
       {/* ── Single sticky navbar ── */}
       <nav
-        className="sticky top-0 z-50 bg-white/96 backdrop-blur border-b border-[#C42F2C]/10"
+        className="sticky top-0 z-50 bg-white/96 backdrop-blur md:border-b border-[#C42F2C]/10 mx-2 mt-2 rounded-full shadow-lg md:mx-0 md:mt-0 md:rounded-none md:shadow-none"
         aria-label="Main navigation"
       >
         <div className="container mx-auto px-4 max-w-6xl flex items-center justify-between h-16">
@@ -238,6 +238,26 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
+
+            {/* My Cart */}
+            <button
+              onClick={() => { setMenuOpen(false); setCartDrawerOpen(true); }}
+              className="py-2.5 text-center text-sm font-semibold text-[#582A00] hover:text-[#C42F2C] rounded-xl hover:bg-[#C42F2C]/6 transition-all flex items-center justify-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              My Cart
+              {cartCount > 0 && (
+                <span
+                  className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white"
+                  style={{ background: '#C42F2C' }}
+                >
+                  {cartCount > 9 ? '9+' : cartCount}
+                </span>
+              )}
+            </button>
+
             <a
               href={waLink}
               target="_blank"
