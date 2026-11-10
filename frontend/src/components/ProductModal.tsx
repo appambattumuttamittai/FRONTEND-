@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useApp } from '@/context/AppContext';
+import toast from 'react-hot-toast';
 
 const weightLabels: Record<string, { en: string; ta: string }> = {
   '250gm': { en: '250 gm — Small Pack',  ta: '250 கிராம் — சிறிய பேக்' },
@@ -99,6 +100,18 @@ export default function ProductModal() {
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 2200);
+    toast(`${label?.en || modalProduct.weight} — Qty ${qty} added to cart`, {
+      style: {
+        background: '#582A00',
+        color: '#FFFFFF',
+        fontWeight: 700,
+        borderRadius: '999px',
+        padding: '12px 20px',
+        fontSize: '14px',
+        boxShadow: '0 8px 24px rgba(88,42,0,0.35)',
+      },
+      duration: 3000,
+    });
   };
 
   return (

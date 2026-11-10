@@ -1,6 +1,7 @@
 'use client';
 import { AppProvider } from '@/context/AppContext';
 import ProductModal from '@/components/ProductModal';
+import { Toaster } from 'react-hot-toast';
 import { ReactNode } from 'react';
 
 /**
@@ -15,6 +16,24 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
       {children}
       {/* Global product modal — available on every page */}
       <ProductModal />
+      {/* Global toast notifications */}
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#582A00',
+            color: '#FFFFFF',
+            fontFamily: "'Exo 2', sans-serif",
+            fontWeight: 700,
+            fontSize: '14px',
+            borderRadius: '999px',
+            padding: '12px 20px',
+            boxShadow: '0 8px 24px rgba(88,42,0,0.35)',
+            maxWidth: '340px',
+          },
+        }}
+      />
     </AppProvider>
   );
 }
