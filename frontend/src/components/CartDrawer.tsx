@@ -194,7 +194,7 @@ export default function CartDrawer({ open, onClose }: Props) {
                       {item.weightLabel}
                     </p>
                     <p style={{ fontSize: 11, color: 'rgba(88,42,0,0.45)', margin: 0, marginTop: 3 }}>
-                      Appambattu Mutta Mittai
+                      APPAMPATTU Mutta Mittai
                     </p>
                     {/* Unit price shown under name */}
                     <p style={{ fontSize: 12, color: '#C42F2C', margin: 0, marginTop: 4, fontWeight: 700 }}>

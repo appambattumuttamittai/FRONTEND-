@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 const galleryImages = [
-  { src: '/images/gallery-1.jpg', alt: 'Appambattu Mutta Mittai — close-up texture', span: 'md:col-span-2 md:row-span-2' },
+  { src: '/images/gallery-1.jpg', alt: 'APPAMPATTU Mutta Mittai — close-up texture', span: 'md:col-span-2 md:row-span-2' },
   { src: '/images/gallery-2.jpg', alt: 'Fresh batch of Mutta Mittai sweet', span: '' },
   { src: '/images/gallery-3.jpg', alt: 'Traditional preparation process', span: '' },
   { src: '/images/gallery-4.jpg', alt: 'Sweet packaging — gift ready', span: '' },
@@ -16,7 +16,7 @@ export default function GallerySection() {
       <div className="relative overflow-hidden mb-16" style={{ minHeight: 320 }}>
         <Image
           src="/images/story-bg.jpg"
-          alt="Appambattu Mutta Mittai — our story"
+          alt="APPAMPATTU Mutta Mittai — our story"
           fill
           className="object-cover"
           sizes="100vw"
@@ -32,7 +32,7 @@ export default function GallerySection() {
             Crafted with Tradition
           </h2>
           <p className="text-white/75 max-w-lg text-base leading-relaxed mb-6">
-            Appambattu Mutta Mittai is an authentic egg sweet made from a generations-old recipe —
+            APPAMPATTU Mutta Mittai is an authentic egg sweet made from a generations-old recipe —
             using pure milk, farm-fresh eggs and unrefined sugar. Every bite tells a story.
           </p>
           <Link

@@ -4,9 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 const sliderImages = [
-  { src: '/images/shop-photo.jpg', alt: 'Couple enjoying Appambattu Mutta Mittai' },
-  { src: '/images/lifestyle-kids.jpg', alt: 'Children enjoying Appambattu Mutta Mittai' },
-  { src: '/images/lifestyle-family.jpg', alt: 'Three generations enjoying Appambattu Mutta Mittai together' },
+  { src: '/images/shop-photo.jpg', alt: 'Couple enjoying APPAMPATTU Mutta Mittai' },
+  { src: '/images/lifestyle-kids.jpg', alt: 'Children enjoying APPAMPATTU Mutta Mittai' },
+  { src: '/images/lifestyle-family.jpg', alt: 'Three generations enjoying APPAMPATTU Mutta Mittai together' },
 ];
 
 function ImageSlider() {
@@ -87,7 +87,7 @@ export default function PickupSection() {
               fontFamily: "'Exo 2', sans-serif",
             }}
           >
-            &ldquo;A timeless sweet from Appambattu that melts in the mouth of all three generations&rdquo;
+            &ldquo;A timeless sweet from APPAMPATTU that melts in the mouth of all three generations&rdquo;
           </p>
           <div className="mt-3 w-16 h-1 mx-auto rounded-full" style={{ background: '#D97706' }} />
         </div>

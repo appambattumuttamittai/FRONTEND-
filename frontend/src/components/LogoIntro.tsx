@@ -104,7 +104,7 @@ export default function LogoIntro() {
       >
         <Image
           src="/images/logo.jpg"
-          alt="Appambattu Egg Sweet"
+          alt="APPAMPATTU Egg Sweet"
           width={INTRO_SIZE}
           height={INTRO_SIZE}
           priority
@@ -132,7 +132,7 @@ export default function LogoIntro() {
               letterSpacing: '0.03em',
             }}
           >
-            Appambattu Mutta Mittai
+            APPAMPATTU Mutta Mittai
           </p>
           <p
             style={{

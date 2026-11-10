@@ -52,7 +52,7 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
       <div className="relative aspect-square overflow-hidden bg-white">
         <Image
           src="/images/product-main.jpg"
-          alt={`Appambattu Mutta Mittai ${product.weight}`}
+          alt={`APPAMPATTU Mutta Mittai ${product.weight}`}
           fill
           className={`object-cover transition-transform duration-500 ${hovered ? 'scale-[1.09]' : 'scale-100'}`}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"

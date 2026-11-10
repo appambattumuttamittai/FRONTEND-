@@ -479,7 +479,7 @@ export default function FeedbackSection() {
                     <textarea
                       value={form.message}
                       onChange={(e) => setForm({ ...form, message: e.target.value })}
-                      placeholder="Tell others about your experience with Appambattu Mutta Mittai..."
+                      placeholder="Tell others about your experience with APPAMPATTU Mutta Mittai..."
                       rows={3}
                       maxLength={500}
                       className="w-full px-3 py-2 md:px-4 md:py-3 rounded-xl text-sm resize-none outline-none transition-all"

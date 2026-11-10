@@ -97,7 +97,7 @@ export default function Header() {
 
   const navLinks = [
     { label: 'Home', href: '/' },
-    { label: 'Order Now', href: '/order' },
+    { label: 'Order Now', href: '/#products' },
     { label: 'Contact', href: '#contact' },
   ];
 
@@ -114,7 +114,7 @@ export default function Header() {
       >
         <div className="container mx-auto px-4 max-w-6xl flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5" aria-label="Appambattu Mutta Mittai - Home">
+          <Link href="/" className="flex items-center gap-2.5" aria-label="Appampattu Mutta Mittai - Home">
             <div
               id="header-logo-img"
               className="w-10 h-10 rounded-full overflow-hidden shadow shrink-0 border-2 border-[#C42F2C]/20"
@@ -122,14 +122,14 @@ export default function Header() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/images/logo.jpg"
-                alt="Appambattu Mutta Mittai Logo"
+                alt="Appampattu Mutta Mittai Logo"
                 width={40}
                 height={40}
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
             </div>
             <div className="leading-tight">
-              <div className="font-black text-[#582A00] text-sm">Appambattu</div>
+              <div className="font-black text-[#582A00] text-sm">Appampattu</div>
               <div className="font-black text-[#C42F2C] text-sm">Mutta Mittai</div>
             </div>
           </Link>
@@ -180,7 +180,7 @@ export default function Header() {
               WhatsApp
             </a>
             <Link
-              href="/order"
+              href="/#products"
               className="px-5 py-2 bg-[#C42F2C] text-white rounded-full text-sm font-bold hover:bg-[#a82624] transition-colors shadow"
             >
               Order Now
@@ -207,7 +207,7 @@ export default function Header() {
                 </span>
               )}
             </button>
-            <Link href="/order" className="px-4 py-1.5 bg-[#C42F2C] text-white rounded-full text-sm font-bold">
+            <Link href="/#products" className="px-4 py-1.5 bg-[#C42F2C] text-white rounded-full text-sm font-bold">
               Order
             </Link>
             <button

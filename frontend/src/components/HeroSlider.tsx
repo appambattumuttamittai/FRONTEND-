@@ -15,7 +15,7 @@ export default function HeroSlider() {
     <section
       className="relative overflow-hidden bg-[#582A00]"
       style={{ height: '100vh', minHeight: 560 }}
-      aria-label="Welcome to Appambattu Mutta Mittai"
+      aria-label="Welcome to APPAMPATTU Mutta Mittai"
     >
       {/* Background video — muted, autoplay, loop */}
       <video
@@ -82,7 +82,7 @@ export default function HeroSlider() {
               className="font-bold text-white/90 mb-2"
               style={{ fontSize: 'clamp(1rem, 2.5vw, 1.3rem)', textShadow: '0 1px 8px rgba(0,0,0,0.3)' }}
             >
-              Appambattu Mutta Mittai
+              APPAMPATTU Mutta Mittai
             </p>
 
             {/* Description */}
@@ -97,7 +97,7 @@ export default function HeroSlider() {
             {/* CTAs */}
             <div className="flex flex-wrap gap-3">
               <Link
-                href="/order"
+                href="/#products"
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-black text-sm transition-all hover:-translate-y-0.5"
                 style={{ background: '#C42F2C', color: 'white', boxShadow: '0 8px 24px rgba(196,47,44,0.5)' }}
               >

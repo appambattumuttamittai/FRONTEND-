@@ -173,7 +173,7 @@ export default function ProductModal() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={galleryImages[activeImg]}
-                  alt={label?.en || 'Appambattu Mutta Mittai'}
+                  alt={label?.en || 'APPAMPATTU Mutta Mittai'}
                   style={{
                     width: '100%',
                     height: '100%',
@@ -257,7 +257,7 @@ export default function ProductModal() {
               {/* Brand + title */}
               <div>
                 <p className="text-xs font-bold tracking-widest uppercase mb-1" style={{ color: '#D97706' }}>
-                  Appambattu Mutta Mittai
+                  APPAMPATTU Mutta Mittai
                 </p>
                 <h2
                   className="text-xl md:text-2xl font-black leading-tight"

@@ -70,7 +70,7 @@ export default function Footer() {
             lineHeight: 1.3,
           }}
         >
-          Order fresh Appambattu Mutta Mittai today — made with milk &amp; egg.
+          Order fresh APPAMPATTU Mutta Mittai today — made with milk &amp; egg.
           Pickup at Villupuram Railway Station or home delivery within Villupuram.
         </p>
 
@@ -111,7 +111,7 @@ export default function Footer() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/logo.jpg"
-              alt="Appambattu Egg Sweet Logo"
+              alt="APPAMPATTU Egg Sweet Logo"
               width={52}
               height={52}
               style={{ borderRadius: '50%', border: '2px solid rgba(88,42,0,0.15)', display: 'block', flexShrink: 0 }}
@@ -119,7 +119,7 @@ export default function Footer() {
             {/* Mobile: show big brand name beside logo; Desktop: show small name */}
             <div className="hidden md:block">
               <p className="font-black text-sm leading-tight" style={{ color: '#582A00', fontFamily: "'Exo 2', sans-serif" }}>
-                Appambattu
+                APPAMPATTU
               </p>
               <p className="font-bold text-xs" style={{ color: '#D97706' }}>
                 Mutta Mittai
@@ -134,7 +134,7 @@ export default function Footer() {
                 letterSpacing: '-0.02em',
               }}
             >
-              APPAMBATTU<br />
+              APPAMPATTU<br />
               <span style={{ color: '#D97706' }}>MUTTA</span><br />
               MITTAI
             </h2>
@@ -155,7 +155,7 @@ export default function Footer() {
                   letterSpacing: '-0.02em',
                 }}
               >
-                APPAMBATTU<br />
+                APPAMPATTU<br />
                 <span style={{ color: '#D97706' }}>MUTTA</span><br />
                 MITTAI
               </h2>
@@ -213,13 +213,20 @@ export default function Footer() {
                   +91 78719 49015
                 </a>
               </div>
+              <a
+                href="mailto:appambattumuttamittai@gmail.com"
+                className="text-sm transition-colors hover:text-[#C42F2C] mt-1 md:mt-2 block break-all"
+                style={{ color: 'rgba(88,42,0,0.6)' }}
+              >
+                appambattumuttamittai@gmail.com
+              </a>
             </div>
 
           </div>
 
           {/* Copyright row */}
           <div className="flex flex-col md:flex-row justify-between items-center pt-4 pb-1 gap-1 text-xs" style={{ color: 'rgba(88,42,0,0.35)' }}>
-            <p>&copy; {year} Appambattu Mutta Mittai. All rights reserved.</p>
+            <p>&copy; {year} APPAMPATTU Mutta Mittai. All rights reserved.</p>
             <p>Made with care in Villupuram, Tamil Nadu</p>
           </div>
 
