@@ -207,8 +207,7 @@ export default function FeedbackSection() {
       ref={sectionRef}
       id="reviews"
       aria-labelledby="feedback-heading"
-      className="relative overflow-hidden"
-      style={{ minHeight: '100vh' }}
+      className="relative overflow-hidden min-h-[140vh] md:min-h-screen"
     >
       {/* ─────────────────────────────────────────────────────
           Responsive video styles injected here:

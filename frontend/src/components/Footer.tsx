@@ -114,9 +114,10 @@ export default function Footer() {
               alt="Appambattu Egg Sweet Logo"
               width={52}
               height={52}
-              style={{ borderRadius: '50%', border: '2px solid rgba(88,42,0,0.15)', display: 'block' }}
+              style={{ borderRadius: '50%', border: '2px solid rgba(88,42,0,0.15)', display: 'block', flexShrink: 0 }}
             />
-            <div>
+            {/* Mobile: show big brand name beside logo; Desktop: show small name */}
+            <div className="hidden md:block">
               <p className="font-black text-sm leading-tight" style={{ color: '#582A00', fontFamily: "'Exo 2', sans-serif" }}>
                 Appambattu
               </p>
@@ -124,16 +125,29 @@ export default function Footer() {
                 Mutta Mittai
               </p>
             </div>
+            <h2
+              className="md:hidden font-black leading-none"
+              style={{
+                color: '#2A1000',
+                fontSize: 'clamp(1.4rem, 7vw, 2rem)',
+                fontFamily: "'Exo 2', sans-serif",
+                letterSpacing: '-0.02em',
+              }}
+            >
+              APPAMBATTU<br />
+              <span style={{ color: '#D97706' }}>MUTTA</span><br />
+              MITTAI
+            </h2>
           </div>
 
           {/* Columns grid — 2-col on mobile, 4-col on desktop */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 pb-6 md:pb-10" style={{ borderBottom: '1px solid rgba(88,42,0,0.08)' }}>
 
-            {/* Brand blurb — full width on mobile, 1 col on desktop */}
-            <div className="col-span-2 md:col-span-1">
-              {/* Giant stacked brand name à la Elevate */}
+            {/* Brand blurb — hidden on mobile (name shown in logo row), 1 col on desktop */}
+            <div className="hidden md:block md:col-span-1">
+              {/* Giant stacked brand name à la Elevate — desktop only (mobile shows it in logo row) */}
               <h2
-                className="font-black leading-none mb-4"
+                className="hidden md:block font-black leading-none mb-4"
                 style={{
                   color: '#2A1000',
                   fontSize: 'clamp(1.6rem, 3.5vw, 2.4rem)',
