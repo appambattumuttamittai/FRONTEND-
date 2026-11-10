@@ -103,11 +103,11 @@ export default function Footer() {
       {/* ═══════════════════════════════════════════════
           MAIN — white panel: logo top-left + columns  (Pension.de-style)
       ═══════════════════════════════════════════════ */}
-      <div style={{ background: '#FFFFFF', borderTop: '1px solid rgba(88,42,0,0.07)' }} className="pt-12 pb-10 px-4">
+      <div style={{ background: '#FFFFFF', borderTop: '1px solid rgba(88,42,0,0.07)' }} className="pt-8 md:pt-12 pb-4 md:pb-10 px-4">
         <div className="container mx-auto max-w-6xl">
 
-          {/* Logo row (Pension.de: logo sits alone top-left above columns) */}
-          <div className="mb-10 flex items-center gap-3">
+          {/* Logo row */}
+          <div className="mb-6 md:mb-10 flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/logo.jpg"
@@ -126,11 +126,11 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Columns grid  — mirrors Pension.de's multi-column layout */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10" style={{ borderBottom: '1px solid rgba(88,42,0,0.08)' }}>
+          {/* Columns grid — 2-col on mobile, 4-col on desktop */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 pb-6 md:pb-10" style={{ borderBottom: '1px solid rgba(88,42,0,0.08)' }}>
 
-            {/* Brand blurb — col 1 (wider) */}
-            <div className="md:col-span-1">
+            {/* Brand blurb — full width on mobile, 1 col on desktop */}
+            <div className="col-span-2 md:col-span-1">
               {/* Giant stacked brand name à la Elevate */}
               <h2
                 className="font-black leading-none mb-4"
@@ -182,8 +182,8 @@ export default function Footer() {
               </div>
             </div>
 
-            {/* Contact */}
-            <div>
+            {/* Contact — full width on mobile, 1 col on desktop */}
+            <div className="col-span-2 md:col-span-1">
               <h3 className="font-black text-[11px] tracking-widest uppercase mb-4" style={{ color: '#582A00' }}>
                 Contact
               </h3>
@@ -230,8 +230,8 @@ export default function Footer() {
 
           </div>
 
-          {/* Copyright row (Pension.de style: sits above the image, inside white panel) */}
-          <div className="flex flex-col md:flex-row justify-between items-center pt-6 pb-2 gap-1 text-xs" style={{ color: 'rgba(88,42,0,0.35)' }}>
+          {/* Copyright row */}
+          <div className="flex flex-col md:flex-row justify-between items-center pt-4 pb-1 gap-1 text-xs" style={{ color: 'rgba(88,42,0,0.35)' }}>
             <p>&copy; {year} Appambattu Mutta Mittai. All rights reserved.</p>
             <p>Made with care in Villupuram, Tamil Nadu</p>
           </div>
