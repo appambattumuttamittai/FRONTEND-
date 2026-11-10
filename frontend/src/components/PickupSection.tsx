@@ -73,7 +73,7 @@ function ImageSlider() {
 
 export default function PickupSection() {
   return (
-    <section className="py-10 md:py-20 pb-4 md:pb-20" style={{ background: '#FFFFFF' }} aria-labelledby="pickup-heading">
+    <section className="pt-10 pb-0 md:pt-20 md:pb-0" style={{ background: '#FFFFFF' }} aria-labelledby="pickup-heading">
       <div className="container mx-auto px-4 max-w-6xl">
 
         {/* Tagline banner */}
@@ -160,16 +160,6 @@ export default function PickupSection() {
               Home delivery is currently available only within Villupuram City limits. Customers from other locations can place orders online and pick them up from our store at Villupuram Railway Station, 1st Platform.
             </div>
 
-            <div className="hidden md:flex flex-wrap gap-3">
-              <a
-                href="https://wa.me/917871949015"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-6 py-3 rounded-full font-bold text-sm border-2 transition-all hover:-translate-y-0.5"
-                style={{ borderColor: '#C42F2C', color: '#C42F2C' }}
-              >
-                WhatsApp Us
-              </a>
             </div>
           </div>
         </div>

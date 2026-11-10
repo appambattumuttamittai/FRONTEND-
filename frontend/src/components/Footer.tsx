@@ -58,7 +58,7 @@ export default function Footer() {
       ═══════════════════════════════════════════════ */}
       <div
         style={{ background: '#FFFFFF', borderTop: '1px solid rgba(88,42,0,0.08)' }}
-        className="hidden md:block py-16 px-4 text-center"
+        className="hidden md:block pt-10 pb-16 px-4 text-center"
       >
         <p
           className="font-black leading-tight mx-auto mb-8"
@@ -70,7 +70,7 @@ export default function Footer() {
             lineHeight: 1.3,
           }}
         >
-          Order fresh Appambattu Mutta Mittai today — made with milk, egg &amp; cashew.
+          Order fresh Appambattu Mutta Mittai today — made with milk &amp; egg.
           Pickup at Villupuram Railway Station or home delivery within Villupuram.
         </p>
 
