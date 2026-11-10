@@ -33,10 +33,7 @@ export default function GallerySection() {
           </h2>
           <p className="text-white/75 max-w-lg text-base leading-relaxed mb-6">
             Appambattu Mutta Mittai is an authentic egg sweet made from a generations-old recipe —
-            using pure milk, farm-fresh eggs, cashew paste and unrefined sugar. Every bite tells a story.
-          </p>
-          <p className="font-bold mb-8" style={{ color: '#D97706', fontFamily: "'Noto Sans Tamil', sans-serif" }}>
-            பாரம்பரிய செய்முறை — தலைமுறை தொட்டு வரும் ருசி
+            using pure milk, farm-fresh eggs and unrefined sugar. Every bite tells a story.
           </p>
           <Link
             href="/order"

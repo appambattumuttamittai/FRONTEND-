@@ -81,9 +81,6 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
         <h3 className="font-bold mt-1.5 mb-0.5" style={{ color: '#582A00', fontSize: '0.95rem' }}>
           {label?.en || product.weight}
         </h3>
-        <p className="text-[11px] mb-3" style={{ color: 'rgba(61,30,8,0.5)', fontFamily: "'Noto Sans Tamil', sans-serif" }}>
-          {label?.ta || ''}
-        </p>
         <div className="flex items-center justify-between">
           <span className="font-black text-2xl" style={{ color: '#C42F2C' }}>
             ₹{product.price}
@@ -209,9 +206,6 @@ export default function ProductsSection() {
             <strong className="text-[#D97706]">Villupuram Railway Station, 1st Platform</strong>.
             {' '}Home delivery available within{' '}
             <strong className="text-[#D97706]">Villupuram</strong>.
-          </p>
-          <p className="text-white/50 mt-1 text-sm" style={{ fontFamily: "'Noto Sans Tamil', sans-serif" }}>
-            குரியர் சேவை இல்லை — மீனம்பூர், அப்பம்பட்டு, விழுப்புரம் இல் மட்டும் பிக்கப்
           </p>
         </div>
       </div>

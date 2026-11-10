@@ -146,8 +146,7 @@ export default function FeedbackSection() {
       ([entry]) => {
         if (entry.isIntersecting) {
           setCardsVisible(true);
-        } else {
-          setCardsVisible(false);
+          observer.disconnect(); // fire once — never reset
         }
       },
       { threshold: 0.12 }
