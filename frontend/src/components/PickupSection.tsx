@@ -163,7 +163,6 @@ export default function PickupSection() {
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
   );
 }
