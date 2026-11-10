@@ -59,6 +59,61 @@ function StarInput({ value, onChange }: { value: number; onChange: (v: number) =
   );
 }
 
+/* ── single glass card (shared between mobile & desktop) ─── */
+function GlassCard({ fb, i, cardsVisible }: { fb: Feedback; i: number; cardsVisible: boolean }) {
+  return (
+    <div
+      style={{
+        transitionDelay: `${i * 120}ms`,
+        transitionProperty: 'opacity, transform',
+        transitionDuration: '580ms',
+        transitionTimingFunction: cardsVisible
+          ? 'cubic-bezier(0.34,1.56,0.64,1)'
+          : 'ease-in',
+        opacity: cardsVisible ? 1 : 0,
+        transform: cardsVisible ? 'translateY(0) scale(1)' : 'translateY(52px) scale(0.86)',
+      }}
+    >
+      <div
+        className="rounded-2xl p-5 flex flex-col gap-3 h-full"
+        style={{
+          background: 'rgba(255,255,255,0.11)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
+        }}
+      >
+        <StarDisplay rating={fb.rating} />
+        <p className="text-sm leading-relaxed flex-1" style={{ color: 'rgba(255,248,240,0.88)' }}>
+          &ldquo;{fb.message}&rdquo;
+        </p>
+        <div
+          className="flex items-center gap-3 pt-3"
+          style={{ borderTop: '1px solid rgba(255,255,255,0.12)' }}
+        >
+          <div
+            className="w-9 h-9 rounded-full flex items-center justify-center text-white font-black text-sm shrink-0"
+            style={{
+              background: ['#C42F2C','#582A00','#D97706','#8B3A00'][i % 4],
+              border: '2px solid rgba(255,255,255,0.25)',
+            }}
+          >
+            {fb.name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)}
+          </div>
+          <div>
+            <p className="font-bold text-sm" style={{ color: '#FFFFFF' }}>{fb.name}</p>
+            <p className="text-[11px]" style={{ color: 'rgba(255,248,240,0.45)' }}>Verified Customer</p>
+          </div>
+          <svg className="w-5 h-5 ml-auto opacity-15" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── main section ────────────────────────────────────────── */
 export default function FeedbackSection() {
   const [feedbacks, setFeedbacks] = useState<Feedback[]>(dummyFeedbacks);
@@ -67,9 +122,13 @@ export default function FeedbackSection() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
 
-  /* scroll-trigger state */
+  /* scroll-trigger */
   const sectionRef = useRef<HTMLElement>(null);
   const [cardsVisible, setCardsVisible] = useState(false);
+
+  /* mobile carousel active dot */
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [activeDot, setActiveDot] = useState(0);
 
   /* fetch real reviews */
   useEffect(() => {
@@ -79,7 +138,7 @@ export default function FeedbackSection() {
       .catch(() => {});
   }, []);
 
-  /* Intersection Observer — trigger card pop when section enters viewport */
+  /* Intersection Observer */
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
@@ -88,15 +147,32 @@ export default function FeedbackSection() {
         if (entry.isIntersecting) {
           setCardsVisible(true);
         } else {
-          /* reset so cards re-animate every time user scrolls back */
           setCardsVisible(false);
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.12 }
     );
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
+
+  /* mobile carousel — track scroll position for dot indicator */
+  useEffect(() => {
+    const el = carouselRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      const index = Math.round(el.scrollLeft / el.clientWidth);
+      setActiveDot(index);
+    };
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const scrollToCard = (index: number) => {
+    const el = carouselRef.current;
+    if (!el) return;
+    el.scrollTo({ left: index * el.clientWidth, behavior: 'smooth' });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,6 +201,8 @@ export default function FeedbackSection() {
     }
   };
 
+  const displayFeedbacks = feedbacks.slice(0, 4);
+
   return (
     <section
       ref={sectionRef}
@@ -133,39 +211,61 @@ export default function FeedbackSection() {
       className="relative overflow-hidden"
       style={{ minHeight: '100vh' }}
     >
+      {/* ─────────────────────────────────────────────────────
+          Responsive video styles injected here:
+          Desktop (≥640px): object-fit cover  — cinematic fill
+          Mobile  (<640px):  object-fit contain — full frame visible, zoomed out
+      ───────────────────────────────────────────────────── */}
+      <style>{`
+        #reviews-video {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center center;
+          z-index: 0;
+          background: #1a0a00;
+        }
+        @media (max-width: 639px) {
+          #reviews-video {
+            object-fit: contain;
+            background: #1a0a00;
+          }
+        }
+      `}</style>
+
       {/* ── Background video ─────────────────────────────── */}
       <video
+        id="reviews-video"
         autoPlay
         muted
         loop
         playsInline
-        className="absolute inset-0 w-full h-full object-cover"
-        style={{ zIndex: 0 }}
         aria-hidden="true"
       >
         <source src="/videos/reviews-bg.mp4" type="video/mp4" />
-        {/* fallback to hero video if reviews-bg.mp4 not present */}
         <source src="/videos/hero-bg-main.mp4" type="video/mp4" />
         <source src="/videos/hero-bg.mp4" type="video/mp4" />
       </video>
 
-      {/* Dark overlay so text is readable */}
+      {/* Dark overlay */}
       <div
         className="absolute inset-0"
         style={{
           zIndex: 1,
           background:
-            'linear-gradient(to bottom, rgba(42,16,0,0.72) 0%, rgba(42,16,0,0.55) 50%, rgba(42,16,0,0.78) 100%)',
+            'linear-gradient(to bottom, rgba(42,16,0,0.68) 0%, rgba(42,16,0,0.48) 50%, rgba(42,16,0,0.75) 100%)',
         }}
         aria-hidden="true"
       />
 
       {/* ── Content (above video) ────────────────────────── */}
-      <div className="relative px-4 py-20" style={{ zIndex: 2 }}>
+      <div className="relative px-4 py-16 md:py-20" style={{ zIndex: 2 }}>
         <div className="container mx-auto max-w-6xl">
 
           {/* Section header */}
-          <div className="text-center mb-14">
+          <div className="text-center mb-10 md:mb-14">
             <span
               className="inline-block text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full mb-4"
               style={{ background: 'rgba(255,255,255,0.12)', color: '#FFAA2B', border: '1px solid rgba(255,170,43,0.3)' }}
@@ -174,79 +274,133 @@ export default function FeedbackSection() {
             </span>
             <h2
               id="feedback-heading"
-              className="text-4xl md:text-5xl font-black mb-4"
+              className="text-3xl md:text-5xl font-black mb-3"
               style={{ color: '#FFFFFF', fontFamily: "'Exo 2', sans-serif", textShadow: '0 2px 20px rgba(0,0,0,0.4)' }}
             >
               Customer Reviews
             </h2>
-            <p className="text-base max-w-md mx-auto" style={{ color: 'rgba(255,248,240,0.6)' }}>
+            <p className="text-sm md:text-base max-w-md mx-auto" style={{ color: 'rgba(255,248,240,0.6)' }}>
               Real words from our happy customers across Tamil Nadu
             </p>
           </div>
 
-          {/* ── Review cards — pop in on scroll ──────────── */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-16">
-            {feedbacks.slice(0, 4).map((fb, i) => (
-              <div
-                key={fb.id}
-                style={{
-                  transitionDelay: `${i * 120}ms`,
-                  transitionProperty: 'opacity, transform',
-                  transitionDuration: '580ms',
-                  transitionTimingFunction: cardsVisible
-                    ? 'cubic-bezier(0.34,1.56,0.64,1)'
-                    : 'ease-in',
-                  opacity: cardsVisible ? 1 : 0,
-                  transform: cardsVisible
-                    ? 'translateY(0) scale(1)'
-                    : 'translateY(52px) scale(0.86)',
-                }}
-              >
-                {/* Glass-morphism card */}
+          {/* ═══════════════════════════════════════════════
+              DESKTOP — 4-column grid (unchanged)
+          ═══════════════════════════════════════════════ */}
+          <div className="hidden sm:grid grid-cols-2 lg:grid-cols-4 gap-5 mb-16">
+            {displayFeedbacks.map((fb, i) => (
+              <GlassCard key={fb.id} fb={fb} i={i} cardsVisible={cardsVisible} />
+            ))}
+          </div>
+
+          {/* ═══════════════════════════════════════════════
+              MOBILE — horizontal swipe carousel
+              Full-width snap scroll, one card at a time
+          ═══════════════════════════════════════════════ */}
+          <div className="sm:hidden mb-6">
+            {/* Carousel track */}
+            <div
+              ref={carouselRef}
+              className="flex overflow-x-auto gap-4"
+              style={{
+                scrollSnapType: 'x mandatory',
+                WebkitOverflowScrolling: 'touch',
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+                /* hide webkit scrollbar */
+              }}
+            >
+              <style>{`
+                #reviews-carousel::-webkit-scrollbar { display: none; }
+              `}</style>
+              {displayFeedbacks.map((fb, i) => (
                 <div
-                  className="rounded-2xl p-5 flex flex-col gap-3 h-full"
+                  key={fb.id}
                   style={{
-                    background: 'rgba(255,255,255,0.11)',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    backdropFilter: 'blur(16px)',
-                    WebkitBackdropFilter: 'blur(16px)',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
+                    scrollSnapAlign: 'center',
+                    flex: '0 0 88%',
+                    /* pop-in animation */
+                    transitionDelay: `${i * 80}ms`,
+                    transitionProperty: 'opacity, transform',
+                    transitionDuration: '500ms',
+                    transitionTimingFunction: cardsVisible
+                      ? 'cubic-bezier(0.34,1.56,0.64,1)'
+                      : 'ease-in',
+                    opacity: cardsVisible ? 1 : 0,
+                    transform: cardsVisible ? 'translateY(0) scale(1)' : 'translateY(40px) scale(0.88)',
                   }}
                 >
-                  <StarDisplay rating={fb.rating} />
-                  <p className="text-sm leading-relaxed flex-1" style={{ color: 'rgba(255,248,240,0.88)' }}>
-                    &ldquo;{fb.message}&rdquo;
-                  </p>
                   <div
-                    className="flex items-center gap-3 pt-3"
-                    style={{ borderTop: '1px solid rgba(255,255,255,0.12)' }}
+                    className="rounded-2xl p-5 flex flex-col gap-3"
+                    style={{
+                      background: 'rgba(255,255,255,0.13)',
+                      border: '1px solid rgba(255,255,255,0.22)',
+                      backdropFilter: 'blur(18px)',
+                      WebkitBackdropFilter: 'blur(18px)',
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                      minHeight: 200,
+                    }}
                   >
+                    <StarDisplay rating={fb.rating} />
+                    <p className="text-sm leading-relaxed flex-1" style={{ color: 'rgba(255,248,240,0.9)' }}>
+                      &ldquo;{fb.message}&rdquo;
+                    </p>
                     <div
-                      className="w-9 h-9 rounded-full flex items-center justify-center text-white font-black text-sm shrink-0"
-                      style={{
-                        background: ['#C42F2C','#582A00','#D97706','#8B3A00'][i % 4],
-                        border: '2px solid rgba(255,255,255,0.25)',
-                      }}
+                      className="flex items-center gap-3 pt-3"
+                      style={{ borderTop: '1px solid rgba(255,255,255,0.14)' }}
                     >
-                      {fb.name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)}
+                      <div
+                        className="w-9 h-9 rounded-full flex items-center justify-center text-white font-black text-sm shrink-0"
+                        style={{
+                          background: ['#C42F2C','#582A00','#D97706','#8B3A00'][i % 4],
+                          border: '2px solid rgba(255,255,255,0.3)',
+                        }}
+                      >
+                        {fb.name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)}
+                      </div>
+                      <div>
+                        <p className="font-bold text-sm text-white">{fb.name}</p>
+                        <p className="text-[11px]" style={{ color: 'rgba(255,248,240,0.45)' }}>Verified Customer</p>
+                      </div>
+                      {/* card number badge */}
+                      <span
+                        className="ml-auto text-xs font-bold px-2 py-0.5 rounded-full"
+                        style={{ background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.5)' }}
+                      >
+                        {i + 1}/{displayFeedbacks.length}
+                      </span>
                     </div>
-                    <div>
-                      <p className="font-bold text-sm" style={{ color: '#FFFFFF' }}>{fb.name}</p>
-                      <p className="text-[11px]" style={{ color: 'rgba(255,248,240,0.45)' }}>Verified Customer</p>
-                    </div>
-                    <svg className="w-5 h-5 ml-auto opacity-15" viewBox="0 0 24 24" fill="white" aria-hidden="true">
-                      <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
-                    </svg>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            {/* Dot navigation */}
+            <div className="flex justify-center gap-2 mt-5">
+              {displayFeedbacks.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => scrollToCard(i)}
+                  aria-label={`Go to review ${i + 1}`}
+                  style={{
+                    width: activeDot === i ? 24 : 8,
+                    height: 8,
+                    borderRadius: 4,
+                    background: activeDot === i ? '#FFAA2B' : 'rgba(255,255,255,0.3)',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    padding: 0,
+                  }}
+                />
+              ))}
+            </div>
           </div>
 
           {/* ── Leave a review form ───────────────────────── */}
           <div className="max-w-2xl mx-auto">
             <div
-              className="rounded-3xl p-8 md:p-10"
+              className="rounded-3xl p-6 md:p-10"
               style={{
                 background: 'rgba(255,255,255,0.1)',
                 border: '1px solid rgba(255,255,255,0.18)',
@@ -256,7 +410,7 @@ export default function FeedbackSection() {
               }}
             >
               <h3
-                className="text-2xl font-black mb-1"
+                className="text-xl md:text-2xl font-black mb-1"
                 style={{ color: '#FFFFFF', fontFamily: "'Exo 2', sans-serif" }}
               >
                 Leave Your Feedback
@@ -288,7 +442,6 @@ export default function FeedbackSection() {
               ) : (
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
 
-                  {/* Name */}
                   <div>
                     <label className="block text-sm font-bold mb-1.5" style={{ color: 'rgba(255,248,240,0.8)' }}>
                       Your Name *
@@ -310,7 +463,6 @@ export default function FeedbackSection() {
                     />
                   </div>
 
-                  {/* Star rating */}
                   <div>
                     <label className="block text-sm font-bold mb-2" style={{ color: 'rgba(255,248,240,0.8)' }}>
                       Rating *
@@ -318,7 +470,6 @@ export default function FeedbackSection() {
                     <StarInput value={form.rating} onChange={(v) => setForm({ ...form, rating: v })} />
                   </div>
 
-                  {/* Message */}
                   <div>
                     <label className="block text-sm font-bold mb-1.5" style={{ color: 'rgba(255,248,240,0.8)' }}>
                       Your Review *
@@ -343,12 +494,10 @@ export default function FeedbackSection() {
                     </p>
                   </div>
 
-                  {/* Error */}
                   {error && (
                     <p className="text-sm font-semibold" style={{ color: '#FFAA2B' }}>{error}</p>
                   )}
 
-                  {/* Submit */}
                   <button
                     type="submit"
                     disabled={submitting}
