@@ -76,7 +76,7 @@ export default function Footer() {
 
         <div className="flex flex-wrap gap-3 justify-center">
           <Link
-            href="/order"
+            href="/#products"
             className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-black text-sm text-white transition-all hover:-translate-y-0.5"
             style={{ background: '#C42F2C', boxShadow: '0 8px 24px rgba(196,47,44,0.35)' }}
           >
