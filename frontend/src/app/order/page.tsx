@@ -8,9 +8,9 @@ import Footer from '@/components/Footer';
 import { useLanguage } from '@/context/LanguageContext';
 import { api, Product } from '@/lib/api';
 
-// Steps
-type Step = 'name' | 'phone' | 'quantity' | 'pickup' | 'payment';
-const STEPS: Step[] = ['name', 'phone', 'quantity', 'pickup', 'payment'];
+// Steps (4 steps: Name -> Phone -> Pickup -> Payment)
+type Step = 'name' | 'phone' | 'pickup' | 'payment';
+const STEPS: Step[] = ['name', 'phone', 'pickup', 'payment'];
 
 interface OrderState {
   name: string;
@@ -29,9 +29,9 @@ interface OrderState {
 // Step indicator
 function StepIndicator({ current, steps }: { current: number; steps: string[] }) {
   const { t } = useLanguage();
-  const labels = ['order.step.name', 'order.step.phone', 'order.step.quantity', 'order.step.pickup', 'order.step.payment'];
+  const labels = ['order.step.name', 'order.step.phone', 'order.step.pickup', 'order.step.payment'];
   return (
-    <div className="w-full max-w-lg mx-auto mb-8 px-1 sm:px-2">
+    <div className="w-full max-w-md mx-auto mb-6 px-1 sm:px-2">
       {/* Stepper row: all 5 steps distributed across full width without overflow */}
       <div className="flex items-start justify-between w-full">
         {steps.map((_, i) => (
@@ -106,10 +106,10 @@ function NameStep({ value, onChange, onNext }: { value: string; onChange: (v: st
   };
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-black text-[#063D20]">{t('order.step.name')}</h2>
+    <div className="space-y-3.5">
+      <h2 className="text-xl sm:text-2xl font-black text-[#063D20]">{t('order.step.name')}</h2>
       <div>
-        <label htmlFor="name" className="block text-sm font-semibold text-[#3A1C10] mb-1.5">
+        <label htmlFor="name" className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">
           {t('order.name.label')} *
         </label>
         <input
@@ -120,13 +120,13 @@ function NameStep({ value, onChange, onNext }: { value: string; onChange: (v: st
           onKeyDown={(e) => e.key === 'Enter' && submit()}
           placeholder={t('order.name.placeholder')}
           autoFocus
-          className="w-full px-4 py-3 rounded-xl border-2 border-[#063D20]/20 focus:border-[#063D20] outline-none text-base transition-colors"
+          className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#063D20]/20 focus:border-[#063D20] outline-none text-sm sm:text-base transition-colors"
         />
-        {err && <p className="text-[#E95012] text-sm mt-1">{err}</p>}
+        {err && <p className="text-[#E95012] text-xs sm:text-sm mt-1">{err}</p>}
       </div>
       <button
         onClick={submit}
-        className="w-full py-4 bg-[#063D20] text-[#FFF4DD] rounded-xl font-bold text-lg hover:bg-[#0A512B] transition-colors"
+        className="w-full py-2.5 sm:py-3 bg-[#063D20] text-[#FFF4DD] rounded-xl font-bold text-sm sm:text-base hover:bg-[#0A512B] transition-colors"
       >
         {t('order.next')} →
       </button>
@@ -192,13 +192,15 @@ function PhoneStep({
     }
   };
 
-  const verifyOtp = async () => {
-    if (otp.length !== 6) { setOtpErr('Enter the 6-digit OTP'); return; }
+  const verifyOtp = async (codeToVerify?: string) => {
+    const code = codeToVerify || otp;
+    if (code.length !== 6) { setOtpErr('Enter the 6-digit OTP'); return; }
     setLoading(true);
     try {
-      await api.verifyOtp(phone.replace(/\D/g, ''), otp, sessionId);
+      await api.verifyOtp(phone.replace(/\D/g, ''), code, sessionId);
       onVerified();
       toast.success(t('order.phone.verified'));
+      onNext();
     } catch (err: any) {
       setOtpErr(err.message || 'Invalid OTP. Please try again.');
     } finally {
@@ -206,36 +208,15 @@ function PhoneStep({
     }
   };
 
-  if (verified) {
-    return (
-      <div className="space-y-4">
-        <h2 className="text-2xl font-black text-[#063D20]">{t('order.step.phone')}</h2>
-        <div className="flex items-center gap-3 p-4 bg-green-50 border-2 border-green-400 rounded-xl">
-          <span className="text-2xl">✅</span>
-          <div>
-            <p className="font-bold text-green-700">{t('order.phone.verified')}</p>
-            <p className="text-green-600 text-sm">+91 {phone.replace(/\D/g, '')}</p>
-          </div>
-        </div>
-        <button
-          onClick={onNext}
-          className="w-full py-4 bg-[#063D20] text-[#FFF4DD] rounded-xl font-bold text-lg hover:bg-[#0A512B] transition-colors"
-        >
-          {t('order.next')} →
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-black text-[#063D20]">{t('order.step.phone')}</h2>
+    <div className="space-y-3.5">
+      <h2 className="text-xl sm:text-2xl font-black text-[#063D20]">{t('order.step.phone')}</h2>
       <div>
-        <label htmlFor="phone" className="block text-sm font-semibold text-[#3A1C10] mb-1.5">
+        <label htmlFor="phone" className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">
           {t('order.phone.label')} *
         </label>
         <div className="flex gap-2">
-          <div className="flex items-center px-3 py-3 bg-gray-100 border-2 border-gray-200 rounded-xl text-sm font-bold text-gray-600">
+          <div className="flex items-center px-3 py-2.5 bg-gray-100 border-2 border-gray-200 rounded-xl text-xs sm:text-sm font-bold text-gray-600">
             🇮🇳 +91
           </div>
           <input
@@ -246,28 +227,28 @@ function PhoneStep({
             onChange={(e) => { onPhoneChange(e.target.value.replace(/\D/g, '').slice(0, 10)); setPhoneErr(''); }}
             placeholder={t('order.phone.placeholder')}
             disabled={otpSent}
-            className="flex-1 px-4 py-3 rounded-xl border-2 border-[#063D20]/20 focus:border-[#063D20] outline-none text-base transition-colors disabled:bg-gray-50"
+            className="flex-1 px-3.5 py-2.5 rounded-xl border-2 border-[#063D20]/20 focus:border-[#063D20] outline-none text-sm sm:text-base transition-colors disabled:bg-gray-50"
             autoComplete="tel"
           />
         </div>
-        {phoneErr && <p className="text-[#E95012] text-sm mt-1">{phoneErr}</p>}
+        {phoneErr && <p className="text-[#E95012] text-xs sm:text-sm mt-1">{phoneErr}</p>}
       </div>
 
       {!otpSent ? (
         <button
           onClick={sendOtp}
           disabled={loading}
-          className="w-full py-4 bg-[#063D20] text-[#FFF4DD] rounded-xl font-bold text-lg hover:bg-[#0A512B] transition-colors disabled:opacity-50"
+          className="w-full py-2.5 sm:py-3 bg-[#063D20] text-[#FFF4DD] rounded-xl font-bold text-sm sm:text-base hover:bg-[#0A512B] transition-colors disabled:opacity-50"
         >
           {loading ? t('common.loading') : t('order.phone.send_otp')}
         </button>
       ) : (
         <div className="space-y-3">
-          <div className="p-3 bg-[#F5B51B]/10 border border-[#F5B51B] rounded-xl text-sm text-center text-[#3A1C10]">
+          <div className="py-2 px-3 bg-[#F5B51B]/10 border border-[#F5B51B] rounded-xl text-xs sm:text-sm text-center text-[#3A1C10]">
             📱 {t('order.phone.otp_sent')} +91 {phone}
           </div>
           <div>
-            <label htmlFor="otp" className="block text-sm font-semibold text-[#3A1C10] mb-1.5">
+            <label htmlFor="otp" className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">
               {t('order.phone.enter_otp')} *
             </label>
             <input
@@ -276,27 +257,34 @@ function PhoneStep({
               type="text"
               inputMode="numeric"
               value={otp}
-              onChange={(e) => { setOtp(e.target.value.replace(/\D/g, '').slice(0, 6)); setOtpErr(''); }}
+              onChange={(e) => {
+                const v = e.target.value.replace(/\D/g, '').slice(0, 6);
+                setOtp(v);
+                setOtpErr('');
+                if (v.length === 6) {
+                  verifyOtp(v);
+                }
+              }}
               onKeyDown={(e) => e.key === 'Enter' && verifyOtp()}
               placeholder="_ _ _ _ _ _"
               maxLength={6}
               autoComplete="one-time-code"
-              className="w-full px-4 py-4 rounded-xl border-2 border-[#063D20]/20 focus:border-[#063D20] outline-none text-center text-2xl font-black tracking-widest transition-colors"
+              className="w-full px-3 py-2.5 rounded-xl border-2 border-[#063D20]/20 focus:border-[#063D20] outline-none text-center text-lg sm:text-xl font-black tracking-widest transition-colors"
             />
-            {otpErr && <p className="text-[#E95012] text-sm mt-1 text-center">{otpErr}</p>}
+            {otpErr && <p className="text-[#E95012] text-xs sm:text-sm mt-1 text-center">{otpErr}</p>}
           </div>
           <button
-            onClick={verifyOtp}
+            onClick={() => verifyOtp()}
             disabled={loading || otp.length !== 6}
-            className="w-full py-4 bg-[#E95012] text-white rounded-xl font-bold text-lg hover:bg-[#c7400d] transition-colors disabled:opacity-50"
+            className="w-full py-2.5 sm:py-3 bg-[#E95012] text-white rounded-xl font-bold text-sm sm:text-base hover:bg-[#c7400d] transition-colors disabled:opacity-50"
           >
             {loading ? t('common.loading') : t('order.phone.verify')}
           </button>
           <div className="text-center">
             {resendTimer > 0 ? (
-              <p className="text-sm text-[#3A1C10]/50">Resend OTP in {resendTimer}s</p>
+              <p className="text-xs sm:text-sm text-[#3A1C10]/50">Resend OTP in {resendTimer}s</p>
             ) : (
-              <button onClick={sendOtp} className="text-sm text-[#063D20] font-semibold underline hover:no-underline">
+              <button onClick={sendOtp} className="text-xs sm:text-sm text-[#063D20] font-semibold underline hover:no-underline">
                 {t('order.phone.resend')}
               </button>
             )}
@@ -307,58 +295,9 @@ function PhoneStep({
   );
 }
 
-// Step 3: Quantity
-function QuantityStep({ products, selected, onSelect, onNext, onBack }: {
-  products: Product[]; selected: Product | null;
-  onSelect: (p: Product) => void; onNext: () => void; onBack: () => void;
-}) {
-  const { t } = useLanguage();
-  const icons = ['🍬', '🎁', '🧁', '👑'];
-
-  return (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-black text-[#063D20]">{t('order.step.quantity')}</h2>
-      <div className="grid grid-cols-2 gap-3">
-        {products.map((p, i) => (
-          <button
-            key={p.id}
-            onClick={() => p.inStock && onSelect(p)}
-            disabled={!p.inStock}
-            className={`p-4 rounded-2xl border-2 text-left transition-all ${
-              selected?.id === p.id
-                ? 'border-[#063D20] bg-[#063D20] text-[#FFF4DD] shadow-lg scale-[1.02]'
-                : p.inStock
-                ? 'border-gray-200 hover:border-[#063D20] hover:shadow-md'
-                : 'border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed'
-            }`}
-          >
-            <div className="text-2xl mb-1">{icons[i]}</div>
-            <div className="font-bold text-base">{p.weight}</div>
-            <div className={`font-black text-2xl ${selected?.id === p.id ? 'text-[#F5B51B]' : 'text-[#E95012]'}`}>
-              ₹{p.price}
-            </div>
-            {!p.inStock && <div className="text-xs text-red-500 mt-1">{t('products.out_of_stock')}</div>}
-          </button>
-        ))}
-      </div>
-      <div className="flex gap-2 pt-2">
-        <button onClick={onBack} className="flex-1 py-4 border-2 border-[#063D20] text-[#063D20] rounded-xl font-bold hover:bg-[#063D20] hover:text-[#FFF4DD] transition-colors">
-          {t('order.back')}
-        </button>
-        <button
-          onClick={onNext}
-          disabled={!selected}
-          className="flex-[2] py-4 bg-[#063D20] text-[#FFF4DD] rounded-xl font-bold text-lg hover:bg-[#0A512B] transition-colors disabled:opacity-40"
-        >
-          {t('order.next')} →
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// Step 4: Pickup details
-function PickupStep({ street, city, pincode, onStreet, onCity, onPincode, onNext, onBack }: {
+// Step 3: Pickup details
+function PickupStep({ product, street, city, pincode, onStreet, onCity, onPincode, onNext, onBack }: {
+  product?: Product | null;
   street: string; city: string; pincode: string;
   onStreet: (v: string) => void; onCity: (v: string) => void; onPincode: (v: string) => void;
   onNext: () => void; onBack: () => void;
@@ -380,57 +319,66 @@ function PickupStep({ street, city, pincode, onStreet, onCity, onPincode, onNext
   };
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-black text-[#063D20]">{t('order.step.pickup')}</h2>
+    <div className="space-y-3.5">
+      <h2 className="text-xl sm:text-2xl font-black text-[#063D20]">{t('order.step.pickup')}</h2>
 
-      <div className="bg-[#063D20]/5 border border-[#063D20]/20 rounded-xl p-3 text-sm text-[#063D20]">
+      {product && (
+        <div className="flex items-center justify-between px-3.5 py-2.5 bg-[#FFF4DD] border border-[#582A00]/15 rounded-xl text-xs sm:text-sm">
+          <span className="font-semibold text-[#582A00]">
+            Selected Pack: <strong className="text-[#C42F2C]">{product.weight}</strong>
+          </span>
+          <span className="font-black text-[#582A00]">₹{product.price}</span>
+        </div>
+      )}
+
+      <div className="bg-[#063D20]/5 border border-[#063D20]/20 rounded-xl p-2.5 text-xs sm:text-sm text-[#063D20]">
         📍 {t('order.pickup.info')}
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-[#3A1C10] mb-1.5">{t('order.street.label')} *</label>
+        <label className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">{t('order.street.label')} *</label>
         <input
           type="text"
           value={street}
           onChange={(e) => { onStreet(e.target.value); setErrors((prev) => ({ ...prev, street: '' })); }}
           placeholder={t('order.street.placeholder')}
-          className="w-full px-4 py-3 rounded-xl border-2 border-[#063D20]/20 focus:border-[#063D20] outline-none text-base transition-colors"
+          className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#063D20]/20 focus:border-[#063D20] outline-none text-sm sm:text-base transition-colors"
         />
-        {errors.street && <p className="text-[#E95012] text-sm mt-1">{errors.street}</p>}
+        {errors.street && <p className="text-[#E95012] text-xs sm:text-sm mt-1">{errors.street}</p>}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-semibold text-[#3A1C10] mb-1.5">{t('order.city.label')} *</label>
+          <label className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">{t('order.city.label')} *</label>
           <input
             type="text"
             value={city}
             onChange={(e) => { onCity(e.target.value); setErrors((prev) => ({ ...prev, city: '' })); }}
-            className="w-full px-4 py-3 rounded-xl border-2 border-[#063D20]/20 focus:border-[#063D20] outline-none text-base transition-colors"
+            className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#063D20]/20 focus:border-[#063D20] outline-none text-sm sm:text-base transition-colors"
           />
-          {errors.city && <p className="text-[#E95012] text-sm mt-1">{errors.city}</p>}
+          {errors.city && <p className="text-[#E95012] text-xs sm:text-sm mt-1">{errors.city}</p>}
         </div>
         <div>
-          <label className="block text-sm font-semibold text-[#3A1C10] mb-1.5">{t('order.pincode.label')}</label>
+          <label className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">{t('order.pincode.label')}</label>
           <input
             type="text"
             inputMode="numeric"
             value={pincode}
             onChange={(e) => onPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-            className="w-full px-4 py-3 rounded-xl border-2 border-[#063D20]/20 focus:border-[#063D20] outline-none text-base transition-colors"
+            className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#063D20]/20 focus:border-[#063D20] outline-none text-sm sm:text-base transition-colors"
           />
         </div>
       </div>
 
-      <div className="bg-[#D97706]/10 border border-[#D97706]/30 rounded-xl p-3 text-sm text-[#7a4800]">
+      <div className="bg-[#D97706]/10 border border-[#D97706]/30 rounded-xl p-2.5 text-xs sm:text-sm text-[#7a4800]">
         Home delivery is currently available only within Villupuram City limits. Customers from other locations can place orders online and pick them up from our store at Villupuram Railway Station, 1st Platform.
       </div>
 
       <div className="flex gap-2 pt-2">
-        <button onClick={onBack} className="flex-1 py-4 border-2 border-[#063D20] text-[#063D20] rounded-xl font-bold hover:bg-[#063D20] hover:text-[#FFF4DD] transition-colors">
+        <button onClick={onBack} className="flex-1 py-2.5 sm:py-3 border-2 border-[#063D20] text-[#063D20] rounded-xl font-bold text-sm sm:text-base hover:bg-[#063D20] hover:text-[#FFF4DD] transition-colors">
           {t('order.back')}
         </button>
-        <button onClick={submit} className="flex-[2] py-4 bg-[#063D20] text-[#FFF4DD] rounded-xl font-bold text-lg hover:bg-[#0A512B] transition-colors">
+        <button onClick={submit} className="flex-[2] py-2.5 sm:py-3 bg-[#063D20] text-[#FFF4DD] rounded-xl font-bold text-sm sm:text-base hover:bg-[#0A512B] transition-colors">
           {t('order.next')} →
         </button>
       </div>
@@ -457,10 +405,11 @@ function PaymentStep({ orderState, onBack, onSuccess }: {
   useEffect(() => {
     const create = async () => {
       try {
+        const prodId = orderState.selectedProduct?.id || '500gm';
         const result = await api.createOrder({
           customerName: orderState.name,
           phone: orderState.phone.replace(/\D/g, ''),
-          productId: orderState.selectedProduct!.id,
+          productId: prodId,
           otpSessionId: orderState.otpSessionId,
           streetAddress: orderState.street,
           city: orderState.city,
@@ -604,7 +553,7 @@ function PaymentStep({ orderState, onBack, onSuccess }: {
           <button
             onClick={handlePaid}
             disabled={submitting}
-            className="w-full py-5 bg-[#25D366] text-white rounded-2xl font-black text-xl hover:bg-[#20bb5a] transition-all disabled:opacity-50 shadow-xl"
+            className="w-full py-3.5 sm:py-4 bg-[#25D366] text-white rounded-xl font-bold text-base sm:text-lg hover:bg-[#20bb5a] transition-all disabled:opacity-50 shadow-lg"
           >
             {submitting ? t('common.loading') : `✅ ${t('order.payment.paid')}`}
           </button>
@@ -640,14 +589,36 @@ function OrderPageContent() {
   });
 
   useEffect(() => {
-    api.getProducts().then((prods) => {
+    const fallbackList: Product[] = [
+      { id: '250gm', weight: '250gm', weightGrams: 250, price: 150, inStock: true },
+      { id: '500gm', weight: '500gm', weightGrams: 500, price: 300, inStock: true },
+      { id: '750gm', weight: '750gm', weightGrams: 750, price: 450, inStock: true },
+      { id: '1kg',   weight: '1kg',   weightGrams: 1000, price: 600, inStock: true },
+    ];
+
+    const matchProduct = (list: Product[], query: string | null) => {
+      if (!query) return null;
+      const clean = query.trim().toLowerCase().replace(/\s+/g, '');
+      return list.find((p) => p.id === query || p.weight.toLowerCase().replace(/\s+/g, '') === clean) || null;
+    };
+
+    api.getProducts().then((data) => {
+      const prods = (data && data.length > 0) ? data : fallbackList;
       setProducts(prods);
       const preselect = searchParams.get('product');
-      if (preselect) {
-        const found = prods.find((p) => p.id === preselect);
-        if (found && found.inStock) setState((s) => ({ ...s, selectedProduct: found }));
+      const matched = matchProduct(prods, preselect);
+      if (matched && matched.inStock) {
+        setState((s) => ({ ...s, selectedProduct: matched }));
+      } else {
+        const defaultProd = prods.find((p) => p.inStock) || prods[0];
+        if (defaultProd) setState((s) => ({ ...s, selectedProduct: defaultProd }));
       }
-    }).catch(() => {});
+    }).catch(() => {
+      setProducts(fallbackList);
+      const preselect = searchParams.get('product');
+      const matched = matchProduct(fallbackList, preselect);
+      setState((s) => ({ ...s, selectedProduct: matched || fallbackList[1] }));
+    });
   }, [searchParams]);
 
   const update = (key: keyof OrderState, value: unknown) =>
@@ -665,12 +636,12 @@ function OrderPageContent() {
   return (
     <div className="min-h-screen bg-[#FFF4DD] pt-16">
       <Header />
-      <main className="py-8 px-4">
-        <div className="max-w-lg mx-auto">
+      <main className="py-6 px-4">
+        <div className="max-w-md mx-auto">
           {/* Page title */}
-          <div className="text-center mb-6">
-            <h1 className="text-3xl font-black text-[#063D20]">{t('order.title')}</h1>
-            <p className="text-[#3A1C10]/60 text-sm mt-1">
+          <div className="text-center mb-5">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#063D20]">{t('order.title')}</h1>
+            <p className="text-[#3A1C10]/60 text-xs sm:text-sm mt-1">
               Home delivery within Villupuram City · Pickup at Villupuram Railway Station
             </p>
           </div>
@@ -678,7 +649,7 @@ function OrderPageContent() {
           <StepIndicator current={step} steps={STEPS} />
 
           {/* Card */}
-          <div className="bg-white rounded-3xl shadow-xl p-6 md:p-8 overflow-hidden">
+          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-lg p-4 sm:p-6 overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.div
                 key={step}
@@ -707,16 +678,8 @@ function OrderPageContent() {
                   />
                 )}
                 {step === 2 && (
-                  <QuantityStep
-                    products={products}
-                    selected={state.selectedProduct}
-                    onSelect={(p) => update('selectedProduct', p)}
-                    onNext={nextStep}
-                    onBack={prevStep}
-                  />
-                )}
-                {step === 3 && (
                   <PickupStep
+                    product={state.selectedProduct}
                     street={state.street}
                     city={state.city}
                     pincode={state.pincode}
@@ -727,7 +690,7 @@ function OrderPageContent() {
                     onBack={prevStep}
                   />
                 )}
-                {step === 4 && (
+                {step === 3 && (
                   <PaymentStep
                     orderState={state}
                     onBack={prevStep}
