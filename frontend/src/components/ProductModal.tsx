@@ -113,13 +113,13 @@ export default function ProductModal() {
 
       {/* ── Panel ── */}
       <div
-        className="fixed inset-0 z-[9001] flex items-end md:items-center justify-center p-0 md:p-6"
+        className="fixed inset-0 z-[9001] flex items-center justify-center p-4 md:p-6"
         role="dialog"
         aria-modal="true"
         aria-label={label?.en || 'Product details'}
       >
         <div
-          className="relative bg-white w-full rounded-t-3xl md:rounded-3xl shadow-2xl max-h-[94vh] md:max-h-[92vh] overflow-y-auto"
+          className="relative bg-white w-full rounded-3xl shadow-2xl max-h-[90vh] overflow-y-auto"
           style={{ maxWidth: 760 }}
           onClick={(e) => e.stopPropagation()}
         >

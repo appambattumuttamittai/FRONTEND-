@@ -184,15 +184,16 @@ export default function Footer() {
 
             {/* Contact — full width on mobile, 1 col on desktop */}
             <div className="col-span-2 md:col-span-1">
-              <h3 className="font-black text-[11px] tracking-widest uppercase mb-4" style={{ color: '#582A00' }}>
-                Contact
-              </h3>
-              <div className="flex flex-col gap-3">
+              {/* Mobile: heading + number on same line. Desktop: stacked */}
+              <div className="flex items-center gap-4 md:block">
+                <h3 className="font-black text-[11px] tracking-widest uppercase md:mb-4 shrink-0" style={{ color: '#582A00' }}>
+                  Contact
+                </h3>
                 <a
                   href={waLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm font-bold transition-colors hover:text-[#C42F2C]"
+                  className="text-sm font-bold transition-colors hover:text-[#C42F2C] md:mt-0 md:block"
                   style={{ color: 'rgba(88,42,0,0.8)' }}
                 >
                   +91 78719 49015
