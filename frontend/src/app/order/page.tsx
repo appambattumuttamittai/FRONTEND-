@@ -386,8 +386,8 @@ function PickupStep({ street, city, pincode, onStreet, onCity, onPincode, onNext
         </div>
       </div>
 
-      <div className="bg-[#E95012]/10 border border-[#E95012]/30 rounded-xl p-3 text-sm">
-        🚫 No delivery — Pickup only from Meenambur, Appambattu, Villupuram
+      <div className="bg-[#D97706]/10 border border-[#D97706]/30 rounded-xl p-3 text-sm text-[#7a4800]">
+        Home delivery is currently available only within Villupuram City limits. Customers from other locations can place orders online and pick them up from our store at Villupuram Railway Station, 1st Platform.
       </div>
 
       <div className="flex gap-2 pt-2">
@@ -635,7 +635,7 @@ function OrderPageContent() {
           <div className="text-center mb-6">
             <h1 className="text-3xl font-black text-[#063D20]">{t('order.title')}</h1>
             <p className="text-[#3A1C10]/60 text-sm mt-1">
-              📍 Pickup from Meenambur, Villupuram only
+              Home delivery within Villupuram City · Pickup at Villupuram Railway Station
             </p>
           </div>
 

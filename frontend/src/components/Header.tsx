@@ -30,11 +30,11 @@ function PromoBanner() {
 
   return (
     <div
-      className="promo-bar py-2.5 overflow-hidden"
+      className="promo-bar py-1 md:py-2.5 overflow-hidden"
       aria-label="Promotional announcements"
       aria-live="polite"
     >
-      <div className="flex items-center justify-center gap-3 text-white text-xs font-semibold tracking-wide">
+      <div className="flex items-center justify-center gap-3 text-white text-[11px] md:text-xs font-semibold tracking-wide">
         {/* Left dots */}
         <span className="hidden sm:flex gap-1">
           {promoMessages.map((_, i) => (
@@ -60,7 +60,7 @@ function PromoBanner() {
             opacity: visible ? 1 : 0,
             transform: visible ? 'translateY(0)' : 'translateY(6px)',
             transition: 'opacity 0.35s ease, transform 0.35s ease',
-            minWidth: 220,
+            minWidth: 160,
             textAlign: 'center',
           }}
         >
@@ -249,32 +249,6 @@ export default function Header() {
             </a>
           </div>
         )}
-      </nav>
-
-      {/* ── Mobile bottom nav ── */}
-      <nav className="fixed bottom-0 inset-x-0 z-50 bg-white border-t border-[#C42F2C]/15 md:hidden" aria-label="Mobile bottom navigation">
-        <div className="flex items-center justify-around h-16">
-          <Link href="/" className="flex flex-col items-center gap-1 text-[#582A00]">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
-            <span className="text-[10px] font-semibold">Home</span>
-          </Link>
-          <Link href="/order" className="flex flex-col items-center gap-1">
-            <div className="w-10 h-10 rounded-full bg-[#C42F2C] flex items-center justify-center shadow-lg -mt-4">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-            </div>
-            <span className="text-[10px] font-semibold text-[#C42F2C]">Order</span>
-          </Link>
-          <a href={waLink} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1 text-[#25D366]" aria-label="WhatsApp">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.126.554 4.126 1.523 5.862L0 24l6.344-1.493A11.948 11.948 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.87 0-3.63-.48-5.17-1.33l-.37-.21-3.77.89.9-3.68-.23-.38A9.952 9.952 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
-            </svg>
-            <span className="text-[10px] font-semibold">WhatsApp</span>
-          </a>
-        </div>
       </nav>
       <CartDrawer open={cartDrawerOpen} onClose={() => setCartDrawerOpen(false)} />
     </>

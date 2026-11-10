@@ -58,7 +58,7 @@ export default function Footer() {
       ═══════════════════════════════════════════════ */}
       <div
         style={{ background: '#FFFFFF', borderTop: '1px solid rgba(88,42,0,0.08)' }}
-        className="py-16 px-4 text-center"
+        className="hidden md:block py-16 px-4 text-center"
       >
         <p
           className="font-black leading-tight mx-auto mb-8"
@@ -127,10 +127,10 @@ export default function Footer() {
           </div>
 
           {/* Columns grid  — mirrors Pension.de's multi-column layout */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pb-10" style={{ borderBottom: '1px solid rgba(88,42,0,0.08)' }}>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10" style={{ borderBottom: '1px solid rgba(88,42,0,0.08)' }}>
 
             {/* Brand blurb — col 1 (wider) */}
-            <div className="col-span-2 md:col-span-1">
+            <div className="md:col-span-1">
               {/* Giant stacked brand name à la Elevate */}
               <h2
                 className="font-black leading-none mb-4"

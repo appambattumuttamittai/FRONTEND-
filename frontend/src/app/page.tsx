@@ -14,7 +14,7 @@ export default function HomePage() {
       <LogoIntro />
       <LocalBusinessSchema />
       <Header />
-      <main className="mobile-nav-spacer">
+      <main>
         <HeroSlider />
         <ProductsSection />
         <FeedbackSection />

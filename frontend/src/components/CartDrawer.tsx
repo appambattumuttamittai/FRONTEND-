@@ -160,28 +160,55 @@ export default function CartDrawer({ open, onClose }: Props) {
                   background: '#FFFFFF',
                   border: '1px solid rgba(196,47,44,0.12)',
                   borderRadius: 16,
-                  padding: '14px 16px',
+                  padding: '12px 14px',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: 8,
+                  gap: 10,
                 }}
               >
-                {/* Top row: label + remove */}
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
-                  <div>
-                    <p style={{ fontWeight: 800, fontSize: 14, color: '#582A00', margin: 0 }}>
+                {/* Top row: image + label + remove */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  {/* Product thumbnail */}
+                  <div
+                    style={{
+                      width: 70,
+                      height: 70,
+                      borderRadius: 12,
+                      overflow: 'hidden',
+                      flexShrink: 0,
+                      border: '1.5px solid rgba(196,47,44,0.12)',
+                      background: '#F5F5F5',
+                    }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/images/product-main.jpg"
+                      alt={item.weightLabel}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    />
+                  </div>
+
+                  {/* Name + brand */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontWeight: 800, fontSize: 14, color: '#582A00', margin: 0, lineHeight: 1.3 }}>
                       {item.weightLabel}
                     </p>
-                    <p style={{ fontSize: 11, color: 'rgba(88,42,0,0.45)', margin: 0, marginTop: 2 }}>
+                    <p style={{ fontSize: 11, color: 'rgba(88,42,0,0.45)', margin: 0, marginTop: 3 }}>
                       Appambattu Mutta Mittai
                     </p>
+                    {/* Unit price shown under name */}
+                    <p style={{ fontSize: 12, color: '#C42F2C', margin: 0, marginTop: 4, fontWeight: 700 }}>
+                      &#x20B9;{item.price} / piece
+                    </p>
                   </div>
+
+                  {/* Remove button */}
                   <button
                     onClick={() => removeItem(item.id)}
                     aria-label={`Remove ${item.weightLabel} from cart`}
                     style={{
-                      width: 28,
-                      height: 28,
+                      width: 30,
+                      height: 30,
                       borderRadius: '50%',
                       border: 'none',
                       background: 'rgba(196,47,44,0.08)',
@@ -191,6 +218,7 @@ export default function CartDrawer({ open, onClose }: Props) {
                       justifyContent: 'center',
                       color: '#C42F2C',
                       flexShrink: 0,
+                      alignSelf: 'flex-start',
                       transition: 'background 0.2s',
                     }}
                   >
@@ -200,34 +228,29 @@ export default function CartDrawer({ open, onClose }: Props) {
                   </button>
                 </div>
 
-                {/* Bottom row: qty × price = total */}
+                {/* Bottom row: qty badge + item total */}
                 <div
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    paddingTop: 8,
+                    paddingTop: 10,
                     borderTop: '1px solid rgba(196,47,44,0.07)',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span
-                      style={{
-                        background: 'rgba(88,42,0,0.06)',
-                        borderRadius: 8,
-                        padding: '3px 10px',
-                        fontSize: 13,
-                        fontWeight: 700,
-                        color: '#582A00',
-                      }}
-                    >
-                      x{item.quantity}
-                    </span>
-                    <span style={{ fontSize: 12, color: 'rgba(88,42,0,0.5)' }}>
-                      &#x20B9;{item.price} each
-                    </span>
-                  </div>
-                  <span style={{ fontWeight: 900, fontSize: 16, color: '#C42F2C' }}>
+                  <span
+                    style={{
+                      background: 'rgba(88,42,0,0.06)',
+                      borderRadius: 8,
+                      padding: '4px 12px',
+                      fontSize: 13,
+                      fontWeight: 700,
+                      color: '#582A00',
+                    }}
+                  >
+                    Qty: {item.quantity}
+                  </span>
+                  <span style={{ fontWeight: 900, fontSize: 17, color: '#C42F2C' }}>
                     &#x20B9;{item.price * item.quantity}
                   </span>
                 </div>
@@ -263,6 +286,21 @@ export default function CartDrawer({ open, onClose }: Props) {
               <span style={{ fontWeight: 900, fontSize: 20, color: '#C42F2C' }}>
                 &#x20B9;{grandTotal}
               </span>
+            </div>
+
+            {/* Delivery note */}
+            <div
+              style={{
+                background: 'rgba(217,119,6,0.07)',
+                border: '1px solid rgba(217,119,6,0.22)',
+                borderRadius: 12,
+                padding: '10px 14px',
+                fontSize: 12,
+                color: '#7a4800',
+                lineHeight: 1.5,
+              }}
+            >
+              <span style={{ fontWeight: 700 }}>Delivery info:</span> Home delivery is available only within Villupuram City limits. For other locations, please pick up from our store at Villupuram Railway Station, 1st Platform.
             </div>
 
             {/* Place Order */}

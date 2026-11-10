@@ -8,7 +8,7 @@ export default function WhatsAppCTA() {
       href={waLink}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-20 right-5 md:bottom-8 md:right-8 z-40 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl wp-pulse"
+      className="fixed bottom-6 right-5 md:bottom-8 md:right-8 z-40 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl wp-pulse"
       style={{ background: '#25D366' }}
       aria-label="Chat on WhatsApp"
     >

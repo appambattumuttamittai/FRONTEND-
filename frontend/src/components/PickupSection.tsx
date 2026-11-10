@@ -73,7 +73,7 @@ function ImageSlider() {
 
 export default function PickupSection() {
   return (
-    <section className="py-20" style={{ background: '#FFFFFF' }} aria-labelledby="pickup-heading">
+    <section className="py-10 md:py-20" style={{ background: '#FFFFFF' }} aria-labelledby="pickup-heading">
       <div className="container mx-auto px-4 max-w-6xl">
 
         {/* Tagline banner */}
@@ -157,7 +157,7 @@ export default function PickupSection() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" />
               </svg>
-              Home delivery available within Villupuram only. For other locations, please use pickup at Villupuram Railway Station.
+              Home delivery is currently available only within Villupuram City limits. Customers from other locations can place orders online and pick them up from our store at Villupuram Railway Station, 1st Platform.
             </div>
 
             <div className="flex flex-wrap gap-3">

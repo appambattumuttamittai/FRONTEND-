@@ -50,17 +50,7 @@ export default function HeroSlider() {
       <div className="relative z-10 h-full flex items-center">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="max-w-xl">
-            {/* Badge */}
-            <div
-              className="inline-block px-4 py-1.5 rounded-full text-xs font-black tracking-widest uppercase mb-5"
-              style={{
-                background: 'rgba(245,181,27,0.22)',
-                border: '1px solid rgba(245,181,27,0.5)',
-                color: '#F5B51B',
-              }}
-            >
-              Traditional Tamil Recipe
-            </div>
+            {/* Badge removed per user request */}
 
             {/* Tamil title */}
             <h1
