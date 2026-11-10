@@ -14,7 +14,7 @@ export default function HeroSlider() {
   return (
     <section
       className="relative overflow-hidden bg-[#582A00]"
-      style={{ height: 'clamp(560px, 80vh, 760px)' }}
+      style={{ height: '100vh', minHeight: 560 }}
       aria-label="Welcome to Appambattu Mutta Mittai"
     >
       {/* Background video — muted, autoplay, loop */}

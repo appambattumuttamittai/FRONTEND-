@@ -109,7 +109,7 @@ export default function Header() {
 
       {/* ── Single sticky navbar ── */}
       <nav
-        className="sticky top-0 z-50 bg-white/96 backdrop-blur md:border-b border-[#C42F2C]/10 mx-2 mt-2 rounded-full shadow-lg md:mx-0 md:mt-0 md:rounded-none md:shadow-none"
+        className="sticky top-0 z-50 bg-white/96 backdrop-blur mx-2 mt-2 rounded-full shadow-lg"
         aria-label="Main navigation"
       >
         <div className="container mx-auto px-4 max-w-6xl flex items-center justify-between h-16">
