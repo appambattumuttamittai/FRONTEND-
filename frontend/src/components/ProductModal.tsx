@@ -126,24 +126,24 @@ export default function ProductModal() {
           {/* Close */}
           <button
             onClick={closeModal}
-            className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full flex items-center justify-center transition-colors hover:bg-gray-100"
-            style={{ color: '#582A00' }}
+            className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg"
+            style={{ background: '#C42F2C', color: '#FFFFFF', boxShadow: '0 4px 14px rgba(196,47,44,0.45)' }}
             aria-label="Close product detail"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
 
-          <div className="flex flex-col md:flex-row">
+          <div className="flex flex-col md:flex-row md:min-h-[420px] md:items-stretch">
 
             {/* ── Left: image gallery ── */}
-            <div className="md:w-5/12 flex flex-col rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none overflow-hidden" style={{ background: '#F5F5F5' }}>
+            <div className="md:w-5/12 flex flex-col md:h-full rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none overflow-hidden" style={{ background: '#F5F5F5' }}>
 
-              {/* Main image with zoom */}
+              {/* Main image with zoom — fixed height on mobile, flex-1 on desktop */}
               <div
-                className="relative overflow-hidden"
-                style={{ height: 180, cursor: zoomed ? 'zoom-out' : 'zoom-in', flexShrink: 0 }}
+                className="relative overflow-hidden flex-shrink-0 md:flex-1"
+                style={{ height: 180, cursor: zoomed ? 'zoom-out' : 'zoom-in' }}
                 onClick={() => setZoomed((z) => !z)}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}

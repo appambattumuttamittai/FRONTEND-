@@ -225,12 +225,6 @@ export default function FeedbackSection() {
           z-index: 0;
           background: #1a0a00;
         }
-        @media (max-width: 639px) {
-          #reviews-video {
-            object-fit: contain;
-            background: #1a0a00;
-          }
-        }
       `}</style>
 
       {/* ── Background video ─────────────────────────────── */}
@@ -247,13 +241,23 @@ export default function FeedbackSection() {
         <source src="/videos/hero-bg.mp4" type="video/mp4" />
       </video>
 
-      {/* Dark overlay */}
+      {/* Dark overlay — lighter on mobile so video is clearly visible */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 hidden md:block"
         style={{
           zIndex: 1,
           background:
             'linear-gradient(to bottom, rgba(42,16,0,0.68) 0%, rgba(42,16,0,0.48) 50%, rgba(42,16,0,0.75) 100%)',
+        }}
+        aria-hidden="true"
+      />
+      {/* Mobile overlay — much lighter */}
+      <div
+        className="absolute inset-0 md:hidden"
+        style={{
+          zIndex: 1,
+          background:
+            'linear-gradient(to bottom, rgba(42,16,0,0.30) 0%, rgba(42,16,0,0.20) 50%, rgba(42,16,0,0.38) 100%)',
         }}
         aria-hidden="true"
       />
