@@ -105,13 +105,16 @@ export default function Header() {
 
       {/* ── Single sticky navbar ── */}
       <nav
-        className="sticky top-0 z-50 bg-[#FFF8F0]/96 backdrop-blur border-b border-[#C42F2C]/10"
+        className="sticky top-0 z-50 bg-white/96 backdrop-blur border-b border-[#C42F2C]/10"
         aria-label="Main navigation"
       >
         <div className="container mx-auto px-4 max-w-6xl flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5" aria-label="Appambattu Mutta Mittai - Home">
-            <div className="w-10 h-10 rounded-full overflow-hidden shadow shrink-0 border-2 border-[#C42F2C]/20">
+            <div
+              id="header-logo-img"
+              className="w-10 h-10 rounded-full overflow-hidden shadow shrink-0 border-2 border-[#C42F2C]/20"
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/images/logo.jpg"
@@ -184,7 +187,7 @@ export default function Header() {
 
         {/* Mobile dropdown menu */}
         {menuOpen && (
-          <div className="md:hidden border-t border-[#C42F2C]/10 bg-[#FFF8F0] px-4 py-4 flex flex-col gap-2">
+          <div className="md:hidden border-t border-[#C42F2C]/10 bg-white px-4 py-4 flex flex-col gap-2">
             {navLinks.map((link) => (
               <Link
                 key={link.label}

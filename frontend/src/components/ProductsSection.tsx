@@ -12,10 +12,10 @@ const weightLabels: Record<string, { en: string; ta: string }> = {
 };
 
 const productImages = [
-  '/images/product-p1.png',
-  '/images/product-p2.png',
-  '/images/product-p3.jpg',
-  '/images/product-p4.jpg',
+  '/images/product-main.jpg',
+  '/images/product-main.jpg',
+  '/images/product-main.jpg',
+  '/images/product-main.jpg',
 ];
 
 function StarRating() {
@@ -43,7 +43,7 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
       onMouseLeave={() => setHovered(false)}
     >
       {/* Image */}
-      <div className="relative aspect-square overflow-hidden bg-[#FFF8F0]">
+      <div className="relative aspect-square overflow-hidden bg-white">
         <Image
           src={imgSrc}
           alt={`Appambattu Mutta Mittai ${product.weight}`}
@@ -135,7 +135,7 @@ export default function ProductsSection() {
   }, []);
 
   return (
-    <section id="products" className="py-20" style={{ background: '#FFF8F0' }} aria-labelledby="products-heading">
+    <section id="products" className="py-20" style={{ background: '#FFFFFF' }} aria-labelledby="products-heading">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
         <div className="text-center mb-14">

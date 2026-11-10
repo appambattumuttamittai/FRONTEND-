@@ -11,11 +11,17 @@ export const metadata: Metadata = {
   description:
     'Appambattu Mutta Mittai – authentic traditional egg sweet from Meenambur, Villupuram, Tamil Nadu. Made with milk, egg, cashew nut paste and sugar. Pickup only.',
   keywords: ['mutta mittai', 'egg sweet', 'tamil sweet', 'villupuram', 'appambattu', 'traditional sweet'],
+  icons: {
+    icon: '/images/logo.jpg',
+    apple: '/images/logo.jpg',
+    shortcut: '/images/logo.jpg',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_IN',
     url: 'https://appambattumuttamittai.com',
     siteName: 'Appambattu Mutta Mittai',
+    images: [{ url: '/images/logo.jpg', width: 512, height: 512, alt: 'Appambattu Egg Sweet Logo' }],
   },
 };
 

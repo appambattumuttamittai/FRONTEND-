@@ -11,7 +11,7 @@ const galleryImages = [
 
 export default function GallerySection() {
   return (
-    <section className="py-20" style={{ background: '#FFF8F0' }} aria-labelledby="gallery-heading">
+    <section className="py-20" style={{ background: '#FFFFFF' }} aria-labelledby="gallery-heading">
       {/* Story banner with background image */}
       <div className="relative overflow-hidden mb-16" style={{ minHeight: 320 }}>
         <Image

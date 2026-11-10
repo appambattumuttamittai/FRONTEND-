@@ -73,7 +73,7 @@ function ImageSlider() {
 
 export default function PickupSection() {
   return (
-    <section className="py-20" style={{ background: '#FFF8F0' }} aria-labelledby="pickup-heading">
+    <section className="py-20" style={{ background: '#FFFFFF' }} aria-labelledby="pickup-heading">
       <div className="container mx-auto px-4 max-w-6xl">
 
         {/* Tagline banner */}
