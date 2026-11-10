@@ -215,51 +215,6 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ═══════════════════════════════════════════════
-          BOTTOM — full-bleed lifestyle image  (Pension.de-style landscape)
-          Bleeds edge-to-edge, no border-radius clipping on bottom
-      ═══════════════════════════════════════════════ */}
-      <div
-        className="relative overflow-hidden w-full"
-        style={{ height: 'clamp(220px, 32vw, 420px)' }}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/images/lifestyle-family.jpg"
-          alt="Family sharing Appambattu Mutta Mittai"
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: 'center 25%',
-            display: 'block',
-          }}
-        />
-        {/* Top-to-transparent gradient — blends image into white panel above */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'linear-gradient(to bottom, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0) 28%, rgba(0,0,0,0) 65%, rgba(42,16,0,0.55) 100%)',
-          }}
-        />
-        {/* Tagline at bottom of image */}
-        <div className="absolute bottom-0 left-0 right-0 pb-6 flex justify-center">
-          <p
-            className="font-black italic text-center px-4"
-            style={{
-              color: 'rgba(255,255,255,0.93)',
-              fontSize: 'clamp(0.9rem, 2.2vw, 1.4rem)',
-              textShadow: '0 2px 12px rgba(0,0,0,0.55)',
-              maxWidth: 580,
-              fontFamily: "'Exo 2', sans-serif",
-            }}
-          >
-            &ldquo;A timeless sweetness from Appambattu that melts in the mouth of all three generations&rdquo;
-          </p>
-        </div>
-      </div>
-
     </footer>
   );
 }
