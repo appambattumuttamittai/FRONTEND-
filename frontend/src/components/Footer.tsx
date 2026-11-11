@@ -225,9 +225,28 @@ export default function Footer() {
           </div>
 
           {/* Copyright row */}
-          <div className="flex flex-col md:flex-row justify-between items-center pt-4 pb-1 gap-1 text-xs" style={{ color: 'rgba(88,42,0,0.35)' }}>
+          <div className="flex flex-col md:flex-row justify-between items-center pt-4 pb-1 gap-2 text-xs" style={{ color: 'rgba(88,42,0,0.55)' }}>
             <p>&copy; {year} APPAMPATTU Mutta Mittai. All rights reserved.</p>
-            <p>Made with care in Villupuram, Tamil Nadu</p>
+            <p className="flex items-center gap-1.5 flex-wrap justify-center">
+              <span>Website Crafted By</span>
+              <a
+                href="https://www.linkedin.com/in/ajaisivakumar"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-bold underline hover:text-[#C42F2C] transition-colors"
+                style={{ color: '#582A00' }}
+              >
+                Ajai
+              </a>
+              <span>·</span>
+              <a
+                href="tel:6385437930"
+                className="font-semibold hover:text-[#C42F2C] transition-colors"
+                style={{ color: '#582A00' }}
+              >
+                +91 63854 37930
+              </a>
+            </p>
           </div>
 
         </div>

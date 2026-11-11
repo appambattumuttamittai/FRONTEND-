@@ -438,9 +438,9 @@ function OrderModal({ order, onClose, onRefresh }: { order: AdminOrder; onClose:
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-3">
-            <div><span className="text-gray-400 text-xs font-semibold uppercase">City</span><p className="font-medium text-gray-700">{order.city || 'Villupuram'}</p></div>
-            <div><span className="text-gray-400 text-xs font-semibold uppercase">Pincode</span><p className="font-medium text-gray-700">{order.pincode || '-'}</p></div>
+          <div>
+            <span className="text-gray-400 text-xs font-semibold uppercase">City</span>
+            <p className="font-medium text-gray-700">{order.city || 'Villupuram'}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-200 text-xs">

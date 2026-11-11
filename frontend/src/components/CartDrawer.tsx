@@ -1,6 +1,8 @@
 'use client';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useApp } from '@/context/AppContext';
+import { getSavedOrders, SavedOrder } from '@/lib/ordersStorage';
 
 interface Props {
   open: boolean;
@@ -9,6 +11,18 @@ interface Props {
 
 export default function CartDrawer({ open, onClose }: Props) {
   const { cart, cartCount, removeItem } = useApp();
+  const [latestOrder, setLatestOrder] = useState<SavedOrder | null>(null);
+
+  useEffect(() => {
+    if (open) {
+      const orders = getSavedOrders();
+      if (orders && orders.length > 0) {
+        setLatestOrder(orders[0]);
+      } else {
+        setLatestOrder(null);
+      }
+    }
+  }, [open]);
 
   const grandTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -118,39 +132,155 @@ export default function CartDrawer({ open, onClose }: Props) {
         {/* Body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
           {cart.length === 0 ? (
-            /* ── Empty state ── */
-            <div
-              style={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 16,
-                padding: '60px 0',
-              }}
-            >
-              <svg
-                style={{ width: 64, height: 64, color: 'rgba(88,42,0,0.18)' }}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
+            latestOrder ? (
+              /* ── Order completed state ── */
+              <div
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 16,
+                  padding: '30px 10px',
+                }}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                />
-              </svg>
-              <p style={{ color: 'rgba(88,42,0,0.45)', fontWeight: 700, fontSize: 15 }}>
-                Your cart is empty
-              </p>
-              <p style={{ color: 'rgba(88,42,0,0.3)', fontSize: 13, textAlign: 'center', maxWidth: 220 }}>
-                Add some Mutta Mittai to get started
-              </p>
-            </div>
+                <div
+                  style={{
+                    background: '#ECFDF5',
+                    border: '1.5px solid #A7F3D0',
+                    borderRadius: 20,
+                    padding: '24px 20px',
+                    width: '100%',
+                    textAlign: 'center',
+                    boxShadow: '0 4px 16px rgba(5,150,105,0.08)',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: '50%',
+                      background: '#059669',
+                      color: '#ffffff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: '0 auto 12px',
+                      boxShadow: '0 4px 12px rgba(5,150,105,0.25)',
+                    }}
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3}>
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </div>
+                  <div style={{ fontWeight: 800, fontSize: 16, color: '#065F46' }}>
+                    Order Completed
+                  </div>
+                  <div style={{ fontSize: 12, color: '#047857', marginTop: 4, fontWeight: 500 }}>
+                    Order #{latestOrder.id.slice(-8).toUpperCase()} has been confirmed &amp; paid.
+                  </div>
+
+                  <div
+                    style={{
+                      marginTop: 14,
+                      paddingTop: 12,
+                      borderTop: '1px solid #D1FAE5',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      fontSize: 12,
+                    }}
+                  >
+                    <span style={{ color: '#065F46', fontWeight: 600 }}>Amount Paid</span>
+                    <span style={{ color: '#065F46', fontWeight: 800, fontSize: 15 }}>₹{latestOrder.totalAmount}</span>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      onClose();
+                      window.dispatchEvent(new CustomEvent('mm_open_my_orders'));
+                    }}
+                    style={{
+                      marginTop: 16,
+                      width: '100%',
+                      background: '#059669',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: 12,
+                      padding: '11px 16px',
+                      fontSize: 13,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6,
+                      boxShadow: '0 2px 8px rgba(5,150,105,0.2)',
+                    }}
+                  >
+                    <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    View in My Orders
+                  </button>
+                </div>
+
+                <div style={{ textAlign: 'center', marginTop: 8 }}>
+                  <p style={{ color: 'rgba(88,42,0,0.5)', fontWeight: 600, fontSize: 13 }}>
+                    Cart ready for next order
+                  </p>
+                  <Link
+                    href="/#products"
+                    onClick={onClose}
+                    style={{
+                      display: 'inline-block',
+                      marginTop: 6,
+                      color: '#C42F2C',
+                      fontSize: 13,
+                      fontWeight: 700,
+                      textDecoration: 'underline',
+                    }}
+                  >
+                    Browse Fresh Packs
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              /* ── Default empty state ── */
+              <div
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 16,
+                  padding: '60px 0',
+                }}
+              >
+                <svg
+                  style={{ width: 64, height: 64, color: 'rgba(88,42,0,0.18)' }}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                  />
+                </svg>
+                <p style={{ color: 'rgba(88,42,0,0.45)', fontWeight: 700, fontSize: 15 }}>
+                  Your cart is empty
+                </p>
+                <p style={{ color: 'rgba(88,42,0,0.3)', fontSize: 13, textAlign: 'center', maxWidth: 220 }}>
+                  Add some Mutta Mittai to get started
+                </p>
+              </div>
+            )
           ) : (
             /* ── Cart items ── */
             cart.map((item) => (

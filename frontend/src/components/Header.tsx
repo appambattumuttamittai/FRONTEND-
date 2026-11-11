@@ -97,6 +97,12 @@ export default function Header() {
   const [orderedItemsOpen, setOrderedItemsOpen] = useState(false);
   const { cartCount } = useApp();
 
+  useEffect(() => {
+    const openOrdersHandler = () => setOrderedItemsOpen(true);
+    window.addEventListener('mm_open_my_orders', openOrdersHandler);
+    return () => window.removeEventListener('mm_open_my_orders', openOrdersHandler);
+  }, []);
+
   const navLinks = [
     { label: 'Home', href: '/' },
     { label: 'Order Now', href: '/#products' },

@@ -429,10 +429,8 @@ function PickupStep({
   onDeliveryMethod,
   street,
   city,
-  pincode,
   onStreet,
   onCity,
-  onPincode,
   onNext,
   onBack,
 }: {
@@ -443,10 +441,8 @@ function PickupStep({
   onDeliveryMethod: (v: 'pickup' | 'delivery') => void;
   street: string;
   city: string;
-  pincode: string;
   onStreet: (v: string) => void;
   onCity: (v: string) => void;
-  onPincode: (v: string) => void;
   onNext: () => void;
   onBack: () => void;
 }) {
@@ -626,28 +622,15 @@ function PickupStep({
             {errors.street && <p className="text-[#C42F2C] text-xs sm:text-sm mt-1">{errors.street}</p>}
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">City / Town *</label>
-              <input
-                type="text"
-                value={city || 'Villupuram'}
-                onChange={(e) => { onCity(e.target.value); setErrors((prev) => ({ ...prev, city: '' })); }}
-                className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors"
-              />
-              {errors.city && <p className="text-[#C42F2C] text-xs sm:text-sm mt-1">{errors.city}</p>}
-            </div>
-            <div>
-              <label className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">Pincode (optional)</label>
-              <input
-                type="text"
-                inputMode="numeric"
-                value={pincode}
-                placeholder="605602"
-                onChange={(e) => onPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors"
-              />
-            </div>
+          <div>
+            <label className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">City / Town *</label>
+            <input
+              type="text"
+              value={city || 'Villupuram'}
+              onChange={(e) => { onCity(e.target.value); setErrors((prev) => ({ ...prev, city: '' })); }}
+              className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors"
+            />
+            {errors.city && <p className="text-[#C42F2C] text-xs sm:text-sm mt-1">{errors.city}</p>}
           </div>
         </div>
       )}
@@ -787,7 +770,7 @@ function PaymentStep({
               transactionId: response.razorpay_payment_id,
             });
 
-            if (orderState.orderSource === 'cart' && onClearCart) {
+            if (onClearCart) {
               onClearCart();
             }
             onSuccess(currentOrderId);
@@ -1028,7 +1011,7 @@ function OrderPageContent() {
     deliveryMethod: 'delivery',
     street: '',
     city: 'Villupuram',
-    pincode: '',
+    pincode: '605602',
     orderId: '',
     totalAmount: 0,
     paymentExpiry: '',
@@ -1207,10 +1190,8 @@ function OrderPageContent() {
                     onDeliveryMethod={(m) => update('deliveryMethod', m)}
                     street={state.street}
                     city={state.city}
-                    pincode={state.pincode}
                     onStreet={(v) => update('street', v)}
                     onCity={(v) => update('city', v)}
-                    onPincode={(v) => update('pincode', v)}
                     onNext={nextStep}
                     onBack={prevStep}
                   />

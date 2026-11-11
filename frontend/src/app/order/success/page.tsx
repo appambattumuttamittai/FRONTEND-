@@ -6,11 +6,13 @@ import { useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/context/LanguageContext';
+import { useApp } from '@/context/AppContext';
 import { api, OrderDetail } from '@/lib/api';
 import { saveOrderToStorage, sanitizeItemWeight } from '@/lib/ordersStorage';
 
 function SuccessContent() {
   const { t } = useLanguage();
+  const { clearCart } = useApp();
   const searchParams = useSearchParams();
   const orderId = searchParams.get('orderId');
   const [order, setOrder] = useState<OrderDetail | null>(null);
@@ -20,6 +22,8 @@ function SuccessContent() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-oi9e.onrender.com';
 
   useEffect(() => {
+    // Ensure cart is cleared upon reaching success page
+    clearCart();
     if (!orderId) { setLoading(false); return; }
     api.getOrder(orderId)
       .then((ord) => {
