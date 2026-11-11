@@ -1061,9 +1061,6 @@ function PaymentStep({
     </div>
   );
 }
-    </div>
-  );
-}
 
 // Main order page
 function OrderPageContent() {
