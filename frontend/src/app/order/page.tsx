@@ -381,7 +381,7 @@ function PhoneStep({
                   `Didn't get it? Wait ${resendTimer}s`
                 ) : (
                   <span>
-                    Didn't get it?{' '}
+                    Didn&apos;t get it?{' '}
                     <button
                       type="button"
                       onClick={sendOtp}

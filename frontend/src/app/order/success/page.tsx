@@ -32,8 +32,8 @@ function SuccessContent() {
           phone: ord.phone,
           totalAmount: ord.totalAmount,
           items: [{
-            id: ord.product.id,
-            weight: ord.product.weight,
+            id: ord.product?.id || ord.id,
+            weight: ord.product?.weight || 'Pack',
             price: ord.totalAmount,
             quantity: 1,
           }],

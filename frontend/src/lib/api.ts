@@ -137,11 +137,13 @@ export interface OrderDetail {
   id: string;
   customerName: string;
   phone: string;
-  product: { weight: string; price: number };
+  product: { id?: string; weight: string; price: number };
   totalAmount: number;
   status: string;
   paymentExpiry: string | null;
+  streetAddress?: string | null;
   city: string | null;
+  pincode?: string | null;
   createdAt: string;
 }
 
