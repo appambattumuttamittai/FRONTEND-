@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/context/LanguageContext';
 import { api, OrderDetail } from '@/lib/api';
+import { saveOrderToStorage } from '@/lib/ordersStorage';
 
 function SuccessContent() {
   const { t } = useLanguage();
@@ -23,6 +24,27 @@ function SuccessContent() {
     api.getOrder(orderId)
       .then((ord) => {
         setOrder(ord);
+
+        // Ensure order is saved to localStorage & sessionStorage for "Ordered Items"
+        saveOrderToStorage({
+          id: ord.id,
+          customerName: ord.customerName,
+          phone: ord.phone,
+          totalAmount: ord.totalAmount,
+          items: [{
+            id: ord.product.id,
+            weight: ord.product.weight,
+            price: ord.totalAmount,
+            quantity: 1,
+          }],
+          deliveryMethod: ord.streetAddress?.toLowerCase().includes('pick up') ? 'pickup' : 'delivery',
+          streetAddress: ord.streetAddress || undefined,
+          city: ord.city || undefined,
+          pincode: ord.pincode || undefined,
+          status: ord.status,
+          date: ord.createdAt,
+        });
+
         // Automatically trigger PDF download once
         if (!downloaded) {
           setDownloaded(true);

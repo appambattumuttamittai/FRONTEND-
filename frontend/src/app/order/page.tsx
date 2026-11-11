@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import { useLanguage } from '@/context/LanguageContext';
 import { useApp } from '@/context/AppContext';
 import { api, Product } from '@/lib/api';
+import { saveOrderToStorage } from '@/lib/ordersStorage';
 
 function loadRazorpayScript(): Promise<boolean> {
   return new Promise((resolve) => {
@@ -41,6 +42,7 @@ interface OrderState {
   items: OrderItem[];
   orderSource: 'cart' | 'direct';
   selectedProduct: Product | null;
+  deliveryMethod: 'pickup' | 'delivery';
   street: string;
   city: string;
   pincode: string;
@@ -166,13 +168,13 @@ function PhoneStep({
   verified: boolean; onVerified: () => void; onNext: () => void;
 }) {
   const { t } = useLanguage();
-  const [otp, setOtp] = useState('');
+  const [otpDigits, setOtpDigits] = useState<string[]>(['', '', '', '', '', '']);
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [phoneErr, setPhoneErr] = useState('');
   const [otpErr, setOtpErr] = useState('');
   const [resendTimer, setResendTimer] = useState(0);
-  const otpRef = useRef<HTMLInputElement>(null);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     if (resendTimer > 0) {
@@ -188,7 +190,15 @@ function PhoneStep({
     const controller = new AbortController();
     (navigator as any).credentials
       .get({ otp: { transport: ['sms'] }, signal: controller.signal })
-      .then((cred: any) => { if (cred?.code) setOtp(cred.code); })
+      .then((cred: any) => {
+        if (cred?.code) {
+          const digits = cred.code.replace(/\D/g, '').slice(0, 6).split('');
+          const newD = ['', '', '', '', '', ''];
+          digits.forEach((d: string, i: number) => { newD[i] = d; });
+          setOtpDigits(newD);
+          if (digits.length === 6) verifyOtp(newD.join(''));
+        }
+      })
       .catch(() => {});
     return () => controller.abort();
   }, [otpSent]);
@@ -205,9 +215,10 @@ function PhoneStep({
       const res = await api.sendOtp(clean);
       onSessionChange(res.sessionId);
       setOtpSent(true);
+      setOtpDigits(['', '', '', '', '', '']);
       setResendTimer(60);
       toast.success(t('order.phone.otp_sent'));
-      setTimeout(() => otpRef.current?.focus(), 300);
+      setTimeout(() => inputRefs.current[0]?.focus(), 300);
     } catch (err: any) {
       toast.error(err.message || t('common.error'));
     } finally {
@@ -216,13 +227,13 @@ function PhoneStep({
   };
 
   const verifyOtp = async (codeToVerify?: string) => {
-    const code = codeToVerify || otp;
-    if (code.length !== 6) { setOtpErr('Enter the 6-digit OTP'); return; }
+    const code = codeToVerify || otpDigits.join('');
+    if (code.length !== 6) { setOtpErr('Please enter the complete 6-digit OTP'); return; }
     setLoading(true);
     try {
       await api.verifyOtp(phone.replace(/\D/g, ''), code, sessionId);
       onVerified();
-      toast.success(t('order.phone.verified'));
+      toast.success('Mobile verified successfully!');
       onNext();
     } catch (err: any) {
       setOtpErr(err.message || 'Invalid OTP. Please try again.');
@@ -231,86 +242,176 @@ function PhoneStep({
     }
   };
 
-  return (
-    <div className="space-y-3.5">
-      <h2 className="text-xl sm:text-2xl font-black text-[#582A00]">{t('order.step.phone')}</h2>
-      <div>
-        <label htmlFor="phone" className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">
-          {t('order.phone.label')} *
-        </label>
-        <div className="flex gap-2">
-          <div className="flex items-center px-3 py-2.5 bg-gray-100 border-2 border-gray-200 rounded-xl text-xs sm:text-sm font-bold text-gray-600">
-            🇮🇳 +91
-          </div>
-          <input
-            id="phone"
-            type="tel"
-            inputMode="numeric"
-            value={phone}
-            onChange={(e) => { onPhoneChange(e.target.value.replace(/\D/g, '').slice(0, 10)); setPhoneErr(''); }}
-            placeholder={t('order.phone.placeholder')}
-            disabled={otpSent}
-            className="flex-1 px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors disabled:bg-gray-50"
-            autoComplete="tel"
-          />
-        </div>
-        {phoneErr && <p className="text-[#C42F2C] text-xs sm:text-sm mt-1">{phoneErr}</p>}
-      </div>
+  const handleDigitChange = (idx: number, val: string) => {
+    const digit = val.replace(/\D/g, '').slice(-1);
+    const newDigits = [...otpDigits];
+    newDigits[idx] = digit;
+    setOtpDigits(newDigits);
+    setOtpErr('');
 
+    if (digit && idx < 5) {
+      inputRefs.current[idx + 1]?.focus();
+    }
+
+    const fullCode = newDigits.join('');
+    // Automatically advance to the next step once 6 digits are entered
+    if (fullCode.length === 6) {
+      verifyOtp(fullCode);
+    }
+  };
+
+  const handleKeyDown = (idx: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && !otpDigits[idx] && idx > 0) {
+      inputRefs.current[idx - 1]?.focus();
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (!pasted) return;
+    const digits = pasted.split('');
+    const newDigits = ['', '', '', '', '', ''];
+    digits.forEach((d, i) => { newDigits[i] = d; });
+    setOtpDigits(newDigits);
+    const focusTarget = Math.min(digits.length, 5);
+    inputRefs.current[focusTarget]?.focus();
+    if (digits.length === 6) {
+      verifyOtp(digits.join(''));
+    }
+  };
+
+  const formatCountdown = (s: number) => {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+  };
+
+  return (
+    <div>
       {!otpSent ? (
-        <button
-          onClick={sendOtp}
-          disabled={loading}
-          className="w-full py-2.5 sm:py-3 bg-[#C42F2C] text-white rounded-xl font-bold text-sm sm:text-base hover:bg-[#a82421] transition-colors disabled:opacity-50 shadow"
-        >
-          {loading ? t('common.loading') : t('order.phone.send_otp')}
-        </button>
-      ) : (
-        <div className="space-y-3">
-          <div className="py-2 px-3 bg-[#F5B51B]/10 border border-[#F5B51B] rounded-xl text-xs sm:text-sm text-center text-[#3A1C10]">
-            📱 {t('order.phone.otp_sent')} +91 {phone}
-          </div>
+        <div className="space-y-3.5">
+          <h2 className="text-xl sm:text-2xl font-black text-[#582A00]">{t('order.step.phone')}</h2>
           <div>
-            <label htmlFor="otp" className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">
-              {t('order.phone.enter_otp')} *
+            <label htmlFor="phone" className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">
+              {t('order.phone.label')} *
             </label>
-            <input
-              id="otp"
-              ref={otpRef}
-              type="text"
-              inputMode="numeric"
-              value={otp}
-              onChange={(e) => {
-                const v = e.target.value.replace(/\D/g, '').slice(0, 6);
-                setOtp(v);
-                setOtpErr('');
-                if (v.length === 6) {
-                  verifyOtp(v);
-                }
-              }}
-              onKeyDown={(e) => e.key === 'Enter' && verifyOtp()}
-              placeholder="_ _ _ _ _ _"
-              maxLength={6}
-              autoComplete="one-time-code"
-              className="w-full px-3 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-center text-lg sm:text-xl font-black tracking-widest transition-colors"
-            />
-            {otpErr && <p className="text-[#C42F2C] text-xs sm:text-sm mt-1 text-center">{otpErr}</p>}
+            <div className="flex gap-2">
+              <div className="flex items-center px-3 py-2.5 bg-gray-100 border-2 border-gray-200 rounded-xl text-xs sm:text-sm font-bold text-gray-600">
+                🇮🇳 +91
+              </div>
+              <input
+                id="phone"
+                type="tel"
+                inputMode="numeric"
+                value={phone}
+                onChange={(e) => { onPhoneChange(e.target.value.replace(/\D/g, '').slice(0, 10)); setPhoneErr(''); }}
+                onKeyDown={(e) => e.key === 'Enter' && sendOtp()}
+                placeholder={t('order.phone.placeholder')}
+                className="flex-1 px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors"
+                autoComplete="tel"
+                autoFocus
+              />
+            </div>
+            {phoneErr && <p className="text-[#C42F2C] text-xs sm:text-sm mt-1">{phoneErr}</p>}
           </div>
+
           <button
-            onClick={() => verifyOtp()}
-            disabled={loading || otp.length !== 6}
+            onClick={sendOtp}
+            disabled={loading}
             className="w-full py-2.5 sm:py-3 bg-[#C42F2C] text-white rounded-xl font-bold text-sm sm:text-base hover:bg-[#a82421] transition-colors disabled:opacity-50 shadow"
           >
-            {loading ? t('common.loading') : t('order.phone.verify')}
+            {loading ? t('common.loading') : t('order.phone.send_otp')}
           </button>
-          <div className="text-center">
-            {resendTimer > 0 ? (
-              <p className="text-xs sm:text-sm text-[#3A1C10]/50">Resend OTP in {resendTimer}s</p>
-            ) : (
-              <button onClick={sendOtp} className="text-xs sm:text-sm text-[#C42F2C] font-semibold underline hover:no-underline">
-                {t('order.phone.resend')}
+        </div>
+      ) : (
+        /* OTP Verification Card matching image specification */
+        <div className="overflow-hidden rounded-2xl border border-[#582A00]/15 shadow-md bg-white">
+          {/* Header with Red Gradient */}
+          <div className="bg-gradient-to-r from-[#C42F2C] to-[#8F1D1A] text-white p-4 sm:p-5 relative">
+            <div className="flex items-center justify-between mb-2">
+              <button
+                type="button"
+                onClick={() => setOtpSent(false)}
+                className="text-white/80 hover:text-white text-xs font-semibold flex items-center gap-1 cursor-pointer"
+              >
+                ← Back
               </button>
-            )}
+              <span className="text-[10px] font-black tracking-wider uppercase bg-white/20 px-2 py-0.5 rounded-full">
+                Appampattu Mutta Mittai
+              </span>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-black">OTP Verification</h3>
+            <p className="text-xs sm:text-sm text-white/90 mt-1">
+              OTP has been sent to <strong>+91 {phone}</strong>
+            </p>
+          </div>
+
+          {/* Body with 6 Segmented PIN boxes, countdown and auto-advance */}
+          <div className="p-5 sm:p-6 space-y-5 text-center">
+            {/* 6 Digit Input Boxes */}
+            <div className="flex justify-center gap-2 sm:gap-2.5">
+              {[0, 1, 2, 3, 4, 5].map((idx) => (
+                <input
+                  key={idx}
+                  ref={(el) => { inputRefs.current[idx] = el; }}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={otpDigits[idx] || ''}
+                  onChange={(e) => handleDigitChange(idx, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(idx, e)}
+                  onPaste={handlePaste}
+                  className={`w-10 h-12 sm:w-12 sm:h-14 text-center text-xl sm:text-2xl font-black rounded-xl border-2 transition-all outline-none ${
+                    otpDigits[idx]
+                      ? 'border-[#C42F2C] bg-[#FFF8F6] text-[#582A00]'
+                      : 'border-[#582A00]/25 bg-white text-[#582A00] focus:border-[#C42F2C] focus:ring-2 focus:ring-[#C42F2C]/20'
+                  }`}
+                />
+              ))}
+            </div>
+
+            {/* Countdown Display e.g. 00:57 */}
+            <div className="pt-1">
+              <span className="text-2xl sm:text-3xl font-black tracking-wider text-[#1F242D] block">
+                {formatCountdown(resendTimer)}
+              </span>
+              <p className="text-xs text-[#582A00]/65 mt-1">
+                {resendTimer > 0 ? (
+                  `Didn't get it? Wait ${resendTimer}s`
+                ) : (
+                  <span>
+                    Didn't get it?{' '}
+                    <button
+                      type="button"
+                      onClick={sendOtp}
+                      className="text-[#C42F2C] font-bold underline hover:no-underline cursor-pointer"
+                    >
+                      Resend OTP
+                    </button>
+                  </span>
+                )}
+              </p>
+            </div>
+
+            {otpErr && <p className="text-[#C42F2C] text-xs font-semibold">{otpErr}</p>}
+
+            {/* Primary Action Button */}
+            <button
+              type="button"
+              onClick={() => verifyOtp(otpDigits.join(''))}
+              disabled={loading || otpDigits.join('').length !== 6}
+              className="w-full py-3 sm:py-3.5 bg-[#C42F2C] hover:bg-[#a82421] text-white rounded-xl font-bold text-sm sm:text-base transition-colors disabled:opacity-50 shadow-md cursor-pointer flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Verifying...
+                </>
+              ) : (
+                'Verify OTP'
+              )}
+            </button>
           </div>
         </div>
       )}
@@ -318,11 +419,13 @@ function PhoneStep({
   );
 }
 
-// Step 3: Pickup details
+// Step 3: Pickup / Delivery details
 function PickupStep({
   items,
   orderSource,
   product,
+  deliveryMethod,
+  onDeliveryMethod,
   street,
   city,
   pincode,
@@ -335,6 +438,8 @@ function PickupStep({
   items: OrderItem[];
   orderSource: 'cart' | 'direct';
   product?: Product | null;
+  deliveryMethod: 'pickup' | 'delivery';
+  onDeliveryMethod: (v: 'pickup' | 'delivery') => void;
   street: string;
   city: string;
   pincode: string;
@@ -349,8 +454,10 @@ function PickupStep({
 
   const validate = () => {
     const errs: Record<string, string> = {};
-    if (!street.trim()) errs.street = t('common.required');
-    if (!city.trim()) errs.city = t('common.required');
+    if (deliveryMethod === 'delivery') {
+      if (!street.trim()) errs.street = 'Please enter your street / door address for delivery';
+      if (!city.trim()) errs.city = 'Please enter city';
+    }
     return errs;
   };
 
@@ -363,9 +470,17 @@ function PickupStep({
   const grandTotal = items.reduce((s, it) => s + it.price * it.quantity, 0);
 
   return (
-    <div className="space-y-3.5">
-      <h2 className="text-xl sm:text-2xl font-black text-[#582A00]">{t('order.step.pickup')}</h2>
+    <div className="space-y-4">
+      <div>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-[#D97706]">
+          Step 3 of 4
+        </span>
+        <h2 className="text-xl sm:text-2xl font-black text-[#582A00]">
+          Shipping & Delivery Method
+        </h2>
+      </div>
 
+      {/* Selected Items Summary Card */}
       {items && items.length > 0 ? (
         <div className="bg-[#FAF7F2] border border-[#582A00]/15 rounded-xl p-3 text-xs sm:text-sm">
           <div className="flex items-center justify-between font-bold text-[#582A00] mb-2 pb-1.5 border-b border-[#582A00]/10">
@@ -395,50 +510,152 @@ function PickupStep({
         </div>
       ) : null}
 
+      {/* Shipping Method Options matching Image 2 */}
       <div>
-        <label className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">{t('order.street.label')} *</label>
-        <input
-          type="text"
-          value={street}
-          onChange={(e) => { onStreet(e.target.value); setErrors((prev) => ({ ...prev, street: '' })); }}
-          placeholder={t('order.street.placeholder')}
-          className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors"
-        />
-        {errors.street && <p className="text-[#C42F2C] text-xs sm:text-sm mt-1">{errors.street}</p>}
+        <label className="block text-xs sm:text-sm font-bold text-[#3A1C10] mb-2">
+          Select Delivery Option *
+        </label>
+        <div className="space-y-2.5">
+          {/* Option 1: Pick up in-store */}
+          <div
+            onClick={() => onDeliveryMethod('pickup')}
+            className={`cursor-pointer rounded-xl border-2 p-3 sm:p-3.5 transition-all flex items-start gap-3 ${
+              deliveryMethod === 'pickup'
+                ? 'border-[#C42F2C] bg-[#FFF8F6] shadow-xs'
+                : 'border-[#582A00]/15 bg-white hover:border-[#582A00]/30'
+            }`}
+          >
+            <div className="pt-0.5">
+              <input
+                type="radio"
+                name="shippingMethod"
+                checked={deliveryMethod === 'pickup'}
+                onChange={() => onDeliveryMethod('pickup')}
+                className="w-4 h-4 text-[#C42F2C] accent-[#C42F2C] cursor-pointer"
+              />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-sm sm:text-base text-[#582A00]">
+                  Pick Up in Store <span className="text-xs font-semibold text-[#D97706]">(For outside Villupuram)</span>
+                </span>
+                <span className="text-xs font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                  FREE
+                </span>
+              </div>
+              <p className="text-xs text-[#582A00]/70 mt-0.5">
+                Pickup directly from store at <strong>Villupuram Railway Station (1st Platform)</strong>. Recommended for customers outside Villupuram.
+              </p>
+            </div>
+          </div>
+
+          {/* Option 2: HOME DELIVERY */}
+          <div
+            onClick={() => onDeliveryMethod('delivery')}
+            className={`cursor-pointer rounded-xl border-2 p-3 sm:p-3.5 transition-all flex items-start gap-3 ${
+              deliveryMethod === 'delivery'
+                ? 'border-[#C42F2C] bg-[#FFF8F6] shadow-xs'
+                : 'border-[#582A00]/15 bg-white hover:border-[#582A00]/30'
+            }`}
+          >
+            <div className="pt-0.5">
+              <input
+                type="radio"
+                name="shippingMethod"
+                checked={deliveryMethod === 'delivery'}
+                onChange={() => onDeliveryMethod('delivery')}
+                className="w-4 h-4 text-[#C42F2C] accent-[#C42F2C] cursor-pointer"
+              />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-sm sm:text-base text-[#582A00]">
+                  HOME DELIVERY <span className="text-xs font-semibold text-[#D97706]">(Within Villupuram City)</span>
+                </span>
+                <span className="text-xs font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                  FREE
+                </span>
+              </div>
+              <p className="text-xs text-[#582A00]/70 mt-0.5">
+                Fresh daily batch delivered straight to your doorstep inside Villupuram City limits.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">{t('order.city.label')} *</label>
-          <input
-            type="text"
-            value={city}
-            onChange={(e) => { onCity(e.target.value); setErrors((prev) => ({ ...prev, city: '' })); }}
-            className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors"
-          />
-          {errors.city && <p className="text-[#C42F2C] text-xs sm:text-sm mt-1">{errors.city}</p>}
+      {/* If Pick up in store: Show confirmed station pickup banner */}
+      {deliveryMethod === 'pickup' && (
+        <div className="bg-[#FAF7F2] border border-[#582A00]/15 rounded-xl p-3.5 space-y-1 text-xs text-[#582A00]">
+          <div className="font-bold text-[#C42F2C] flex items-center gap-1.5 text-xs sm:text-sm">
+            <span>🏬</span>
+            <span>Confirmed Store Pickup Location</span>
+          </div>
+          <p className="font-semibold">
+            Appampattu Mutta Mittai Outlet · Villupuram Railway Station (1st Platform)
+          </p>
+          <p className="text-[#582A00]/70">
+            Helpline: +91 78719 49015. Your package will be prepared and reserved immediately upon online payment.
+          </p>
         </div>
-        <div>
-          <label className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">{t('order.pincode.label')}</label>
-          <input
-            type="text"
-            inputMode="numeric"
-            value={pincode}
-            onChange={(e) => onPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-            className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors"
-          />
-        </div>
-      </div>
+      )}
 
-      <div className="bg-[#D97706]/10 border border-[#D97706]/30 rounded-xl p-2.5 text-xs sm:text-sm text-[#7a4800]">
-        Home delivery is currently available only within Villupuram City limits. Customers from other locations can place orders online and pick them up from our store at Villupuram Railway Station, 1st Platform.
-      </div>
+      {/* If Home Delivery: Show Street Address & City input fields */}
+      {deliveryMethod === 'delivery' && (
+        <div className="space-y-3 pt-1">
+          <div>
+            <label className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">
+              Street / Door Address in Villupuram *
+            </label>
+            <input
+              type="text"
+              value={street}
+              onChange={(e) => { onStreet(e.target.value); setErrors((prev) => ({ ...prev, street: '' })); }}
+              placeholder="House/Door No, Street Name, Area Landmark"
+              className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors"
+            />
+            {errors.street && <p className="text-[#C42F2C] text-xs sm:text-sm mt-1">{errors.street}</p>}
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">City / Town *</label>
+              <input
+                type="text"
+                value={city || 'Villupuram'}
+                onChange={(e) => { onCity(e.target.value); setErrors((prev) => ({ ...prev, city: '' })); }}
+                className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors"
+              />
+              {errors.city && <p className="text-[#C42F2C] text-xs sm:text-sm mt-1">{errors.city}</p>}
+            </div>
+            <div>
+              <label className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">Pincode (optional)</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={pincode}
+                placeholder="605602"
+                onChange={(e) => onPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex gap-2 pt-2">
-        <button onClick={onBack} className="flex-1 py-2.5 sm:py-3 border-2 border-[#582A00]/20 text-[#582A00] rounded-xl font-bold text-sm sm:text-base hover:bg-[#582A00]/10 transition-colors">
+        <button
+          type="button"
+          onClick={onBack}
+          className="flex-1 py-2.5 sm:py-3 border-2 border-[#582A00]/20 text-[#582A00] rounded-xl font-bold text-sm sm:text-base hover:bg-[#582A00]/10 transition-colors cursor-pointer"
+        >
           {t('order.back')}
         </button>
-        <button onClick={submit} className="flex-[2] py-2.5 sm:py-3 bg-[#C42F2C] text-white rounded-xl font-bold text-sm sm:text-base hover:bg-[#a82421] transition-colors shadow">
+        <button
+          type="button"
+          onClick={submit}
+          className="flex-[2] py-2.5 sm:py-3 bg-[#C42F2C] text-white rounded-xl font-bold text-sm sm:text-base hover:bg-[#a82421] transition-colors shadow cursor-pointer"
+        >
           {t('order.next')} →
         </button>
       </div>
@@ -465,6 +682,7 @@ function PaymentStep({
   const [creating, setCreating] = useState(true);
   const [currentOrderId, setCurrentOrderId] = useState('');
   const [createError, setCreateError] = useState('');
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
   // Create order on mount
   useEffect(() => {
@@ -472,6 +690,14 @@ function PaymentStep({
       try {
         const prodId = orderState.items[0]?.id || orderState.selectedProduct?.id || '500gm';
         const totalQty = orderState.items.reduce((s, it) => s + it.quantity, 0) || 1;
+        const isPickup = orderState.deliveryMethod === 'pickup';
+        const streetVal = isPickup
+          ? 'Pick up in-store (Villupuram Railway Station, 1st Platform)'
+          : (orderState.street || 'Villupuram City');
+        const cityVal = isPickup
+          ? 'Villupuram (Store Pickup)'
+          : (orderState.city || 'Villupuram');
+
         const result = await api.createOrder({
           customerName: orderState.name,
           phone: orderState.phone.replace(/\D/g, ''),
@@ -479,8 +705,8 @@ function PaymentStep({
           quantity: totalQty,
           items: orderState.items.map((it) => ({ productId: it.id, quantity: it.quantity })),
           otpSessionId: orderState.otpSessionId,
-          streetAddress: orderState.street,
-          city: orderState.city,
+          streetAddress: streetVal,
+          city: cityVal,
           pincode: orderState.pincode || undefined,
         });
         setCurrentOrderId(result.orderId);
@@ -557,6 +783,27 @@ function PaymentStep({
               razorpaySignature: response.razorpay_signature,
             });
             toast.success('Payment successful!', { id: 'rzp' });
+
+            // Save order to both localStorage & sessionStorage for "Ordered Items" in hamburger menu
+            saveOrderToStorage({
+              id: currentOrderId,
+              customerName: orderState.name,
+              phone: orderState.phone,
+              totalAmount: grandTotal,
+              items: orderState.items,
+              deliveryMethod: orderState.deliveryMethod,
+              streetAddress: orderState.deliveryMethod === 'pickup'
+                ? 'Pick up in-store (Villupuram Railway Station, 1st Platform)'
+                : orderState.street,
+              city: orderState.deliveryMethod === 'pickup'
+                ? 'Villupuram (Store Pickup)'
+                : (orderState.city || 'Villupuram'),
+              pincode: orderState.pincode,
+              status: 'PAID',
+              date: new Date().toISOString(),
+              transactionId: response.razorpay_payment_id,
+            });
+
             if (orderState.orderSource === 'cart' && onClearCart) {
               onClearCart();
             }
@@ -570,14 +817,15 @@ function PaymentStep({
         modal: {
           ondismiss: () => {
             setSubmitting(false);
+            setShowCancelModal(true);
           },
         },
       };
 
       const rzp = new (window as any).Razorpay(options);
-      rzp.on('payment.failed', (resp: any) => {
-        toast.error(resp.error?.description || 'Payment was cancelled or failed.');
+      rzp.on('payment.failed', () => {
         setSubmitting(false);
+        setShowCancelModal(true);
       });
       rzp.open();
     } catch (err: any) {
@@ -707,15 +955,19 @@ function PaymentStep({
               )}
             </div>
 
-            {/* Pricing breakdown breakdown */}
+            {/* Pricing breakdown & Delivery Selection */}
             <div className="pt-2 border-t border-[#582A00]/10 space-y-1.5 text-xs text-[#582A00]/70">
               <div className="flex justify-between">
                 <span>Items Subtotal</span>
                 <span>₹{grandTotal}</span>
               </div>
-              <div className="flex justify-between">
-                <span>Delivery / Pickup</span>
-                <span className="text-emerald-700 font-bold">FREE</span>
+              <div className="flex justify-between items-center">
+                <span>Shipping Method</span>
+                <span className="text-[#C42F2C] font-bold">
+                  {orderState.deliveryMethod === 'pickup'
+                    ? '🏬 Pick up in-store (Free)'
+                    : '🚚 Home Delivery (Free)'}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>Taxes & Packaging</span>
@@ -737,7 +989,11 @@ function PaymentStep({
             {/* Customer & Location chip */}
             <div className="mt-3 pt-2.5 border-t border-[#582A00]/10 flex items-center justify-between text-[11px] text-[#582A00]/70 flex-wrap gap-1">
               <span>👤 {orderState.name} ({orderState.phone})</span>
-              <span>📍 {orderState.city || 'Villupuram'}</span>
+              <span>
+                {orderState.deliveryMethod === 'pickup'
+                  ? '📍 Store Pickup: Villupuram Railway Station'
+                  : `📍 Home Delivery: ${orderState.city || 'Villupuram'}`}
+              </span>
             </div>
           </div>
 
@@ -772,6 +1028,39 @@ function PaymentStep({
           </div>
         </>
       )}
+
+      {/* Payment Cancelled Modal matching Image 3 */}
+      <AnimatePresence>
+        {showCancelModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-7 max-w-sm sm:max-w-md w-full text-center space-y-4"
+            >
+              <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-500 border border-amber-200 flex items-center justify-center text-2xl mx-auto">
+                ⚠️
+              </div>
+              <h3 className="text-xl font-bold text-[#1F242D]">Payment Cancelled</h3>
+              <p className="text-sm text-[#582A00]/75 leading-relaxed">
+                Payment was cancelled. Your cart items have been restored — you can retry checkout.
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowCancelModal(false)}
+                className="w-full py-3 bg-[#C42F2C] hover:bg-[#a82421] text-white rounded-xl font-bold text-base transition-colors shadow-md cursor-pointer active:scale-[0.99]"
+              >
+                OK
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
     </div>
   );
 }
@@ -792,8 +1081,9 @@ function OrderPageContent() {
     items: [],
     orderSource: 'direct',
     selectedProduct: null,
+    deliveryMethod: 'pickup',
     street: '',
-    city: '',
+    city: 'Villupuram',
     pincode: '',
     orderId: '',
     totalAmount: 0,
@@ -969,6 +1259,8 @@ function OrderPageContent() {
                     items={state.items}
                     orderSource={state.orderSource}
                     product={state.selectedProduct}
+                    deliveryMethod={state.deliveryMethod}
+                    onDeliveryMethod={(m) => update('deliveryMethod', m)}
                     street={state.street}
                     city={state.city}
                     pincode={state.pincode}

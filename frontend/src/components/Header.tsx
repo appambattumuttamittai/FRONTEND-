@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useApp } from '@/context/AppContext';
 import CartDrawer from '@/components/CartDrawer';
+import OrderedItemsDrawer from '@/components/OrderedItemsDrawer';
 
 const promoMessages = [
   "India's Original Muttai Mittai",
@@ -93,6 +94,7 @@ function PromoBanner() {
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
+  const [orderedItemsOpen, setOrderedItemsOpen] = useState(false);
   const { cartCount } = useApp();
 
   const navLinks = [
@@ -145,6 +147,14 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
+            {/* Ordered Items desktop button */}
+            <button
+              onClick={() => setOrderedItemsOpen(true)}
+              className="px-4 py-2 text-sm font-semibold text-[#582A00] hover:text-[#C42F2C] rounded-full hover:bg-[#C42F2C]/8 transition-all flex items-center gap-1.5 cursor-pointer"
+            >
+              <span>📦</span>
+              <span>Ordered Items</span>
+            </button>
           </div>
 
           {/* Desktop CTA */}
@@ -239,10 +249,19 @@ export default function Header() {
               </Link>
             ))}
 
+            {/* Ordered Items inside Hamburger Menu */}
+            <button
+              onClick={() => { setMenuOpen(false); setOrderedItemsOpen(true); }}
+              className="py-2.5 text-center text-sm font-semibold text-[#582A00] hover:text-[#C42F2C] rounded-xl hover:bg-[#C42F2C]/6 transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>📦</span>
+              <span>Ordered Items</span>
+            </button>
+
             {/* My Cart */}
             <button
               onClick={() => { setMenuOpen(false); setCartDrawerOpen(true); }}
-              className="py-2.5 text-center text-sm font-semibold text-[#582A00] hover:text-[#C42F2C] rounded-xl hover:bg-[#C42F2C]/6 transition-all flex items-center justify-center gap-2"
+              className="py-2.5 text-center text-sm font-semibold text-[#582A00] hover:text-[#C42F2C] rounded-xl hover:bg-[#C42F2C]/6 transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -271,6 +290,7 @@ export default function Header() {
         )}
       </nav>
       <CartDrawer open={cartDrawerOpen} onClose={() => setCartDrawerOpen(false)} />
+      <OrderedItemsDrawer open={orderedItemsOpen} onClose={() => setOrderedItemsOpen(false)} />
     </>
   );
 }

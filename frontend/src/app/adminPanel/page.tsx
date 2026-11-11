@@ -196,7 +196,7 @@ function OrdersTable({ onSelectOrder }: { onSelectOrder: (order: AdminOrder) => 
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b">
             <tr>
-              {['Order ID', 'Customer', 'Phone', 'Product', 'Amount', 'Status', 'Date', 'Action'].map((h) => (
+              {['Order ID', 'Customer', 'Phone', 'Items / Packs', 'Amount', 'Delivery', 'Status', 'Date', 'Action'].map((h) => (
                 <th key={h} className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">{h}</th>
               ))}
             </tr>
@@ -205,35 +205,50 @@ function OrdersTable({ onSelectOrder }: { onSelectOrder: (order: AdminOrder) => 
             {loading ? (
               Array(5).fill(0).map((_, i) => (
                 <tr key={i}>
-                  {Array(8).fill(0).map((_, j) => (
+                  {Array(9).fill(0).map((_, j) => (
                     <td key={j} className="px-4 py-3"><div className="h-4 shimmer rounded w-20" /></td>
                   ))}
                 </tr>
               ))
             ) : data?.orders.length === 0 ? (
-              <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-400">No orders found</td></tr>
+              <tr><td colSpan={9} className="px-4 py-8 text-center text-gray-400">No orders found</td></tr>
             ) : (
-              data?.orders.map((order) => (
-                <tr key={order.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-mono text-xs font-bold text-[#063D20]">{order.id.slice(-8).toUpperCase()}</td>
-                  <td className="px-4 py-3 font-semibold whitespace-nowrap">{order.customerName}</td>
-                  <td className="px-4 py-3 text-gray-600">{order.phone}</td>
-                  <td className="px-4 py-3 whitespace-nowrap">{order.product.weight}</td>
-                  <td className="px-4 py-3 font-bold text-[#E95012]">₹{order.totalAmount}</td>
-                  <td className="px-4 py-3"><StatusBadge status={order.status} /></td>
-                  <td className="px-4 py-3 text-gray-500 whitespace-nowrap text-xs">
-                    {new Date(order.createdAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                  </td>
-                  <td className="px-4 py-3">
-                    <button
-                      onClick={() => onSelectOrder(order)}
-                      className="px-3 py-1 bg-[#063D20] text-white rounded-lg text-xs font-bold hover:bg-[#0A512B]"
-                    >
-                      Manage
-                    </button>
-                  </td>
-                </tr>
-              ))
+              data?.orders.map((order) => {
+                const isPickup =
+                  order.streetAddress?.toLowerCase().includes('pick up') ||
+                  order.streetAddress?.toLowerCase().includes('store') ||
+                  order.adminNotes?.includes('[STORE PICKUP]');
+                const itemsText = order.adminNotes?.split('|')[0]?.replace(/\[.*?\]/g, '').trim() || order.product.weight;
+
+                return (
+                  <tr key={order.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 font-mono text-xs font-bold text-[#C42F2C]">#{order.id.slice(-8).toUpperCase()}</td>
+                    <td className="px-4 py-3 font-semibold whitespace-nowrap">{order.customerName}</td>
+                    <td className="px-4 py-3 text-gray-600">{order.phone}</td>
+                    <td className="px-4 py-3 font-medium text-[#582A00] whitespace-nowrap">{itemsText}</td>
+                    <td className="px-4 py-3 font-bold text-[#C42F2C]">₹{order.totalAmount}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                        isPickup ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-blue-50 text-blue-800 border border-blue-200'
+                      }`}>
+                        {isPickup ? '🏬 Pickup' : '🚚 Delivery'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3"><StatusBadge status={order.status} /></td>
+                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap text-xs">
+                      {new Date(order.createdAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                    </td>
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => onSelectOrder(order)}
+                        className="px-3 py-1 bg-[#C42F2C] text-white rounded-lg text-xs font-bold hover:bg-[#a82421] transition-colors shadow-xs"
+                      >
+                        Manage
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
@@ -272,6 +287,8 @@ function OrderModal({ order, onClose, onRefresh }: { order: AdminOrder; onClose:
   const [notes, setNotes] = useState(order.adminNotes || '');
   const [saving, setSaving] = useState(false);
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-oi9e.onrender.com';
+
   const save = async () => {
     setSaving(true);
     try {
@@ -291,6 +308,14 @@ function OrderModal({ order, onClose, onRefresh }: { order: AdminOrder; onClose:
     'PAID', 'PAYMENT_FAILED', 'OUT_OF_STOCK', 'READY_FOR_PICKUP', 'PICKED_UP', 'CANCELLED'
   ];
 
+  const isPickup =
+    order.streetAddress?.toLowerCase().includes('pick up') ||
+    order.streetAddress?.toLowerCase().includes('store') ||
+    order.adminNotes?.includes('[STORE PICKUP]');
+
+  const itemsText = order.adminNotes?.split('|')[0]?.replace(/\[.*?\]/g, '').trim() || order.product.weight;
+  const txRef = order.adminNotes?.includes('Razorpay:') ? order.adminNotes.split('Razorpay:')[1]?.trim() : null;
+
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <motion.div
@@ -299,57 +324,110 @@ function OrderModal({ order, onClose, onRefresh }: { order: AdminOrder; onClose:
         animate={{ opacity: 1, scale: 1 }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
           <div>
-            <h2 className="text-xl font-black text-[#063D20]">Order #{order.id.slice(-8).toUpperCase()}</h2>
-            <StatusBadge status={order.status} />
+            <span className="text-xs text-gray-400 font-mono">ID: {order.id}</span>
+            <h2 className="text-xl font-black text-[#582A00]">Order #{order.id.slice(-8).toUpperCase()}</h2>
+            <div className="mt-1"><StatusBadge status={order.status} /></div>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl font-bold">✕</button>
         </div>
 
-        <div className="space-y-4 text-sm mb-6">
+        {/* Database Record Details */}
+        <div className="space-y-3.5 text-sm mb-6 bg-gray-50 rounded-2xl p-4 border border-gray-100">
           <div className="grid grid-cols-2 gap-3">
-            <div><span className="text-gray-500">Customer</span><p className="font-bold">{order.customerName}</p></div>
-            <div><span className="text-gray-500">Phone</span><p className="font-bold">{order.phone}</p></div>
-            <div><span className="text-gray-500">Product</span><p className="font-bold">{order.product.weight}</p></div>
-            <div><span className="text-gray-500">Amount</span><p className="font-black text-[#E95012]">₹{order.totalAmount}</p></div>
-            <div><span className="text-gray-500">City</span><p className="font-bold">{order.city || '-'}</p></div>
-            <div><span className="text-gray-500">Pincode</span><p className="font-bold">{order.pincode || '-'}</p></div>
+            <div>
+              <span className="text-gray-400 text-xs font-semibold uppercase">Customer</span>
+              <p className="font-bold text-[#582A00]">{order.customerName}</p>
+            </div>
+            <div>
+              <span className="text-gray-400 text-xs font-semibold uppercase">Phone</span>
+              <div className="flex items-center gap-2">
+                <p className="font-bold text-[#582A00]">{order.phone}</p>
+                <a href={`https://wa.me/91${order.phone}`} target="_blank" rel="noopener noreferrer" className="text-xs text-emerald-600 font-bold hover:underline">
+                  WhatsApp
+                </a>
+              </div>
+            </div>
+            <div>
+              <span className="text-gray-400 text-xs font-semibold uppercase">Ordered Items / Weight</span>
+              <p className="font-bold text-[#C42F2C]">{itemsText}</p>
+            </div>
+            <div>
+              <span className="text-gray-400 text-xs font-semibold uppercase">Total Amount</span>
+              <p className="font-black text-[#C42F2C] text-base">₹{order.totalAmount}</p>
+            </div>
           </div>
+
+          {/* Delivery Method */}
+          <div className="pt-2 border-t border-gray-200">
+            <span className="text-gray-400 text-xs font-semibold uppercase">Delivery Choice</span>
+            <p className="font-bold text-[#582A00]">
+              {isPickup ? '🏬 Pick Up In-Store (Villupuram Railway Station, 1st Platform)' : '🚚 HOME DELIVERY (Within Villupuram City)'}
+            </p>
+          </div>
+
           {order.streetAddress && (
-            <div><span className="text-gray-500">Address</span><p className="font-bold">{order.streetAddress}</p></div>
+            <div>
+              <span className="text-gray-400 text-xs font-semibold uppercase">Delivery / Store Address</span>
+              <p className="font-medium text-gray-700">{order.streetAddress}</p>
+            </div>
           )}
-          <div><span className="text-gray-500">Created</span><p>{new Date(order.createdAt).toLocaleString('en-IN')}</p></div>
-          {order.paidAt && <div><span className="text-gray-500">Paid At</span><p>{new Date(order.paidAt).toLocaleString('en-IN')}</p></div>}
+
+          <div className="grid grid-cols-2 gap-3">
+            <div><span className="text-gray-400 text-xs font-semibold uppercase">City</span><p className="font-medium text-gray-700">{order.city || 'Villupuram'}</p></div>
+            <div><span className="text-gray-400 text-xs font-semibold uppercase">Pincode</span><p className="font-medium text-gray-700">{order.pincode || '-'}</p></div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-200 text-xs">
+            <div><span className="text-gray-400 uppercase">Created Time</span><p className="font-medium">{new Date(order.createdAt).toLocaleString('en-IN')}</p></div>
+            <div><span className="text-gray-400 uppercase">Payment Time</span><p className="font-medium">{order.paidAt ? new Date(order.paidAt).toLocaleString('en-IN') : 'Pending'}</p></div>
+          </div>
+
+          {txRef && (
+            <div className="text-xs">
+              <span className="text-gray-400 uppercase">Razorpay Payment ID</span>
+              <p className="font-mono font-bold text-gray-700">{txRef}</p>
+            </div>
+          )}
+
+          {/* Direct Invoice PDF download link */}
+          <a
+            href={`${apiUrl}/api/orders/${order.id}/invoice.pdf`}
+            download={`Invoice-${order.id.slice(-8).toUpperCase()}.pdf`}
+            className="w-full flex items-center justify-center gap-2 py-2.5 bg-white border border-[#C42F2C] text-[#C42F2C] rounded-xl font-bold text-xs hover:bg-[#C42F2C] hover:text-white transition-all shadow-xs"
+          >
+            📄 Download Official Tax Invoice (PDF)
+          </a>
         </div>
 
         <div className="space-y-3">
           <div>
-            <label className="block text-sm font-semibold mb-1.5">Update Status</label>
+            <label className="block text-sm font-semibold mb-1.5 text-[#582A00]">Update Status</label>
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:border-[#063D20] outline-none"
+              className="w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:border-[#C42F2C] outline-none text-sm"
             >
               {statuses.map((s) => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-semibold mb-1.5">Admin Notes</label>
+            <label className="block text-sm font-semibold mb-1.5 text-[#582A00]">Admin / Order Notes</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:border-[#063D20] outline-none resize-none"
+              className="w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:border-[#C42F2C] outline-none resize-none text-sm"
               rows={2}
-              placeholder="Optional internal notes..."
+              placeholder="Internal tracking notes..."
             />
           </div>
           <div className="flex gap-2">
-            <button onClick={onClose} className="flex-1 py-3 border-2 border-gray-200 rounded-xl font-bold hover:bg-gray-50">Cancel</button>
+            <button onClick={onClose} className="flex-1 py-3 border-2 border-gray-200 rounded-xl font-bold hover:bg-gray-50 text-sm">Cancel</button>
             <button
               onClick={save}
               disabled={saving}
-              className="flex-[2] py-3 bg-[#063D20] text-white rounded-xl font-bold hover:bg-[#0A512B] disabled:opacity-50"
+              className="flex-[2] py-3 bg-[#C42F2C] text-white rounded-xl font-bold hover:bg-[#a82421] disabled:opacity-50 text-sm transition-colors shadow"
             >
               {saving ? 'Saving...' : '✓ Update Order'}
             </button>
