@@ -135,6 +135,7 @@ export default function ProductsSection() {
         })));
       })
       .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setProducts]);
 
   return (

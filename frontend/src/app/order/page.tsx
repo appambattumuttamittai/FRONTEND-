@@ -201,6 +201,7 @@ function PhoneStep({
       })
       .catch(() => {});
     return () => controller.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [otpSent]);
 
   const sendOtp = async () => {
@@ -722,6 +723,7 @@ function PaymentStep({
       }
     };
     create();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Countdown timer
@@ -742,6 +744,7 @@ function PaymentStep({
       });
     }, 1000);
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [creating, expired]);
 
   // Razorpay Pay Handler

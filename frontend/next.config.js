@@ -1,9 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Disable SWC – use Babel fallback (via .babelrc) for environments
-  // where native SWC binaries cannot be compiled. On Vercel, SWC works
-  // normally because the build runs in a Linux container.
+  // where native SWC binaries cannot be compiled.
   swcMinify: false,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: false,
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '**' },

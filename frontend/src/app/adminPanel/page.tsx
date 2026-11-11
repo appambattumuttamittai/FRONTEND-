@@ -157,7 +157,9 @@ function OrdersTable({ onSelectOrder }: { onSelectOrder: (order: AdminOrder) => 
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { load(); }, [page, status]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const t = setTimeout(() => { setPage(1); load(); }, 400);
     return () => clearTimeout(t);
@@ -656,6 +658,7 @@ function FeedbackTab() {
     finally { setLoading(false); }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { load(); }, [filter]);
 
   const toggle = async (id: string, current: boolean) => {

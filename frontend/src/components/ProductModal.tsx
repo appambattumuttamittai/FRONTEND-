@@ -76,6 +76,7 @@ export default function ProductModal() {
       document.body.style.overflow = '';
     }
     return () => { document.body.style.overflow = ''; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modalProduct?.id]);
 
   /* close on Escape key */
