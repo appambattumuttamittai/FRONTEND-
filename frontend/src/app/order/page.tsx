@@ -130,7 +130,7 @@ function NameStep({ value, onChange, onNext }: { value: string; onChange: (v: st
 
   return (
     <div className="space-y-3.5">
-      <h2 className="text-xl sm:text-2xl font-black text-[#063D20]">{t('order.step.name')}</h2>
+      <h2 className="text-xl sm:text-2xl font-black text-[#582A00]">{t('order.step.name')}</h2>
       <div>
         <label htmlFor="name" className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">
           {t('order.name.label')} *
@@ -143,13 +143,13 @@ function NameStep({ value, onChange, onNext }: { value: string; onChange: (v: st
           onKeyDown={(e) => e.key === 'Enter' && submit()}
           placeholder={t('order.name.placeholder')}
           autoFocus
-          className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#063D20]/20 focus:border-[#063D20] outline-none text-sm sm:text-base transition-colors"
+          className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors"
         />
-        {err && <p className="text-[#E95012] text-xs sm:text-sm mt-1">{err}</p>}
+        {err && <p className="text-[#C42F2C] text-xs sm:text-sm mt-1">{err}</p>}
       </div>
       <button
         onClick={submit}
-        className="w-full py-2.5 sm:py-3 bg-[#063D20] text-[#FFF4DD] rounded-xl font-bold text-sm sm:text-base hover:bg-[#0A512B] transition-colors"
+        className="w-full py-2.5 sm:py-3 bg-[#C42F2C] text-white rounded-xl font-bold text-sm sm:text-base hover:bg-[#a82421] transition-colors shadow"
       >
         {t('order.next')} →
       </button>
@@ -233,7 +233,7 @@ function PhoneStep({
 
   return (
     <div className="space-y-3.5">
-      <h2 className="text-xl sm:text-2xl font-black text-[#063D20]">{t('order.step.phone')}</h2>
+      <h2 className="text-xl sm:text-2xl font-black text-[#582A00]">{t('order.step.phone')}</h2>
       <div>
         <label htmlFor="phone" className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">
           {t('order.phone.label')} *
@@ -250,18 +250,18 @@ function PhoneStep({
             onChange={(e) => { onPhoneChange(e.target.value.replace(/\D/g, '').slice(0, 10)); setPhoneErr(''); }}
             placeholder={t('order.phone.placeholder')}
             disabled={otpSent}
-            className="flex-1 px-3.5 py-2.5 rounded-xl border-2 border-[#063D20]/20 focus:border-[#063D20] outline-none text-sm sm:text-base transition-colors disabled:bg-gray-50"
+            className="flex-1 px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors disabled:bg-gray-50"
             autoComplete="tel"
           />
         </div>
-        {phoneErr && <p className="text-[#E95012] text-xs sm:text-sm mt-1">{phoneErr}</p>}
+        {phoneErr && <p className="text-[#C42F2C] text-xs sm:text-sm mt-1">{phoneErr}</p>}
       </div>
 
       {!otpSent ? (
         <button
           onClick={sendOtp}
           disabled={loading}
-          className="w-full py-2.5 sm:py-3 bg-[#063D20] text-[#FFF4DD] rounded-xl font-bold text-sm sm:text-base hover:bg-[#0A512B] transition-colors disabled:opacity-50"
+          className="w-full py-2.5 sm:py-3 bg-[#C42F2C] text-white rounded-xl font-bold text-sm sm:text-base hover:bg-[#a82421] transition-colors disabled:opacity-50 shadow"
         >
           {loading ? t('common.loading') : t('order.phone.send_otp')}
         </button>
@@ -292,14 +292,14 @@ function PhoneStep({
               placeholder="_ _ _ _ _ _"
               maxLength={6}
               autoComplete="one-time-code"
-              className="w-full px-3 py-2.5 rounded-xl border-2 border-[#063D20]/20 focus:border-[#063D20] outline-none text-center text-lg sm:text-xl font-black tracking-widest transition-colors"
+              className="w-full px-3 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-center text-lg sm:text-xl font-black tracking-widest transition-colors"
             />
-            {otpErr && <p className="text-[#E95012] text-xs sm:text-sm mt-1 text-center">{otpErr}</p>}
+            {otpErr && <p className="text-[#C42F2C] text-xs sm:text-sm mt-1 text-center">{otpErr}</p>}
           </div>
           <button
             onClick={() => verifyOtp()}
             disabled={loading || otp.length !== 6}
-            className="w-full py-2.5 sm:py-3 bg-[#E95012] text-white rounded-xl font-bold text-sm sm:text-base hover:bg-[#c7400d] transition-colors disabled:opacity-50"
+            className="w-full py-2.5 sm:py-3 bg-[#C42F2C] text-white rounded-xl font-bold text-sm sm:text-base hover:bg-[#a82421] transition-colors disabled:opacity-50 shadow"
           >
             {loading ? t('common.loading') : t('order.phone.verify')}
           </button>
@@ -307,7 +307,7 @@ function PhoneStep({
             {resendTimer > 0 ? (
               <p className="text-xs sm:text-sm text-[#3A1C10]/50">Resend OTP in {resendTimer}s</p>
             ) : (
-              <button onClick={sendOtp} className="text-xs sm:text-sm text-[#063D20] font-semibold underline hover:no-underline">
+              <button onClick={sendOtp} className="text-xs sm:text-sm text-[#C42F2C] font-semibold underline hover:no-underline">
                 {t('order.phone.resend')}
               </button>
             )}
@@ -364,10 +364,10 @@ function PickupStep({
 
   return (
     <div className="space-y-3.5">
-      <h2 className="text-xl sm:text-2xl font-black text-[#063D20]">{t('order.step.pickup')}</h2>
+      <h2 className="text-xl sm:text-2xl font-black text-[#582A00]">{t('order.step.pickup')}</h2>
 
       {items && items.length > 0 ? (
-        <div className="bg-[#FFF4DD] border border-[#582A00]/15 rounded-xl p-3 text-xs sm:text-sm">
+        <div className="bg-[#FAF7F2] border border-[#582A00]/15 rounded-xl p-3 text-xs sm:text-sm">
           <div className="flex items-center justify-between font-bold text-[#582A00] mb-2 pb-1.5 border-b border-[#582A00]/10">
             <span>{orderSource === 'cart' ? '🛒 Cart Items' : '📦 Selected Order'}</span>
             <span className="text-[#C42F2C] font-black text-sm">
@@ -387,7 +387,7 @@ function PickupStep({
           </div>
         </div>
       ) : product ? (
-        <div className="flex items-center justify-between px-3.5 py-2.5 bg-[#FFF4DD] border border-[#582A00]/15 rounded-xl text-xs sm:text-sm">
+        <div className="flex items-center justify-between px-3.5 py-2.5 bg-[#FAF7F2] border border-[#582A00]/15 rounded-xl text-xs sm:text-sm">
           <span className="font-semibold text-[#582A00]">
             Selected Pack: <strong className="text-[#C42F2C]">{product.weight}</strong>
           </span>
@@ -402,9 +402,9 @@ function PickupStep({
           value={street}
           onChange={(e) => { onStreet(e.target.value); setErrors((prev) => ({ ...prev, street: '' })); }}
           placeholder={t('order.street.placeholder')}
-          className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#063D20]/20 focus:border-[#063D20] outline-none text-sm sm:text-base transition-colors"
+          className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors"
         />
-        {errors.street && <p className="text-[#E95012] text-xs sm:text-sm mt-1">{errors.street}</p>}
+        {errors.street && <p className="text-[#C42F2C] text-xs sm:text-sm mt-1">{errors.street}</p>}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -414,9 +414,9 @@ function PickupStep({
             type="text"
             value={city}
             onChange={(e) => { onCity(e.target.value); setErrors((prev) => ({ ...prev, city: '' })); }}
-            className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#063D20]/20 focus:border-[#063D20] outline-none text-sm sm:text-base transition-colors"
+            className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors"
           />
-          {errors.city && <p className="text-[#E95012] text-xs sm:text-sm mt-1">{errors.city}</p>}
+          {errors.city && <p className="text-[#C42F2C] text-xs sm:text-sm mt-1">{errors.city}</p>}
         </div>
         <div>
           <label className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">{t('order.pincode.label')}</label>
@@ -425,7 +425,7 @@ function PickupStep({
             inputMode="numeric"
             value={pincode}
             onChange={(e) => onPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-            className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#063D20]/20 focus:border-[#063D20] outline-none text-sm sm:text-base transition-colors"
+            className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors"
           />
         </div>
       </div>
@@ -435,10 +435,10 @@ function PickupStep({
       </div>
 
       <div className="flex gap-2 pt-2">
-        <button onClick={onBack} className="flex-1 py-2.5 sm:py-3 border-2 border-[#063D20] text-[#063D20] rounded-xl font-bold text-sm sm:text-base hover:bg-[#063D20] hover:text-[#FFF4DD] transition-colors">
+        <button onClick={onBack} className="flex-1 py-2.5 sm:py-3 border-2 border-[#582A00]/20 text-[#582A00] rounded-xl font-bold text-sm sm:text-base hover:bg-[#582A00]/10 transition-colors">
           {t('order.back')}
         </button>
-        <button onClick={submit} className="flex-[2] py-2.5 sm:py-3 bg-[#063D20] text-[#FFF4DD] rounded-xl font-bold text-sm sm:text-base hover:bg-[#0A512B] transition-colors">
+        <button onClick={submit} className="flex-[2] py-2.5 sm:py-3 bg-[#C42F2C] text-white rounded-xl font-bold text-sm sm:text-base hover:bg-[#a82421] transition-colors shadow">
           {t('order.next')} →
         </button>
       </div>
@@ -447,14 +447,18 @@ function PickupStep({
 }
 
 // Step 4: Payment
-function PaymentStep({ orderState, onBack, onSuccess, onClearCart }: {
-  orderState: OrderState; onBack: () => void;
+function PaymentStep({
+  orderState,
+  onBack,
+  onSuccess,
+  onClearCart,
+}: {
+  orderState: OrderState;
+  onBack: () => void;
   onSuccess: (orderId: string) => void;
   onClearCart?: () => void;
 }) {
   const { t } = useLanguage();
-  const router = useRouter();
-  const [qrUrl, setQrUrl] = useState('/gpayQR.png');
   const [timeLeft, setTimeLeft] = useState(90);
   const [expired, setExpired] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -481,7 +485,6 @@ function PaymentStep({ orderState, onBack, onSuccess, onClearCart }: {
         });
         setCurrentOrderId(result.orderId);
 
-        // Calculate time left from server expiry
         if (result.paymentExpiry) {
           const expiryMs = new Date(result.paymentExpiry).getTime() - Date.now();
           setTimeLeft(Math.max(0, Math.floor(expiryMs / 1000)));
@@ -495,26 +498,25 @@ function PaymentStep({ orderState, onBack, onSuccess, onClearCart }: {
     create();
   }, []);
 
-  // Load QR URL
-  useEffect(() => {
-    api.getQrUrl().then((r) => setQrUrl(r.url || '/gpayQR.png')).catch(() => {});
-  }, []);
-
   // Countdown timer
   useEffect(() => {
     if (creating || expired || timeLeft <= 0) return;
-    if (timeLeft === 0) { setExpired(true); return; }
+    if (timeLeft === 0) {
+      setExpired(true);
+      return;
+    }
     const interval = setInterval(() => {
       setTimeLeft((t) => {
-        if (t <= 1) { setExpired(true); clearInterval(interval); return 0; }
+        if (t <= 1) {
+          setExpired(true);
+          clearInterval(interval);
+          return 0;
+        }
         return t - 1;
       });
     }, 1000);
     return () => clearInterval(interval);
   }, [creating, expired]);
-
-  // Check Razorpay config on mount
-  const [showQrFallback, setShowQrFallback] = useState(false);
 
   // Razorpay Pay Handler
   const handleRazorpayPay = async () => {
@@ -523,7 +525,7 @@ function PaymentStep({ orderState, onBack, onSuccess, onClearCart }: {
     try {
       const loaded = await loadRazorpayScript();
       if (!loaded) {
-        toast.error('Failed to load Razorpay. Please check internet connection.');
+        toast.error('Failed to load Razorpay payment gateway. Please check your internet connection.');
         setSubmitting(false);
         return;
       }
@@ -547,14 +549,14 @@ function PaymentStep({ orderState, onBack, onSuccess, onClearCart }: {
         },
         handler: async (response: any) => {
           try {
-            toast.loading('Verifying payment...', { id: 'rzp' });
+            toast.loading('Confirming payment...', { id: 'rzp' });
             await api.verifyRazorpayPayment({
               orderId: currentOrderId,
               razorpayOrderId: response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpaySignature: response.razorpay_signature,
             });
-            toast.success('Payment verified!', { id: 'rzp' });
+            toast.success('Payment successful!', { id: 'rzp' });
             if (orderState.orderSource === 'cart' && onClearCart) {
               onClearCart();
             }
@@ -574,45 +576,31 @@ function PaymentStep({ orderState, onBack, onSuccess, onClearCart }: {
 
       const rzp = new (window as any).Razorpay(options);
       rzp.on('payment.failed', (resp: any) => {
-        toast.error(resp.error?.description || 'Payment was unsuccessful');
+        toast.error(resp.error?.description || 'Payment was cancelled or failed.');
         setSubmitting(false);
       });
       rzp.open();
     } catch (err: any) {
       if (err.message === 'RAZORPAY_NOT_CONFIGURED' || err.message?.includes('not yet configured')) {
-        toast.error('Razorpay keys not yet added in Render backend environment variables.');
-        setShowQrFallback(true);
+        toast.error('Razorpay keys are not yet configured in Render backend environment variables.');
       } else {
-        toast.error(err.message || 'Could not initiate Razorpay payment');
+        toast.error(err.message || 'Could not initiate Razorpay payment.');
       }
-      setSubmitting(false);
-    }
-  };
-
-  const handlePaid = async () => {
-    if (!currentOrderId) return;
-    setSubmitting(true);
-    try {
-      await api.iHavePaid(currentOrderId);
-      if (orderState.orderSource === 'cart' && onClearCart) {
-        onClearCart();
-      }
-      onSuccess(currentOrderId);
-    } catch (err: any) {
-      toast.error(err.message || t('common.error'));
-    } finally {
       setSubmitting(false);
     }
   };
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
   const urgent = timeLeft <= 30;
+  const grandTotal =
+    orderState.totalAmount ||
+    orderState.items.reduce((s, it) => s + it.price * it.quantity, 0);
 
   if (creating) {
     return (
       <div className="text-center py-12">
-        <div className="w-12 h-12 border-4 border-[#063D20] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-[#3A1C10]/60">{t('common.loading')}</p>
+        <div className="w-10 h-10 border-3 border-[#C42F2C] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+        <p className="text-sm font-semibold text-[#582A00]/70">Preparing secure checkout...</p>
       </div>
     );
   }
@@ -620,83 +608,136 @@ function PaymentStep({ orderState, onBack, onSuccess, onClearCart }: {
   if (createError) {
     return (
       <div className="text-center py-8">
-        <div className="text-4xl mb-4">⚠️</div>
-        <p className="text-[#E95012] font-bold mb-4">{createError}</p>
-        <button onClick={onBack} className="px-6 py-3 bg-[#063D20] text-[#FFF4DD] rounded-xl font-bold">
-          {t('order.back')}
+        <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold">
+          !
+        </div>
+        <p className="text-[#C42F2C] font-bold mb-4">{createError}</p>
+        <button
+          onClick={onBack}
+          className="px-6 py-2.5 bg-[#582A00] text-white rounded-xl font-semibold text-sm hover:bg-[#3D1D00] transition-colors"
+        >
+          ← Go Back & Edit Details
         </button>
       </div>
     );
   }
 
-  const grandTotal = orderState.totalAmount || orderState.items.reduce((s, it) => s + it.price * it.quantity, 0);
-
   return (
-    <div className="space-y-4 sm:space-y-5">
-      <h2 className="text-xl sm:text-2xl font-black text-[#063D20]">{t('order.step.payment')}</h2>
-
-      {/* Order summary */}
-      <div className="bg-[#063D20] text-[#FFF4DD] rounded-2xl p-4 sm:p-5">
-        <h3 className="text-[#F5B51B] font-bold text-xs sm:text-sm mb-3">
-          {orderState.orderSource === 'cart' ? '🛒 Cart Order Summary' : '📦 Order Summary'}
-        </h3>
-        <div className="space-y-2 text-xs sm:text-sm">
-          <div className="flex justify-between">
-            <span className="text-[#FFF4DD]/80">Name</span>
-            <span className="font-semibold">{orderState.name}</span>
-          </div>
-
-          <div className="border-t border-[#FFF4DD]/15 pt-2 space-y-1.5">
-            {orderState.items && orderState.items.length > 0 ? (
-              orderState.items.map((it) => (
-                <div key={it.id} className="flex justify-between items-center">
-                  <span>
-                    {it.weight} <span className="text-[#F5B51B] font-semibold">× {it.quantity}</span>
-                  </span>
-                  <span className="font-semibold">₹{it.price * it.quantity}</span>
-                </div>
-              ))
-            ) : (
-              <div className="flex justify-between">
-                <span>{orderState.selectedProduct?.weight}</span>
-                <span className="font-semibold">₹{orderState.selectedProduct?.price}</span>
-              </div>
-            )}
-          </div>
-
-          <div className="flex justify-between border-t border-[#FFF4DD]/15 pt-2">
-            <span className="text-[#FFF4DD]/80">Delivery / Pickup</span>
-            <span className="font-semibold">{orderState.city}</span>
-          </div>
-          <div className="border-t border-[#FFF4DD]/20 my-2" />
-          <div className="flex justify-between text-base sm:text-lg font-black">
-            <span>{t('order.total')}</span>
-            <span className="text-[#F5B51B]">₹{grandTotal}</span>
-          </div>
+    <div className="space-y-4">
+      {/* Top Header & Modern Countdown Pill */}
+      <div className="flex items-center justify-between pb-3 border-b border-[#582A00]/10">
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[#D97706]">
+            Step 4 of 4 · Final Step
+          </span>
+          <h2 className="text-lg sm:text-xl font-black text-[#582A00] leading-tight">
+            Review & Pay
+          </h2>
         </div>
+
+        {/* Sleek countdown timer pill */}
+        {!expired && (
+          <div
+            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-colors ${
+              urgent
+                ? 'bg-red-50 text-red-600 border border-red-200 animate-pulse'
+                : 'bg-amber-50 text-[#92400E] border border-amber-200/70'
+            }`}
+          >
+            <span className="text-sm">⏳</span>
+            <span>{formatTime(timeLeft)}</span>
+          </div>
+        )}
       </div>
 
       {expired ? (
-        <div className="text-center py-6">
-          <div className="text-4xl mb-3">⏰</div>
-          <p className="text-[#E95012] font-bold text-lg">{t('order.payment.expired')}</p>
-          <button onClick={onBack} className="mt-4 px-6 py-3 bg-[#063D20] text-[#FFF4DD] rounded-xl font-bold">
-            Place New Order
+        <div className="text-center py-8 bg-red-50/50 rounded-2xl border border-red-100 p-6">
+          <div className="text-3xl mb-2">⏱️</div>
+          <h3 className="font-bold text-[#C42F2C] text-base mb-1">Session Expired</h3>
+          <p className="text-xs text-[#582A00]/70 mb-4">
+            Your 90-second batch reservation has timed out to ensure fresh inventory.
+          </p>
+          <button
+            onClick={onBack}
+            className="px-6 py-2.5 bg-[#C42F2C] text-white rounded-xl font-bold text-sm shadow hover:bg-[#a82421] transition-colors"
+          >
+            Start Checkout Again
           </button>
         </div>
       ) : (
         <>
-          {/* Timer */}
-          <div className="text-center">
-            <p className="text-xs sm:text-sm text-[#3A1C10]/60 mb-1">{t('order.payment.timer')}</p>
-            <div className={`text-3xl sm:text-4xl font-black tabular-nums ${urgent ? 'timer-urgent' : 'text-[#063D20]'}`}>
-              {formatTime(timeLeft)}
+          {/* Professional Order Summary Card */}
+          <div className="bg-[#FAF7F2] rounded-2xl border border-[#582A00]/10 p-4 sm:p-5">
+            <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#582A00]/10">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#582A00]">
+                {orderState.orderSource === 'cart' ? 'Cart Summary' : 'Order Summary'}
+              </span>
+              <span className="text-[11px] font-mono text-[#582A00]/60 bg-white px-2 py-0.5 rounded border border-[#582A00]/10">
+                #{currentOrderId.slice(-8).toUpperCase()}
+              </span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-1.5 sm:h-2 mt-2">
-              <div
-                className={`h-full rounded-full transition-all ${urgent ? 'bg-[#E95012]' : 'bg-[#063D20]'}`}
-                style={{ width: `${(timeLeft / 90) * 100}%` }}
-              />
+
+            {/* Itemized List */}
+            <div className="space-y-2 mb-3">
+              {orderState.items && orderState.items.length > 0 ? (
+                orderState.items.map((it) => (
+                  <div key={it.id} className="flex items-center justify-between text-xs sm:text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">🍬</span>
+                      <div>
+                        <span className="font-bold text-[#582A00]">{it.weight}</span>
+                        <span className="text-xs text-[#582A00]/60 ml-2">× {it.quantity}</span>
+                      </div>
+                    </div>
+                    <span className="font-bold text-[#582A00]">₹{it.price * it.quantity}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="flex items-center justify-between text-xs sm:text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">🍬</span>
+                    <span className="font-bold text-[#582A00]">
+                      {orderState.selectedProduct?.weight || 'Mutta Mittai Pack'}
+                    </span>
+                  </div>
+                  <span className="font-bold text-[#582A00]">
+                    ₹{orderState.selectedProduct?.price || grandTotal}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Pricing breakdown breakdown */}
+            <div className="pt-2 border-t border-[#582A00]/10 space-y-1.5 text-xs text-[#582A00]/70">
+              <div className="flex justify-between">
+                <span>Items Subtotal</span>
+                <span>₹{grandTotal}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Delivery / Pickup</span>
+                <span className="text-emerald-700 font-bold">FREE</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Taxes & Packaging</span>
+                <span className="text-[#582A00]/60">Included</span>
+              </div>
+            </div>
+
+            {/* Total Row */}
+            <div className="mt-3 pt-3 border-t-2 border-[#582A00]/15 flex items-baseline justify-between">
+              <div>
+                <span className="text-sm font-black text-[#582A00] block">Total Payable</span>
+                <span className="text-[10px] text-[#582A00]/60">Inclusive of all taxes</span>
+              </div>
+              <span className="text-2xl sm:text-3xl font-black text-[#C42F2C]">
+                ₹{grandTotal}
+              </span>
+            </div>
+
+            {/* Customer & Location chip */}
+            <div className="mt-3 pt-2.5 border-t border-[#582A00]/10 flex items-center justify-between text-[11px] text-[#582A00]/70 flex-wrap gap-1">
+              <span>👤 {orderState.name} ({orderState.phone})</span>
+              <span>📍 {orderState.city || 'Villupuram'}</span>
             </div>
           </div>
 
@@ -704,60 +745,31 @@ function PaymentStep({ orderState, onBack, onSuccess, onClearCart }: {
           <button
             onClick={handleRazorpayPay}
             disabled={submitting}
-            className="w-full py-3.5 sm:py-4 bg-[#C42F2C] text-white rounded-xl font-black text-base sm:text-lg hover:bg-[#a82421] transition-all disabled:opacity-50 shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full py-3.5 sm:py-4 bg-[#C42F2C] hover:bg-[#a82421] text-white rounded-xl font-black text-base sm:text-lg transition-all disabled:opacity-50 shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
           >
             {submitting ? (
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-2 text-sm sm:text-base font-bold">
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 Connecting to Razorpay...
               </span>
             ) : (
-              <span>💳 Pay ₹{grandTotal} with Razorpay</span>
+              <span className="flex items-center gap-2">
+                <span>🔒</span>
+                <span>Pay ₹{grandTotal} with Razorpay</span>
+              </span>
             )}
           </button>
 
-          <p className="text-center text-xs text-[#582A00]/60">
-            Supports UPI (GPay, PhonePe, Paytm), Credit / Debit Cards & Netbanking
-          </p>
-
-          {/* Optional manual QR fallback toggle */}
-          <div className="pt-2 text-center">
-            <button
-              type="button"
-              onClick={() => setShowQrFallback((prev) => !prev)}
-              className="text-xs text-[#582A00]/70 underline hover:text-[#582A00] cursor-pointer"
-            >
-              {showQrFallback ? '▲ Hide Direct QR Scan' : '▼ Or scan direct GPay QR'}
-            </button>
-          </div>
-
-          {showQrFallback && (
-            <div className="space-y-3 pt-2">
-              <div className="text-center">
-                <div className="inline-block p-2 bg-white rounded-2xl shadow-md border border-[#F5B51B]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={qrUrl}
-                    alt="GPay QR code"
-                    className="w-44 h-44 object-contain mx-auto"
-                    onError={(e) => { (e.target as HTMLImageElement).src = '/gpayQR.png'; }}
-                  />
-                </div>
-              </div>
-
-              <button
-                onClick={handlePaid}
-                disabled={submitting}
-                className="w-full py-3 bg-[#25D366] text-white rounded-xl font-bold text-sm sm:text-base hover:bg-[#20bb5a] transition-all disabled:opacity-50 shadow cursor-pointer"
-              >
-                {submitting ? t('common.loading') : `✅ ${t('order.payment.paid')}`}
-              </button>
+          {/* Security & Accepted Payment Badges */}
+          <div className="text-center space-y-1.5 pt-1">
+            <p className="text-[11px] sm:text-xs text-[#582A00]/70 font-medium">
+              Accepts <strong>Google Pay</strong>, <strong>PhonePe</strong>, <strong>Paytm</strong>, <strong>UPI</strong>, <strong>Cards</strong> & <strong>Netbanking</strong>
+            </p>
+            <div className="inline-flex items-center gap-1.5 text-[10px] text-[#582A00]/50 font-medium">
+              <span>🛡️</span>
+              <span>256-Bit SSL Encrypted · RBI Authorized Payment Gateway</span>
             </div>
-          )}
-
-          <p className="text-center text-[11px] text-[#3A1C10]/50">
-            Order ID: {currentOrderId.slice(-8).toUpperCase()}
-          </p>
+          </div>
         </>
       )}
     </div>
@@ -915,7 +927,7 @@ function OrderPageContent() {
         <div className="max-w-md mx-auto">
           {/* Page title */}
           <div className="text-center mb-5">
-            <h1 className="text-2xl sm:text-3xl font-black text-[#063D20]">{t('order.title')}</h1>
+            <h1 className="text-2xl sm:text-3xl font-black text-[#582A00]">{t('order.title')}</h1>
             <p className="text-[#3A1C10]/60 text-xs sm:text-sm mt-1">
               Home delivery within Villupuram City · Pickup at Villupuram Railway Station
             </p>
@@ -987,7 +999,7 @@ function OrderPageContent() {
 
 export default function OrderPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-[#063D20]">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-[#C42F2C] font-bold">Loading...</div>}>
       <OrderPageContent />
     </Suspense>
   );

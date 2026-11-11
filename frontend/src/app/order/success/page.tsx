@@ -59,7 +59,7 @@ function SuccessContent() {
           </motion.div>
 
           <motion.h1
-            className="text-4xl font-black text-[#063D20] mb-3"
+            className="text-4xl font-black text-[#582A00] mb-3"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -97,7 +97,7 @@ function SuccessContent() {
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-100">
                   <span className="text-[#3A1C10]/60">Amount</span>
-                  <span className="font-black text-[#E95012]">₹{order.totalAmount}</span>
+                  <span className="font-black text-[#C42F2C]">₹{order.totalAmount}</span>
                 </div>
                 <div className="flex justify-between py-2">
                   <span className="text-[#3A1C10]/60">Status</span>
@@ -134,13 +134,13 @@ function SuccessContent() {
               href={`https://wa.me/917871949015?text=Hi%2C%20my%20order%20ID%20is%20${orderId?.slice(-8).toUpperCase()}%20and%20I%20have%20paid.%20Please%20confirm.`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 py-4 bg-[#25D366] text-white rounded-2xl font-bold text-lg hover:bg-[#20bb5a] transition-colors"
+              className="flex items-center justify-center gap-2 py-4 bg-[#25D366] text-white rounded-2xl font-bold text-lg hover:bg-[#20bb5a] transition-colors shadow"
             >
               💬 {t('success.whatsapp')}
             </a>
             <Link
               href="/"
-              className="py-4 border-2 border-[#063D20] text-[#063D20] rounded-2xl font-bold hover:bg-[#063D20] hover:text-[#FFF4DD] transition-colors"
+              className="py-4 border-2 border-[#582A00]/20 text-[#582A00] rounded-2xl font-bold hover:bg-[#582A00]/10 transition-colors"
             >
               ← {t('success.home')}
             </Link>
@@ -148,7 +148,7 @@ function SuccessContent() {
 
           {/* Pickup & Delivery reminder */}
           <motion.div
-            className="mt-8 bg-[#063D20] text-[#FFF4DD] rounded-2xl p-5 text-sm"
+            className="mt-8 bg-[#582A00] text-[#FFF4DD] rounded-2xl p-5 text-sm shadow-md"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
