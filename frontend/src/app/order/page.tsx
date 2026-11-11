@@ -298,8 +298,8 @@ function PhoneStep({
               {t('order.phone.label')} *
             </label>
             <div className="flex gap-2">
-              <div className="flex items-center px-3 py-2.5 bg-gray-100 border-2 border-gray-200 rounded-xl text-xs sm:text-sm font-bold text-gray-600">
-                🇮🇳 +91
+              <div className="flex items-center px-3.5 py-2.5 bg-stone-100 border-2 border-stone-200 rounded-xl text-xs sm:text-sm font-bold text-stone-700">
+                +91
               </div>
               <input
                 id="phone"
@@ -485,7 +485,12 @@ function PickupStep({
       {items && items.length > 0 ? (
         <div className="bg-[#FAF7F2] border border-[#582A00]/15 rounded-xl p-3 text-xs sm:text-sm">
           <div className="flex items-center justify-between font-bold text-[#582A00] mb-2 pb-1.5 border-b border-[#582A00]/10">
-            <span>{orderSource === 'cart' ? '🛒 Cart Items' : '📦 Selected Order'}</span>
+            <span className="flex items-center gap-1.5">
+              <svg className="w-4 h-4 text-[#C42F2C]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              <span>{orderSource === 'cart' ? 'Cart Items' : 'Selected Order'}</span>
+            </span>
             <span className="text-[#C42F2C] font-black text-sm">
               Total: ₹{grandTotal}
             </span>
@@ -517,40 +522,7 @@ function PickupStep({
           Select Delivery Option *
         </label>
         <div className="space-y-2.5">
-          {/* Option 1: Pick up in-store */}
-          <div
-            onClick={() => onDeliveryMethod('pickup')}
-            className={`cursor-pointer rounded-xl border-2 p-3 sm:p-3.5 transition-all flex items-start gap-3 ${
-              deliveryMethod === 'pickup'
-                ? 'border-[#C42F2C] bg-[#FFF8F6] shadow-xs'
-                : 'border-[#582A00]/15 bg-white hover:border-[#582A00]/30'
-            }`}
-          >
-            <div className="pt-0.5">
-              <input
-                type="radio"
-                name="shippingMethod"
-                checked={deliveryMethod === 'pickup'}
-                onChange={() => onDeliveryMethod('pickup')}
-                className="w-4 h-4 text-[#C42F2C] accent-[#C42F2C] cursor-pointer"
-              />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-sm sm:text-base text-[#582A00]">
-                  Pick Up in Store <span className="text-xs font-semibold text-[#D97706]">(For outside Villupuram)</span>
-                </span>
-                <span className="text-xs font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                  FREE
-                </span>
-              </div>
-              <p className="text-xs text-[#582A00]/70 mt-0.5">
-                Pickup directly from store at <strong>Villupuram Railway Station (1st Platform)</strong>. Recommended for customers outside Villupuram.
-              </p>
-            </div>
-          </div>
-
-          {/* Option 2: HOME DELIVERY */}
+          {/* Option 1: HOME DELIVERY (Default) */}
           <div
             onClick={() => onDeliveryMethod('delivery')}
             className={`cursor-pointer rounded-xl border-2 p-3 sm:p-3.5 transition-all flex items-start gap-3 ${
@@ -582,6 +554,39 @@ function PickupStep({
               </p>
             </div>
           </div>
+
+          {/* Option 2: Pick up in-store */}
+          <div
+            onClick={() => onDeliveryMethod('pickup')}
+            className={`cursor-pointer rounded-xl border-2 p-3 sm:p-3.5 transition-all flex items-start gap-3 ${
+              deliveryMethod === 'pickup'
+                ? 'border-[#C42F2C] bg-[#FFF8F6] shadow-xs'
+                : 'border-[#582A00]/15 bg-white hover:border-[#582A00]/30'
+            }`}
+          >
+            <div className="pt-0.5">
+              <input
+                type="radio"
+                name="shippingMethod"
+                checked={deliveryMethod === 'pickup'}
+                onChange={() => onDeliveryMethod('pickup')}
+                className="w-4 h-4 text-[#C42F2C] accent-[#C42F2C] cursor-pointer"
+              />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-sm sm:text-base text-[#582A00]">
+                  Pick Up in Store <span className="text-xs font-semibold text-[#D97706]">(For outside Villupuram)</span>
+                </span>
+                <span className="text-xs font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                  FREE
+                </span>
+              </div>
+              <p className="text-xs text-[#582A00]/70 mt-0.5">
+                Pickup directly from store at <strong>Villupuram Railway Station (1st Platform)</strong>. Recommended for customers outside Villupuram.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -589,7 +594,10 @@ function PickupStep({
       {deliveryMethod === 'pickup' && (
         <div className="bg-[#FAF7F2] border border-[#582A00]/15 rounded-xl p-3.5 space-y-1 text-xs text-[#582A00]">
           <div className="font-bold text-[#C42F2C] flex items-center gap-1.5 text-xs sm:text-sm">
-            <span>🏬</span>
+            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
             <span>Confirmed Store Pickup Location</span>
           </div>
           <p className="font-semibold">
@@ -677,8 +685,6 @@ function PaymentStep({
   onClearCart?: () => void;
 }) {
   const { t } = useLanguage();
-  const [timeLeft, setTimeLeft] = useState(90);
-  const [expired, setExpired] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [creating, setCreating] = useState(true);
   const [currentOrderId, setCurrentOrderId] = useState('');
@@ -711,11 +717,6 @@ function PaymentStep({
           pincode: orderState.pincode || undefined,
         });
         setCurrentOrderId(result.orderId);
-
-        if (result.paymentExpiry) {
-          const expiryMs = new Date(result.paymentExpiry).getTime() - Date.now();
-          setTimeLeft(Math.max(0, Math.floor(expiryMs / 1000)));
-        }
       } catch (err: any) {
         setCreateError(err.message || t('common.error'));
       } finally {
@@ -725,27 +726,6 @@ function PaymentStep({
     create();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Countdown timer
-  useEffect(() => {
-    if (creating || expired || timeLeft <= 0) return;
-    if (timeLeft === 0) {
-      setExpired(true);
-      return;
-    }
-    const interval = setInterval(() => {
-      setTimeLeft((t) => {
-        if (t <= 1) {
-          setExpired(true);
-          clearInterval(interval);
-          return 0;
-        }
-        return t - 1;
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [creating, expired]);
 
   // Razorpay Pay Handler
   const handleRazorpayPay = async () => {
@@ -841,8 +821,6 @@ function PaymentStep({
     }
   };
 
-  const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
-  const urgent = timeLeft <= 30;
   const grandTotal =
     orderState.totalAmount ||
     orderState.items.reduce((s, it) => s + it.price * it.quantity, 0);
@@ -875,88 +853,49 @@ function PaymentStep({
 
   return (
     <div className="space-y-4">
-      {/* Top Header & Modern Countdown Pill */}
-      <div className="flex items-center justify-between pb-3 border-b border-[#582A00]/10">
-        <div>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[#D97706]">
-            Step 4 of 4 · Final Step
-          </span>
-          <h2 className="text-lg sm:text-xl font-black text-[#582A00] leading-tight">
-            Review & Pay
-          </h2>
-        </div>
-
-        {/* Sleek countdown timer pill */}
-        {!expired && (
-          <div
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-colors ${
-              urgent
-                ? 'bg-red-50 text-red-600 border border-red-200 animate-pulse'
-                : 'bg-amber-50 text-[#92400E] border border-amber-200/70'
-            }`}
-          >
-            <span className="text-sm">⏳</span>
-            <span>{formatTime(timeLeft)}</span>
-          </div>
-        )}
+      {/* Top Header */}
+      <div className="pb-3 border-b border-[#582A00]/10">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-[#D97706]">
+          Step 4 of 4 · Final Step
+        </span>
+        <h2 className="text-lg sm:text-xl font-black text-[#582A00] leading-tight">
+          Review & Pay
+        </h2>
       </div>
 
-      {expired ? (
-        <div className="text-center py-8 bg-red-50/50 rounded-2xl border border-red-100 p-6">
-          <div className="text-3xl mb-2">⏱️</div>
-          <h3 className="font-bold text-[#C42F2C] text-base mb-1">Session Expired</h3>
-          <p className="text-xs text-[#582A00]/70 mb-4">
-            Your 90-second batch reservation has timed out to ensure fresh inventory.
-          </p>
-          <button
-            onClick={onBack}
-            className="px-6 py-2.5 bg-[#C42F2C] text-white rounded-xl font-bold text-sm shadow hover:bg-[#a82421] transition-colors"
-          >
-            Start Checkout Again
-          </button>
+      {/* Professional Order Summary Card */}
+      <div className="bg-[#FAF7F2] rounded-2xl border border-[#582A00]/10 p-4 sm:p-5">
+        <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#582A00]/10">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#582A00]">
+            {orderState.orderSource === 'cart' ? 'Cart Summary' : 'Order Summary'}
+          </span>
+          <span className="text-[11px] font-mono text-[#582A00]/60 bg-white px-2 py-0.5 rounded border border-[#582A00]/10">
+            #{currentOrderId.slice(-8).toUpperCase()}
+          </span>
         </div>
-      ) : (
-        <>
-          {/* Professional Order Summary Card */}
-          <div className="bg-[#FAF7F2] rounded-2xl border border-[#582A00]/10 p-4 sm:p-5">
-            <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#582A00]/10">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#582A00]">
-                {orderState.orderSource === 'cart' ? 'Cart Summary' : 'Order Summary'}
-              </span>
-              <span className="text-[11px] font-mono text-[#582A00]/60 bg-white px-2 py-0.5 rounded border border-[#582A00]/10">
-                #{currentOrderId.slice(-8).toUpperCase()}
-              </span>
-            </div>
 
-            {/* Itemized List */}
-            <div className="space-y-2 mb-3">
-              {orderState.items && orderState.items.length > 0 ? (
-                orderState.items.map((it) => (
-                  <div key={it.id} className="flex items-center justify-between text-xs sm:text-sm">
-                    <div className="flex items-center gap-2">
-                      <span className="text-base">🍬</span>
-                      <div>
-                        <span className="font-bold text-[#582A00]">{it.weight}</span>
-                        <span className="text-xs text-[#582A00]/60 ml-2">× {it.quantity}</span>
-                      </div>
-                    </div>
-                    <span className="font-bold text-[#582A00]">₹{it.price * it.quantity}</span>
-                  </div>
-                ))
-              ) : (
-                <div className="flex items-center justify-between text-xs sm:text-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="text-base">🍬</span>
-                    <span className="font-bold text-[#582A00]">
-                      {orderState.selectedProduct?.weight || 'Mutta Mittai Pack'}
-                    </span>
-                  </div>
-                  <span className="font-bold text-[#582A00]">
-                    ₹{orderState.selectedProduct?.price || grandTotal}
-                  </span>
-                </div>
-              )}
+        {/* Itemized List */}
+        <div className="space-y-2 mb-3">
+          {orderState.items && orderState.items.length > 0 ? (
+            orderState.items.map((it) => (
+              <div key={it.id} className="flex items-center justify-between text-xs sm:text-sm">
+                <span className="font-bold text-[#582A00]">
+                  {it.weight} <span className="text-xs text-[#582A00]/60 font-normal ml-1">× {it.quantity}</span>
+                </span>
+                <span className="font-bold text-[#582A00]">₹{it.price * it.quantity}</span>
+              </div>
+            ))
+          ) : (
+            <div className="flex items-center justify-between text-xs sm:text-sm">
+              <span className="font-bold text-[#582A00]">
+                {orderState.selectedProduct?.weight || 'Mutta Mittai Pack'}
+              </span>
+              <span className="font-bold text-[#582A00]">
+                ₹{orderState.selectedProduct?.price || grandTotal}
+              </span>
             </div>
+          )}
+        </div>
 
             {/* Pricing breakdown & Delivery Selection */}
             <div className="pt-2 border-t border-[#582A00]/10 space-y-1.5 text-xs text-[#582A00]/70">
@@ -968,8 +907,8 @@ function PaymentStep({
                 <span>Shipping Method</span>
                 <span className="text-[#C42F2C] font-bold">
                   {orderState.deliveryMethod === 'pickup'
-                    ? '🏬 Pick up in-store (Free)'
-                    : '🚚 Home Delivery (Free)'}
+                    ? 'Store Pickup (Free)'
+                    : 'Home Delivery (Free)'}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -991,11 +930,11 @@ function PaymentStep({
 
             {/* Customer & Location chip */}
             <div className="mt-3 pt-2.5 border-t border-[#582A00]/10 flex items-center justify-between text-[11px] text-[#582A00]/70 flex-wrap gap-1">
-              <span>👤 {orderState.name} ({orderState.phone})</span>
+              <span>Customer: {orderState.name} ({orderState.phone})</span>
               <span>
                 {orderState.deliveryMethod === 'pickup'
-                  ? '📍 Store Pickup: Villupuram Railway Station'
-                  : `📍 Home Delivery: ${orderState.city || 'Villupuram'}`}
+                  ? 'Fulfillment: Store Pickup (Railway Station)'
+                  : `Fulfillment: Home Delivery (${orderState.city || 'Villupuram'})`}
               </span>
             </div>
           </div>
@@ -1013,7 +952,10 @@ function PaymentStep({
               </span>
             ) : (
               <span className="flex items-center gap-2">
-                <span>🔒</span>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0110 0v4" />
+                </svg>
                 <span>Pay ₹{grandTotal} with Razorpay</span>
               </span>
             )}
@@ -1024,13 +966,13 @@ function PaymentStep({
             <p className="text-[11px] sm:text-xs text-[#582A00]/70 font-medium">
               Accepts <strong>Google Pay</strong>, <strong>PhonePe</strong>, <strong>Paytm</strong>, <strong>UPI</strong>, <strong>Cards</strong> & <strong>Netbanking</strong>
             </p>
-            <div className="inline-flex items-center gap-1.5 text-[10px] text-[#582A00]/50 font-medium">
-              <span>🛡️</span>
+            <div className="inline-flex items-center gap-1.5 text-[10px] text-[#582A00]/60 font-medium">
+              <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
               <span>256-Bit SSL Encrypted · RBI Authorized Payment Gateway</span>
             </div>
           </div>
-        </>
-      )}
 
       {/* Payment Cancelled Modal matching Image 3 */}
       <AnimatePresence>
@@ -1043,8 +985,10 @@ function PaymentStep({
               transition={{ duration: 0.2 }}
               className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-7 max-w-sm sm:max-w-md w-full text-center space-y-4"
             >
-              <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-500 border border-amber-200 flex items-center justify-center text-2xl mx-auto">
-                ⚠️
+              <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-500 border border-amber-200 flex items-center justify-center mx-auto">
+                <svg className="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
               </div>
               <h3 className="text-xl font-bold text-[#1F242D]">Payment Cancelled</h3>
               <p className="text-sm text-[#582A00]/75 leading-relaxed">
@@ -1081,7 +1025,7 @@ function OrderPageContent() {
     items: [],
     orderSource: 'direct',
     selectedProduct: null,
-    deliveryMethod: 'pickup',
+    deliveryMethod: 'delivery',
     street: '',
     city: 'Villupuram',
     pincode: '',

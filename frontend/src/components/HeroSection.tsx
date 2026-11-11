@@ -121,12 +121,7 @@ export default function HeroSection() {
         }}
       />
 
-      {/* Floating decorative elements */}
-      <FloatingElement emoji="🥛" className="top-24 left-4 md:left-12 opacity-60" delay={0} />
-      <FloatingElement emoji="🥚" className="top-32 right-4 md:right-16 opacity-60" delay={1.5} />
-      <FloatingElement emoji="🌿" className="bottom-32 left-6 md:left-20 opacity-50" delay={0.8} />
-      <FloatingElement emoji="✨" className="bottom-24 right-8 md:right-24 opacity-70" delay={2} />
-      <FloatingElement emoji="🌰" className="top-1/2 left-2 md:left-8 opacity-40" delay={1} />
+
 
       <div className="container mx-auto px-4 max-w-6xl py-12">
         <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
@@ -203,7 +198,9 @@ export default function HeroSection() {
                 href="/order"
                 className="group inline-flex items-center justify-center gap-2 px-7 py-4 bg-[#E95012] text-white rounded-2xl font-bold text-lg hover:bg-[#c7400d] transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1"
               >
-                <span>🛒</span>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
                 {t('hero.cta')}
                 <motion.span
                   animate={reduce ? {} : { x: [0, 4, 0] }}
@@ -234,15 +231,17 @@ export default function HeroSection() {
               transition={{ delay: 1 }}
             >
               {[
-                { icon: '🌿', label: 'Pure Ingredients', ta: 'தூய பொருட்கள்' },
-                { icon: '👨‍🍳', label: 'Traditional Recipe', ta: 'பாரம்பரிய செய்முறை' },
-                { icon: '✅', label: 'FSSAI Certified', ta: 'FSSAI சான்றிதழ்' },
+                { label: 'Pure Ingredients', ta: 'தூய பொருட்கள்' },
+                { label: 'Traditional Recipe', ta: 'பாரம்பரிய செய்முறை' },
+                { label: 'FSSAI Certified', ta: 'FSSAI சான்றிதழ்' },
               ].map((badge) => (
                 <div
                   key={badge.label}
-                  className="flex items-center gap-1.5 bg-[#0A512B] rounded-full px-3 py-1.5 text-xs text-[#FFF4DD]/90"
+                  className="flex items-center gap-1.5 bg-[#0A512B] rounded-full px-3.5 py-1.5 text-xs text-[#FFF4DD]/90"
                 >
-                  <span>{badge.icon}</span>
+                  <svg className="w-3.5 h-3.5 text-[#F5B51B]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
                   <span>{badge.label}</span>
                 </div>
               ))}

@@ -20,24 +20,43 @@ export interface SavedOrder {
 
 const STORAGE_KEY = 'mm_ordered_items';
 
+export function sanitizeItemWeight(raw: string): string {
+  if (!raw) return 'Mutta Mittai Pack';
+  return raw
+    .split(/\||\s*Razorpay:/i)[0]
+    .replace(/\[STORE PICKUP\]|\[HOME DELIVERY\]/gi, '')
+    .trim() || 'Mutta Mittai Pack';
+}
+
+function normalizeOrder(order: SavedOrder): SavedOrder {
+  const isPickup =
+    order.deliveryMethod === 'pickup' ||
+    Boolean(order.streetAddress?.toLowerCase().includes('pick up')) ||
+    Boolean(order.streetAddress?.toLowerCase().includes('railway')) ||
+    Boolean(order.city?.toLowerCase().includes('pickup')) ||
+    Boolean(order.city?.toLowerCase().includes('store'));
+
+  const sanitizedItems = (order.items || []).map((it) => ({
+    ...it,
+    weight: sanitizeItemWeight(it.weight),
+  }));
+
+  return {
+    ...order,
+    deliveryMethod: isPickup ? 'pickup' : 'delivery',
+    city: isPickup ? 'Villupuram Railway Station' : (order.city ? order.city.replace(/\(Store Pickup\)/gi, '').trim() : 'Villupuram City'),
+    items: sanitizedItems,
+  };
+}
+
 export function getSavedOrders(): SavedOrder[] {
   if (typeof window === 'undefined') return [];
   try {
-    // Check localStorage first
-    const local = localStorage.getItem(STORAGE_KEY);
-    if (local) {
-      const parsed = JSON.parse(local);
-      if (Array.isArray(parsed)) return parsed;
-    }
-
-    // Fallback check sessionStorage
-    const session = sessionStorage.getItem(STORAGE_KEY);
-    if (session) {
-      const parsed = JSON.parse(session);
+    const raw = localStorage.getItem(STORAGE_KEY) || sessionStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) {
-        // Sync to localStorage
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed)); } catch {}
-        return parsed;
+        return parsed.map(normalizeOrder);
       }
     }
   } catch (err) {
@@ -50,15 +69,14 @@ export function saveOrderToStorage(order: SavedOrder): void {
   if (typeof window === 'undefined') return;
   try {
     const existing = getSavedOrders();
-    // Prepend or update existing order
-    const filtered = existing.filter((o) => o.id !== order.id);
-    const updated = [order, ...filtered].slice(0, 50); // Keep latest 50 orders
+    const normalized = normalizeOrder(order);
+    const filtered = existing.filter((o) => o.id !== normalized.id);
+    const updated = [normalized, ...filtered].slice(0, 50);
 
     const json = JSON.stringify(updated);
     localStorage.setItem(STORAGE_KEY, json);
     sessionStorage.setItem(STORAGE_KEY, json);
 
-    // Dispatch custom event so Header or any active drawer updates in real-time
     window.dispatchEvent(new CustomEvent('mm_orders_updated'));
   } catch (err) {
     console.error('Failed to save order to storage:', err);

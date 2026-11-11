@@ -88,9 +88,11 @@ export default function LogoIntro() {
           zIndex: 9999,
           pointerEvents: 'none',
           willChange: 'transform, opacity',
-          // Phase 'in': scale up from tiny with spring
-          // Phase 'hold': sit centered at full size
-          // Phase 'fly': translate + scale to header position, then fade out on arrival
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 'max-content',
           transform: isFlying
             ? flyTransform
             : phase === 'in'
@@ -102,20 +104,35 @@ export default function LogoIntro() {
             : 'transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s ease',
         }}
       >
-        <Image
-          src="/images/logo.jpg"
-          alt="APPAMPATTU Egg Sweet"
-          width={INTRO_SIZE}
-          height={INTRO_SIZE}
-          priority
-          style={{ borderRadius: '50%', display: 'block' }}
-        />
+        <div
+          style={{
+            width: INTRO_SIZE,
+            height: INTRO_SIZE,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto',
+          }}
+        >
+          <Image
+            src="/images/logo.jpg"
+            alt="APPAMPATTU Egg Sweet"
+            width={INTRO_SIZE}
+            height={INTRO_SIZE}
+            priority
+            style={{ borderRadius: '50%', display: 'block', margin: '0 auto' }}
+          />
+        </div>
 
         {/* Brand text — visible only during 'hold', hidden before flying */}
         <div
           style={{
             marginTop: 18,
             textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
             opacity: phase === 'hold' ? 1 : 0,
             transform: phase === 'hold' ? 'translateY(0)' : 'translateY(8px)',
             transition: 'opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s',

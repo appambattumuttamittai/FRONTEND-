@@ -60,7 +60,12 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
         animate={{ opacity: 1, scale: 1 }}
       >
         <div className="text-center mb-8">
-          <div className="text-5xl mb-3">🔐</div>
+          <div className="w-14 h-14 bg-emerald-50 text-[#063D20] border border-emerald-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0110 0v4" />
+            </svg>
+          </div>
           <h1 className="text-2xl font-black text-[#063D20]">Admin Panel</h1>
           <p className="text-[#3A1C10]/50 text-sm mt-1">Appambattu Mutta Mittai</p>
         </div>
@@ -108,24 +113,78 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
 // Stats cards
 function StatsGrid({ stats }: { stats: DashboardStats }) {
   const cards = [
-    { label: 'Orders Today', value: stats.ordersToday, icon: '📦', color: 'text-[#063D20]' },
-    { label: 'Revenue Today', value: `₹${stats.revenueToday}`, icon: '💰', color: 'text-green-600' },
-    { label: 'Pending Review', value: stats.pendingReview, icon: '🔍', color: 'text-blue-600' },
-    { label: 'Paid Orders', value: stats.paidOrders, icon: '✅', color: 'text-green-600' },
-    { label: 'Failed/Expired', value: stats.failedOrders, icon: '❌', color: 'text-red-600' },
-    { label: 'Total Orders', value: stats.totalOrders, icon: '📊', color: 'text-[#063D20]' },
+    {
+      label: 'Orders Today',
+      value: stats.ordersToday,
+      color: 'text-[#063D20]',
+      icon: (
+        <svg className="w-5 h-5 mx-auto text-[#063D20]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Revenue Today',
+      value: `₹${stats.revenueToday}`,
+      color: 'text-emerald-700',
+      icon: (
+        <svg className="w-5 h-5 mx-auto text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Pending Review',
+      value: stats.pendingReview,
+      color: 'text-amber-700',
+      icon: (
+        <svg className="w-5 h-5 mx-auto text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Paid Orders',
+      value: stats.paidOrders,
+      color: 'text-emerald-700',
+      icon: (
+        <svg className="w-5 h-5 mx-auto text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Failed/Expired',
+      value: stats.failedOrders,
+      color: 'text-rose-700',
+      icon: (
+        <svg className="w-5 h-5 mx-auto text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Total Orders',
+      value: stats.totalOrders,
+      color: 'text-[#063D20]',
+      icon: (
+        <svg className="w-5 h-5 mx-auto text-[#063D20]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+      ),
+    },
   ];
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
       {cards.map((c, i) => (
         <motion.div
           key={i}
-          className="bg-white rounded-2xl shadow p-4 text-center"
+          className="bg-white rounded-2xl shadow p-4 text-center border border-gray-100"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.05 }}
         >
-          <div className="text-2xl mb-1">{c.icon}</div>
+          <div className="mb-2">{c.icon}</div>
           <div className={`text-2xl font-black ${c.color}`}>{c.value}</div>
           <div className="text-xs text-gray-500 font-medium mt-1">{c.label}</div>
         </motion.div>
@@ -187,9 +246,12 @@ function OrdersTable({ onSelectOrder }: { onSelectOrder: (order: AdminOrder) => 
         </select>
         <a
           href={api.adminExportCsv(status ? { status } : {})}
-          className="px-3 py-2 bg-[#063D20] text-white rounded-lg text-sm font-bold hover:bg-[#0A512B]"
+          className="px-3.5 py-2 bg-[#063D20] text-white rounded-lg text-xs font-bold hover:bg-[#0A512B] flex items-center gap-1.5"
         >
-          ⬇ CSV
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span>Export CSV</span>
         </a>
       </div>
 
@@ -230,10 +292,10 @@ function OrdersTable({ onSelectOrder }: { onSelectOrder: (order: AdminOrder) => 
                     <td className="px-4 py-3 font-medium text-[#582A00] whitespace-nowrap">{itemsText}</td>
                     <td className="px-4 py-3 font-bold text-[#C42F2C]">₹{order.totalAmount}</td>
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                      <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${
                         isPickup ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-blue-50 text-blue-800 border border-blue-200'
                       }`}>
-                        {isPickup ? '🏬 Pickup' : '🚚 Delivery'}
+                        {isPickup ? 'Store Pickup' : 'Home Delivery'}
                       </span>
                     </td>
                     <td className="px-4 py-3"><StatusBadge status={order.status} /></td>
@@ -365,7 +427,7 @@ function OrderModal({ order, onClose, onRefresh }: { order: AdminOrder; onClose:
           <div className="pt-2 border-t border-gray-200">
             <span className="text-gray-400 text-xs font-semibold uppercase">Delivery Choice</span>
             <p className="font-bold text-[#582A00]">
-              {isPickup ? '🏬 Pick Up In-Store (Villupuram Railway Station, 1st Platform)' : '🚚 HOME DELIVERY (Within Villupuram City)'}
+              {isPickup ? 'Pick Up In-Store (Villupuram Railway Station, 1st Platform)' : 'Home Delivery (Within Villupuram City)'}
             </p>
           </div>
 
@@ -399,7 +461,10 @@ function OrderModal({ order, onClose, onRefresh }: { order: AdminOrder; onClose:
             download={`Invoice-${order.id.slice(-8).toUpperCase()}.pdf`}
             className="w-full flex items-center justify-center gap-2 py-2.5 bg-white border border-[#C42F2C] text-[#C42F2C] rounded-xl font-bold text-xs hover:bg-[#C42F2C] hover:text-white transition-all shadow-xs"
           >
-            📄 Download Official Tax Invoice (PDF)
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>Download Official Tax Invoice (PDF)</span>
           </a>
         </div>
 
@@ -567,19 +632,21 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   };
 
   const tabs = [
-    { key: 'orders', label: '📦 Orders' },
-    { key: 'products', label: '⚙️ Products' },
-    { key: 'analytics', label: '📊 Analytics' },
-    { key: 'feedback', label: '⭐ Feedback' },
-    { key: 'content', label: '🖼️ Site Content' },
+    { key: 'orders', label: 'Orders' },
+    { key: 'products', label: 'Products' },
+    { key: 'analytics', label: 'Analytics' },
+    { key: 'feedback', label: 'Feedback' },
+    { key: 'content', label: 'Site Content' },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-[#063D20] text-white px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">🥚</span>
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-full bg-[#F5B51B] flex items-center justify-center font-black text-[#582A00] text-xs shadow-xs">
+            AM
+          </div>
           <div>
             <div className="font-black text-sm">Mutta Mittai Admin</div>
             <div className="text-[#F5B51B] text-xs">Appambattu, Villupuram</div>
@@ -588,8 +655,11 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         <div className="flex items-center gap-3">
           {sheetsUrl && (
             <a href={sheetsUrl} target="_blank" rel="noopener noreferrer"
-              className="hidden md:flex items-center gap-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-bold">
-              📊 Google Sheets
+              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-green-700 hover:bg-green-800 text-white rounded-lg text-xs font-bold transition-colors">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span>Google Sheets</span>
             </a>
           )}
           <button onClick={handleLogout} className="px-3 py-1.5 bg-[#E95012] hover:bg-[#c7400d] rounded-lg text-sm font-bold">

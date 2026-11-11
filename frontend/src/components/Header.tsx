@@ -147,13 +147,15 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
-            {/* Ordered Items desktop button */}
+            {/* My Orders desktop button */}
             <button
               onClick={() => setOrderedItemsOpen(true)}
               className="px-4 py-2 text-sm font-semibold text-[#582A00] hover:text-[#C42F2C] rounded-full hover:bg-[#C42F2C]/8 transition-all flex items-center gap-1.5 cursor-pointer"
             >
-              <span>📦</span>
-              <span>Ordered Items</span>
+              <svg className="w-4 h-4 text-[#C42F2C]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              <span>My Orders</span>
             </button>
           </div>
 
@@ -249,13 +251,15 @@ export default function Header() {
               </Link>
             ))}
 
-            {/* Ordered Items inside Hamburger Menu */}
+            {/* My Orders inside Hamburger Menu */}
             <button
               onClick={() => { setMenuOpen(false); setOrderedItemsOpen(true); }}
               className="py-2.5 text-center text-sm font-semibold text-[#582A00] hover:text-[#C42F2C] rounded-xl hover:bg-[#C42F2C]/6 transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>📦</span>
-              <span>Ordered Items</span>
+              <svg className="w-4 h-4 text-[#C42F2C]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              <span>My Orders</span>
             </button>
 
             {/* My Cart */}
