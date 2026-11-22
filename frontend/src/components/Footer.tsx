@@ -166,6 +166,10 @@ export default function Footer() {
                 Traditional Tamil Nadu egg sweet — made fresh daily.
                 One product. One station. Authentic since generations.
               </p>
+              {/* Swiggy note */}
+              <p className="text-xs mt-3 font-semibold hidden md:block" style={{ color: '#E95012' }}>
+                🛵 Also on Swiggy
+              </p>
             </div>
 
             {/* Pack Sizes */}

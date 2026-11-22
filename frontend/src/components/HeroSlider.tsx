@@ -29,7 +29,6 @@ export default function HeroSlider() {
         aria-hidden="true"
       >
         <source src="/videos/hero-bg-main.mp4" type="video/mp4" />
-        <source src="/videos/hero-bg.mp4" type="video/mp4" />
       </video>
 
       {/* Dark gradient overlay — mobile: lighter so video shows through more */}
@@ -123,6 +122,14 @@ export default function HeroSlider() {
                 WhatsApp Order
               </a>
             </div>
+
+            {/* Swiggy availability badge */}
+            <p className="mt-4 text-white/70 text-sm flex items-center gap-1.5">
+              <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+              </svg>
+              Also available on <span className="font-bold text-white/90">Swiggy</span> — search &ldquo;Appampattu Mutta Mittai&rdquo;
+            </p>
           </div>
         </div>
       </div>

@@ -237,8 +237,6 @@ export default function FeedbackSection() {
         aria-hidden="true"
       >
         <source src="/videos/reviews-bg.mp4" type="video/mp4" />
-        <source src="/videos/hero-bg-main.mp4" type="video/mp4" />
-        <source src="/videos/hero-bg.mp4" type="video/mp4" />
       </video>
 
       {/* Dark overlay — lighter on mobile so video is clearly visible */}

@@ -4,14 +4,28 @@ import { LanguageProvider } from '@/context/LanguageContext';
 import ClientProviders from '@/components/ClientProviders';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://APPAMPATTUmuttamittai.com'),
+  metadataBase: new URL('https://appambattumuttamittai.com'),
   title: {
-    default: 'APPAMPATTU Mutta Mittai | அப்பம்பட்டு முட்டை மிட்டாய் | Traditional Egg Sweet Villupuram',
-    template: '%s | APPAMPATTU Mutta Mittai',
+    default: 'Appampattu Mutta Mittai | முட்டை மிட்டாய் | Best Egg Sweet in Villupuram',
+    template: '%s | Appampattu Mutta Mittai',
   },
   description:
-    'APPAMPATTU Mutta Mittai – authentic traditional egg sweet from Meenambur, Villupuram, Tamil Nadu. Made with milk, egg, ghee and sugar. Home Delivery Available within Villupuram.',
-  keywords: ['mutta mittai', 'egg sweet', 'tamil sweet', 'villupuram', 'APPAMPATTU', 'traditional sweet'],
+    'Appampattu Mutta Mittai — the original traditional egg sweet (முட்டை மிட்டாய்) from Meenambur, Appampattu, Villupuram, Tamil Nadu. Made fresh daily with milk, egg, cashew and sugar. Order online or find us on Swiggy. Home delivery within Villupuram city.',
+  keywords: [
+    'appampattu', 'appambattu', 'mutta mittai', 'egg sweet', 'egg sweet villupuram',
+    'villupuram sweet', 'sweet villupuram', 'traditional egg sweet', 'tamil egg sweet',
+    'முட்டை மிட்டாய்', 'அப்பம்பட்டு முட்டை மிட்டாய்', 'egg sweet near me',
+    'muttai mittai', 'appampattu egg sweet', 'appambattu egg sweet',
+    'villupuram traditional sweet', 'meenambur sweet', 'swiggy egg sweet villupuram',
+  ],
+  authors: [{ name: 'Appampattu Mutta Mittai', url: 'https://appambattumuttamittai.com' }],
+  creator: 'Appampattu Mutta Mittai',
+  publisher: 'Appampattu Mutta Mittai',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large', 'max-video-preview': -1 },
+  },
   icons: {
     icon: '/images/logo.jpg',
     apple: '/images/logo.jpg',
@@ -20,9 +34,20 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_IN',
-    url: 'https://APPAMPATTUmuttamittai.com',
-    siteName: 'APPAMPATTU Mutta Mittai',
-    images: [{ url: '/images/logo.jpg', width: 512, height: 512, alt: 'APPAMPATTU Egg Sweet Logo' }],
+    url: 'https://appambattumuttamittai.com',
+    siteName: 'Appampattu Mutta Mittai',
+    title: 'Appampattu Mutta Mittai — Original Egg Sweet from Villupuram',
+    description: 'Order the authentic Appampattu Mutta Mittai (முட்டை மிட்டாய்) — traditional Tamil Nadu egg sweet made fresh daily in Villupuram. Available online and on Swiggy.',
+    images: [{ url: '/images/logo.jpg', width: 512, height: 512, alt: 'Appampattu Mutta Mittai — Traditional Egg Sweet Villupuram' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Appampattu Mutta Mittai | Traditional Egg Sweet Villupuram',
+    description: 'Order authentic Mutta Mittai (முட்டை மிட்டாய்) from Villupuram. Made fresh daily. Available on Swiggy and online delivery.',
+    images: ['/images/logo.jpg'],
+  },
+  alternates: {
+    canonical: 'https://appambattumuttamittai.com',
   },
 };
 

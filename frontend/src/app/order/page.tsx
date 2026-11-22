@@ -448,6 +448,7 @@ function PickupStep({
 }) {
   const { t } = useLanguage();
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submittingStep, setSubmittingStep] = useState(false);
 
   const validate = () => {
     const errs: Record<string, string> = {};
@@ -459,9 +460,12 @@ function PickupStep({
   };
 
   const submit = () => {
+    if (submittingStep) return;
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    setSubmittingStep(true);
     onNext();
+    setTimeout(() => setSubmittingStep(false), 800);
   };
 
   const grandTotal = items.reduce((s, it) => s + it.price * it.quantity, 0);
@@ -646,9 +650,10 @@ function PickupStep({
         <button
           type="button"
           onClick={submit}
-          className="flex-[2] py-2.5 sm:py-3 bg-[#C42F2C] text-white rounded-xl font-bold text-sm sm:text-base hover:bg-[#a82421] transition-colors shadow cursor-pointer"
+          disabled={submittingStep}
+          className="flex-[2] py-2.5 sm:py-3 bg-[#C42F2C] text-white rounded-xl font-bold text-sm sm:text-base hover:bg-[#a82421] transition-colors shadow cursor-pointer disabled:opacity-50"
         >
-          {t('order.next')} →
+          {submittingStep ? 'Processing...' : `${t('order.next')} →`}
         </button>
       </div>
     </div>
@@ -673,9 +678,12 @@ function PaymentStep({
   const [currentOrderId, setCurrentOrderId] = useState('');
   const [createError, setCreateError] = useState('');
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const creationLock = useRef(false);
 
-  // Create order on mount
+  // Create order on mount — strictly single execution to prevent duplicate records
   useEffect(() => {
+    if (creationLock.current) return;
+    creationLock.current = true;
     const create = async () => {
       try {
         const prodId = orderState.items[0]?.id || orderState.selectedProduct?.id || '500gm';
