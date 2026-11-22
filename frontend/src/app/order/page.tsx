@@ -1136,8 +1136,14 @@ function OrderPageContent() {
   const update = (key: keyof OrderState, value: unknown) =>
     setState((s) => ({ ...s, [key]: value }));
 
-  const nextStep = () => setStep((s) => Math.min(s + 1, STEPS.length - 1));
-  const prevStep = () => setStep((s) => Math.max(s - 1, 0));
+  const nextStep = () => {
+    setStep((s) => Math.min(s + 1, STEPS.length - 1));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  const prevStep = () => {
+    setStep((s) => Math.max(s - 1, 0));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const slideVariants = {
     enter: { opacity: 0, x: 40 },
