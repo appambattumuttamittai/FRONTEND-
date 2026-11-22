@@ -128,7 +128,7 @@ export default function HeroSlider() {
               <svg className="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
               </svg>
-              Also on <span className="font-bold text-white">Swiggy</span>
+              Also available on <span className="font-bold text-white">Swiggy</span>
               <span className="hidden sm:inline">— search &ldquo;Appampattu Mutta Mittai&rdquo;</span>
             </p>
           </div>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { LanguageProvider } from '@/context/LanguageContext';
 import ClientProviders from '@/components/ClientProviders';
+import { PostHogProvider } from '@/components/PostHogProvider';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://appambattumuttamittai.com'),
@@ -71,9 +72,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <LanguageProvider>
-          <ClientProviders>{children}</ClientProviders>
-        </LanguageProvider>
+        <PostHogProvider>
+          <LanguageProvider>
+            <ClientProviders>{children}</ClientProviders>
+          </LanguageProvider>
+        </PostHogProvider>
       </body>
     </html>
   );
