@@ -124,11 +124,12 @@ export default function HeroSlider() {
             </div>
 
             {/* Swiggy availability badge */}
-            <p className="mt-4 text-white/70 text-sm flex items-center gap-1.5">
-              <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <p className="mt-4 text-white/75 text-xs md:text-sm flex items-center gap-1.5 flex-wrap">
+              <svg className="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
               </svg>
-              Also available on <span className="font-bold text-white/90">Swiggy</span> — search &ldquo;Appampattu Mutta Mittai&rdquo;
+              Also on <span className="font-bold text-white">Swiggy</span>
+              <span className="hidden sm:inline">— search &ldquo;Appampattu Mutta Mittai&rdquo;</span>
             </p>
           </div>
         </div>

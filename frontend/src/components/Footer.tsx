@@ -125,19 +125,25 @@ export default function Footer() {
                 Mutta Mittai
               </p>
             </div>
-            <h2
-              className="md:hidden font-black leading-none"
-              style={{
-                color: '#2A1000',
-                fontSize: 'clamp(1.4rem, 7vw, 2rem)',
-                fontFamily: "'Exo 2', sans-serif",
-                letterSpacing: '-0.02em',
-              }}
-            >
-              APPAMPATTU<br />
-              <span style={{ color: '#D97706' }}>MUTTA</span><br />
-              MITTAI
-            </h2>
+            <div className="md:hidden">
+              <h2
+                className="font-black leading-none"
+                style={{
+                  color: '#2A1000',
+                  fontSize: 'clamp(1.4rem, 7vw, 2rem)',
+                  fontFamily: "'Exo 2', sans-serif",
+                  letterSpacing: '-0.02em',
+                }}
+              >
+                APPAMPATTU<br />
+                <span style={{ color: '#D97706' }}>MUTTA</span><br />
+                MITTAI
+              </h2>
+              {/* Swiggy note — mobile only */}
+              <p className="text-xs mt-1 font-semibold" style={{ color: '#E95012' }}>
+                🛵 Also available on Swiggy
+              </p>
+            </div>
           </div>
 
           {/* Columns grid — 2-col on mobile, 4-col on desktop */}
