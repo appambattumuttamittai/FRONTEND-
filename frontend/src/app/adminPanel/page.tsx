@@ -676,16 +676,70 @@ function ProductConfig({ onRefresh }: { onRefresh: () => void }) {
 }
 
 // ── Main Dashboard ─────────────────────────────────────────────
-const tabs = [
-  { key: 'orders', label: 'Orders' },
-  { key: 'products', label: 'Products' },
-  { key: 'analytics', label: 'Analytics' },
-  { key: 'feedback', label: 'Feedback' },
-  { key: 'archives', label: '🗂 Archives' },
-] as const;
+type TabKey = 'orders' | 'products' | 'analytics' | 'feedback' | 'archives';
+
+interface TabItem {
+  key: TabKey;
+  label: string;
+  shortLabel: string;
+  icon: React.ReactNode;
+}
+
+const tabs: TabItem[] = [
+  {
+    key: 'orders',
+    label: 'Orders',
+    shortLabel: 'Orders',
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+      </svg>
+    ),
+  },
+  {
+    key: 'products',
+    label: 'Products',
+    shortLabel: 'Products',
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+      </svg>
+    ),
+  },
+  {
+    key: 'analytics',
+    label: 'Analytics',
+    shortLabel: 'Stats',
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+    ),
+  },
+  {
+    key: 'feedback',
+    label: 'Feedback',
+    shortLabel: 'Reviews',
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+      </svg>
+    ),
+  },
+  {
+    key: 'archives',
+    label: 'Archives',
+    shortLabel: 'Archive',
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+      </svg>
+    ),
+  },
+];
 
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
-  const [tab, setTab] = useState<'orders' | 'products' | 'analytics' | 'feedback' | 'archives'>('orders');
+  const [tab, setTab] = useState<TabKey>('orders');
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
@@ -748,19 +802,46 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         {/* Stats */}
         {stats && <StatsGrid stats={stats} />}
 
-        {/* Tabs */}
-        <div className="flex gap-1.5 sm:gap-2 mb-4 sm:mb-6 border-b border-gray-200 overflow-x-auto pb-0 scrollbar-none">
+        {/* Mobile Tab Segmented Control (Zero scroll, fits screen 100%) */}
+        <div className="sm:hidden grid grid-cols-5 p-1 bg-gray-200/70 rounded-2xl mb-4 border border-gray-200 shadow-2xs">
+          {tabs.map((t) => {
+            const isActive = tab === t.key;
+            return (
+              <button
+                key={t.key}
+                type="button"
+                onClick={() => setTab(t.key)}
+                className={`py-2 px-1 flex flex-col items-center justify-center rounded-xl transition-all ${
+                  isActive
+                    ? 'bg-white text-[#063D20] shadow-sm font-black'
+                    : 'text-gray-500 hover:text-gray-800 font-medium'
+                }`}
+              >
+                <div className={`mb-1 ${isActive ? 'text-[#063D20]' : 'text-gray-400'}`}>
+                  {t.icon}
+                </div>
+                <span className="text-[10px] leading-tight tracking-tight text-center">
+                  {t.shortLabel}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Desktop Tab Bar */}
+        <div className="hidden sm:flex gap-2 mb-6 border-b border-gray-200 pb-0">
           {tabs.map((t) => (
             <button
               key={t.key}
-              onClick={() => setTab(t.key as typeof tab)}
-              className={`px-3 sm:px-4 py-2 font-bold text-xs sm:text-sm rounded-t-xl -mb-px shrink-0 transition-all ${
+              onClick={() => setTab(t.key)}
+              className={`px-4 py-2 font-bold text-sm rounded-t-xl -mb-px transition-all flex items-center gap-2 ${
                 tab === t.key
                   ? 'bg-white text-[#063D20] border-t border-l border-r border-b-2 border-b-white border-gray-200 shadow-xs'
                   : 'text-gray-500 hover:text-[#063D20] hover:bg-gray-100/60'
               }`}
             >
-              {t.label}
+              <span>{t.icon}</span>
+              <span>{t.label}</span>
             </button>
           ))}
         </div>
