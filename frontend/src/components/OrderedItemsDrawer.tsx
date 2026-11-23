@@ -1,7 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getSavedOrders, SavedOrder, sanitizeItemWeight } from '@/lib/ordersStorage';
+import toast from 'react-hot-toast';
+import { api } from '@/lib/api';
+import { getSavedOrders, saveOrderToStorage, SavedOrder, sanitizeItemWeight } from '@/lib/ordersStorage';
 
 interface Props {
   open: boolean;
@@ -10,11 +12,32 @@ interface Props {
 
 export default function OrderedItemsDrawer({ open, onClose }: Props) {
   const [orders, setOrders] = useState<SavedOrder[]>([]);
+  const [lookupInput, setLookupInput] = useState('');
+  const [searchingOrder, setSearchingOrder] = useState(false);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-oi9e.onrender.com';
 
   const reloadOrders = () => {
-    setOrders(getSavedOrders());
+    const list = getSavedOrders();
+    setOrders(list);
+
+    // Auto-sync live status from backend for any order not yet marked PAID
+    // (Handles when user closed the tab and webhook confirmed payment on the server)
+    list.forEach(async (ord) => {
+      if (ord.status !== 'PAID') {
+        try {
+          const live = await api.getOrder(ord.id);
+          if (live && live.status && live.status !== ord.status) {
+            saveOrderToStorage({
+              ...ord,
+              status: live.status,
+            });
+          }
+        } catch {
+          // Ignore network errors in background polling
+        }
+      }
+    });
   };
 
   useEffect(() => {
@@ -144,6 +167,92 @@ export default function OrderedItemsDrawer({ open, onClose }: Props) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
+        </div>
+
+        {/* Quick Order Tracker by Order ID */}
+        <div style={{ padding: '10px 16px', background: '#F5F0E8', borderBottom: '1px solid #ECE7E1' }}>
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const q = lookupInput.trim().replace(/^#/, '');
+              if (!q) return;
+              setSearchingOrder(true);
+              try {
+                const live = await api.getOrder(q);
+                if (live && live.id) {
+                  if (live.status !== 'PAID') {
+                    toast.error(`Order #${live.id.slice(-8).toUpperCase()} was not paid (Status: ${live.status.replace(/_/g, ' ')}). Only confirmed paid orders appear here.`);
+                    return;
+                  }
+                  const cleanW = sanitizeItemWeight(live.product?.weight || '');
+                  const isStorePickup =
+                    Boolean(live.streetAddress?.toLowerCase().includes('pick up')) ||
+                    Boolean(live.streetAddress?.toLowerCase().includes('railway')) ||
+                    Boolean(live.city?.toLowerCase().includes('pickup')) ||
+                    Boolean(live.city?.toLowerCase().includes('store'));
+
+                  saveOrderToStorage({
+                    id: live.id,
+                    customerName: live.customerName,
+                    phone: live.phone,
+                    totalAmount: live.totalAmount,
+                    items: [{
+                      id: live.product?.id || live.id,
+                      weight: cleanW,
+                      price: live.totalAmount,
+                      quantity: 1,
+                    }],
+                    deliveryMethod: isStorePickup ? 'pickup' : 'delivery',
+                    streetAddress: live.streetAddress || undefined,
+                    city: isStorePickup ? 'Villupuram Railway Station' : (live.city || 'Villupuram City'),
+                    pincode: live.pincode || undefined,
+                    status: live.status,
+                    date: live.createdAt,
+                  });
+                  toast.success('Order found and added to your device!');
+                  setLookupInput('');
+                }
+              } catch (err: any) {
+                toast.error(err.message || 'Order not found. Please check your Order ID.');
+              } finally {
+                setSearchingOrder(false);
+              }
+            }}
+            style={{ display: 'flex', gap: 6 }}
+          >
+            <input
+              type="text"
+              value={lookupInput}
+              onChange={(e) => setLookupInput(e.target.value)}
+              placeholder="Track by Order ID (e.g. J118FKSK)..."
+              style={{
+                flex: 1,
+                padding: '7px 12px',
+                fontSize: 12,
+                borderRadius: 8,
+                border: '1px solid #D6CDC2',
+                outline: 'none',
+                background: '#FFFFFF',
+              }}
+            />
+            <button
+              type="submit"
+              disabled={searchingOrder || !lookupInput.trim()}
+              style={{
+                padding: '7px 14px',
+                background: '#582A00',
+                color: '#FFFFFF',
+                borderRadius: 8,
+                border: 'none',
+                fontSize: 12,
+                fontWeight: 700,
+                cursor: 'pointer',
+                opacity: searchingOrder || !lookupInput.trim() ? 0.6 : 1,
+              }}
+            >
+              {searchingOrder ? '...' : 'Track'}
+            </button>
+          </form>
         </div>
 
         {/* Content list */}
