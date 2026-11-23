@@ -1,6 +1,7 @@
 'use client';
 import { useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { scrollToSection } from '@/lib/navigation';
 
 export default function HeroSlider() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -96,7 +97,8 @@ export default function HeroSlider() {
             {/* CTAs */}
             <div className="flex flex-wrap gap-3">
               <Link
-                href="/#products"
+                href="/"
+                onClick={(e) => scrollToSection('products', e)}
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-black text-sm transition-all hover:-translate-y-0.5"
                 style={{ background: '#C42F2C', color: 'white', boxShadow: '0 8px 24px rgba(196,47,44,0.5)' }}
               >

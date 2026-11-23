@@ -8,7 +8,7 @@ import Footer from '@/components/Footer';
 import { useLanguage } from '@/context/LanguageContext';
 import { useApp } from '@/context/AppContext';
 import { api, Product } from '@/lib/api';
-import { saveOrderToStorage } from '@/lib/ordersStorage';
+import { saveOrderToStorage, trackPendingOrderId, removePendingOrderId } from '@/lib/ordersStorage';
 
 function loadRazorpayScript(): Promise<boolean> {
   return new Promise((resolve) => {
@@ -708,6 +708,7 @@ function PaymentStep({
           pincode: orderState.pincode || undefined,
         });
         setCurrentOrderId(result.orderId);
+        trackPendingOrderId(result.orderId);
       } catch (err: any) {
         setCreateError(err.message || t('common.error'));
       } finally {
@@ -777,6 +778,7 @@ function PaymentStep({
               date: new Date().toISOString(),
               transactionId: response.razorpay_payment_id,
             });
+            removePendingOrderId(currentOrderId);
 
             if (onClearCart) {
               onClearCart();
@@ -883,6 +885,7 @@ function PaymentStep({
                   pincode: orderState.pincode || undefined,
                 });
                 setCurrentOrderId(result.orderId);
+        trackPendingOrderId(result.orderId);
               } catch (err: any) {
                 setCreateError(err.message || 'Failed to create order. Please try again.');
               } finally {

@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useApp } from '@/context/AppContext';
+import { scrollToSection } from '@/lib/navigation';
 import CartDrawer from '@/components/CartDrawer';
 import OrderedItemsDrawer from '@/components/OrderedItemsDrawer';
 
@@ -103,10 +104,27 @@ export default function Header() {
     return () => window.removeEventListener('mm_open_my_orders', openOrdersHandler);
   }, []);
 
+  // Clean any #hash from browser address bar immediately while keeping smooth scrolling
+  useEffect(() => {
+    const cleanHash = () => {
+      if (typeof window !== 'undefined' && window.location.hash) {
+        const id = window.location.hash.replace(/^#/, '');
+        const el = document.getElementById(id);
+        if (el) {
+          setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 50);
+        }
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+    };
+    cleanHash();
+    window.addEventListener('hashchange', cleanHash);
+    return () => window.removeEventListener('hashchange', cleanHash);
+  }, []);
+
   const navLinks = [
-    { label: 'Home', href: '/' },
-    { label: 'Order Now', href: '/#products' },
-    { label: 'Contact', href: '#contact' },
+    { label: 'Home', href: '/', sectionId: '' },
+    { label: 'Order Now', href: '/', sectionId: 'products' },
+    { label: 'Contact', href: '/', sectionId: 'contact' },
   ];
 
   const waLink = 'https://wa.me/917871949015?text=Hi%2C%20I%20want%20to%20order%20Mutta%20Mittai!';
@@ -148,6 +166,11 @@ export default function Header() {
               <Link
                 key={link.label}
                 href={link.href}
+                onClick={(e) => {
+                  if (link.sectionId) {
+                    scrollToSection(link.sectionId, e);
+                  }
+                }}
                 className="px-4 py-2 text-sm font-semibold text-[#582A00] hover:text-[#C42F2C] rounded-full hover:bg-[#C42F2C]/8 transition-all"
               >
                 {link.label}
@@ -198,7 +221,8 @@ export default function Header() {
               WhatsApp
             </a>
             <Link
-              href="/#products"
+              href="/"
+              onClick={(e) => scrollToSection('products', e)}
               className="px-5 py-2 bg-[#C42F2C] text-white rounded-full text-sm font-bold hover:bg-[#a82624] transition-colors shadow"
             >
               Order Now
@@ -225,7 +249,11 @@ export default function Header() {
                 </span>
               )}
             </button>
-            <Link href="/#products" className="px-4 py-1.5 bg-[#C42F2C] text-white rounded-full text-sm font-bold">
+            <Link
+              href="/"
+              onClick={(e) => scrollToSection('products', e)}
+              className="px-4 py-1.5 bg-[#C42F2C] text-white rounded-full text-sm font-bold"
+            >
               Order
             </Link>
             <button
@@ -250,7 +278,12 @@ export default function Header() {
               <Link
                 key={link.label}
                 href={link.href}
-                onClick={() => setMenuOpen(false)}
+                onClick={(e) => {
+                  setMenuOpen(false);
+                  if (link.sectionId) {
+                    scrollToSection(link.sectionId, e);
+                  }
+                }}
                 className="py-2.5 text-center text-sm font-semibold text-[#582A00] hover:text-[#C42F2C] rounded-xl hover:bg-[#C42F2C]/6 transition-all"
               >
                 {link.label}

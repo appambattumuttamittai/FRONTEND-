@@ -82,3 +82,42 @@ export function saveOrderToStorage(order: SavedOrder): void {
     console.error('Failed to save order to storage:', err);
   }
 }
+
+const PENDING_ORDERS_KEY = 'mm_pending_order_ids';
+
+export function getPendingOrderIds(): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(PENDING_ORDERS_KEY) || sessionStorage.getItem(PENDING_ORDERS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch {}
+  return [];
+}
+
+export function trackPendingOrderId(orderId: string): void {
+  if (typeof window === 'undefined' || !orderId) return;
+  try {
+    const ids = getPendingOrderIds();
+    if (!ids.includes(orderId)) {
+      const updated = [orderId, ...ids].slice(0, 10);
+      const json = JSON.stringify(updated);
+      localStorage.setItem(PENDING_ORDERS_KEY, json);
+      sessionStorage.setItem(PENDING_ORDERS_KEY, json);
+    }
+  } catch {}
+}
+
+export function removePendingOrderId(orderId: string): void {
+  if (typeof window === 'undefined' || !orderId) return;
+  try {
+    const ids = getPendingOrderIds();
+    const updated = ids.filter((id) => id !== orderId);
+    const json = JSON.stringify(updated);
+    localStorage.setItem(PENDING_ORDERS_KEY, json);
+    sessionStorage.setItem(PENDING_ORDERS_KEY, json);
+  } catch {}
+}
+

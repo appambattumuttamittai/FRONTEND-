@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { api } from '@/lib/api';
-import { getSavedOrders, saveOrderToStorage, SavedOrder, sanitizeItemWeight } from '@/lib/ordersStorage';
+import { getSavedOrders, saveOrderToStorage, getPendingOrderIds, removePendingOrderId, SavedOrder, sanitizeItemWeight } from '@/lib/ordersStorage';
+import { scrollToSection } from '@/lib/navigation';
 
 interface Props {
   open: boolean;
@@ -21,8 +22,49 @@ export default function OrderedItemsDrawer({ open, onClose }: Props) {
     const list = getSavedOrders();
     setOrders(list);
 
-    // Auto-sync live status from backend for any order not yet marked PAID
-    // (Handles when user closed the tab and webhook confirmed payment on the server)
+    // 1. Check pending orders initiated on this device (handles user closing tab right after Razorpay payment)
+    const pendingIds = getPendingOrderIds();
+    pendingIds.forEach(async (pendingId) => {
+      try {
+        const live = await api.getOrder(pendingId);
+        if (live && live.id) {
+          if (live.status === 'PAID') {
+            const cleanW = sanitizeItemWeight(live.product?.weight || '');
+            const isStorePickup =
+              Boolean(live.streetAddress?.toLowerCase().includes('pick up')) ||
+              Boolean(live.streetAddress?.toLowerCase().includes('railway')) ||
+              Boolean(live.city?.toLowerCase().includes('pickup')) ||
+              Boolean(live.city?.toLowerCase().includes('store'));
+
+            saveOrderToStorage({
+              id: live.id,
+              customerName: live.customerName,
+              phone: live.phone,
+              totalAmount: live.totalAmount,
+              items: [{
+                id: live.product?.id || live.id,
+                weight: cleanW,
+                price: live.totalAmount,
+                quantity: 1,
+              }],
+              deliveryMethod: isStorePickup ? 'pickup' : 'delivery',
+              streetAddress: live.streetAddress || undefined,
+              city: isStorePickup ? 'Villupuram Railway Station' : (live.city || 'Villupuram City'),
+              pincode: live.pincode || undefined,
+              status: live.status,
+              date: live.createdAt,
+            });
+            removePendingOrderId(pendingId);
+          } else if (live.status === 'CANCELLED' || live.status === 'FAILED') {
+            removePendingOrderId(pendingId);
+          }
+        }
+      } catch {
+        // Silently skip if network or not found
+      }
+    });
+
+    // 2. Auto-sync live status from backend for any order in storage not yet marked PAID
     list.forEach(async (ord) => {
       if (ord.status !== 'PAID') {
         try {
@@ -293,8 +335,11 @@ export default function OrderedItemsDrawer({ open, onClose }: Props) {
                 When you complete an order, your official tax invoice and order summary will appear here.
               </p>
               <Link
-                href="/#products"
-                onClick={onClose}
+                href="/"
+                onClick={(e) => {
+                  onClose();
+                  scrollToSection('products', e);
+                }}
                 style={{
                   display: 'inline-block',
                   background: '#C42F2C',

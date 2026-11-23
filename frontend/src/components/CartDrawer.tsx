@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useApp } from '@/context/AppContext';
 import { getSavedOrders, SavedOrder } from '@/lib/ordersStorage';
+import { scrollToSection } from '@/lib/navigation';
 
 interface Props {
   open: boolean;
@@ -231,8 +232,11 @@ export default function CartDrawer({ open, onClose }: Props) {
                     Cart ready for next order
                   </p>
                   <Link
-                    href="/#products"
-                    onClick={onClose}
+                    href="/"
+                    onClick={(e) => {
+                      onClose();
+                      scrollToSection('products', e);
+                    }}
                     style={{
                       display: 'inline-block',
                       marginTop: 6,
