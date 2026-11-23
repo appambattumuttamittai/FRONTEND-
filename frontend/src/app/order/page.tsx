@@ -818,25 +818,85 @@ function PaymentStep({
 
   if (creating) {
     return (
-      <div className="text-center py-12">
-        <div className="w-10 h-10 border-3 border-[#C42F2C] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-        <p className="text-sm font-semibold text-[#582A00]/70">Preparing secure checkout...</p>
+      <div className="text-center space-y-4 py-8">
+        <div className="w-14 h-14 mx-auto relative">
+          <div className="w-14 h-14 rounded-full border-4 border-[#C42F2C]/20 border-t-[#C42F2C] animate-spin" />
+        </div>
+        <div>
+          <p className="font-black text-[#582A00] text-base">Preparing your order…</p>
+          <p className="text-xs text-[#582A00]/60 mt-1">Securing your slot · this takes only a moment</p>
+        </div>
+        <div className="flex justify-center gap-5 text-[11px] text-[#582A00]/50 pt-1">
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#C42F2C] animate-pulse" />
+            Verifying details
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D97706] animate-pulse" style={{ animationDelay: '0.3s' }} />
+            Creating order
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" style={{ animationDelay: '0.6s' }} />
+            Setting payment
+          </span>
+        </div>
       </div>
     );
   }
 
   if (createError) {
     return (
-      <div className="text-center py-8">
-        <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold">
-          !
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-center space-y-3">
+        <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+          <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12A9 9 0 113 12a9 9 0 0118 0z" />
+          </svg>
         </div>
-        <p className="text-[#C42F2C] font-bold mb-4">{createError}</p>
+        <div>
+          <p className="font-black text-red-800 text-sm">Order creation failed</p>
+          <p className="text-red-600 text-xs mt-1">{createError}</p>
+        </div>
+        <div className="text-xs text-red-700 bg-red-100 rounded-xl p-2.5 text-left">
+          <strong>How to fix:</strong> Check your internet connection, then tap &quot;Try Again&quot; below. If it keeps failing, go back and re-verify your phone number.
+        </div>
         <button
-          onClick={onBack}
-          className="px-6 py-2.5 bg-[#582A00] text-white rounded-xl font-semibold text-sm hover:bg-[#3D1D00] transition-colors"
+          onClick={() => {
+            setCreateError('');
+            creationLock.current = false;
+            setCreating(true);
+            const c = async () => {
+              try {
+                const prodId = orderState.items[0]?.id || orderState.selectedProduct?.id || '500gm';
+                const totalQty = orderState.items.reduce((s, it) => s + it.quantity, 0) || 1;
+                const isPickup = orderState.deliveryMethod === 'pickup';
+                const streetVal = isPickup ? 'Pick up in-store (Villupuram Railway Station, 1st Platform)' : (orderState.street || 'Villupuram City');
+                const cityVal = isPickup ? 'Villupuram (Store Pickup)' : (orderState.city || 'Villupuram');
+                const result = await api.createOrder({
+                  customerName: orderState.name,
+                  phone: orderState.phone.replace(/\D/g, ''),
+                  productId: prodId,
+                  quantity: totalQty,
+                  items: orderState.items.map((it) => ({ productId: it.id, quantity: it.quantity })),
+                  otpSessionId: orderState.otpSessionId,
+                  streetAddress: streetVal,
+                  city: cityVal,
+                  pincode: orderState.pincode || undefined,
+                });
+                setCurrentOrderId(result.orderId);
+              } catch (err: any) {
+                setCreateError(err.message || 'Failed to create order. Please try again.');
+              } finally {
+                setCreating(false);
+              }
+            };
+            c();
+          }}
+          className="w-full py-2.5 bg-red-600 text-white rounded-xl font-bold text-sm hover:bg-red-700 transition-colors"
         >
-          ← Go Back & Edit Details
+          Try Again
+        </button>
+        <button onClick={onBack} className="w-full py-2 text-red-700 font-semibold text-xs underline">
+          ← Go back and check your details
         </button>
       </div>
     );
@@ -1008,6 +1068,7 @@ function OrderPageContent() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [products, setProducts] = useState<Product[]>([]);
+  const [isOffline, setIsOffline] = useState(false);
   const [state, setState] = useState<OrderState>({
     name: '',
     phone: '',
@@ -1024,6 +1085,15 @@ function OrderPageContent() {
     totalAmount: 0,
     paymentExpiry: '',
   });
+
+  useEffect(() => {
+    setIsOffline(!navigator.onLine);
+    const goOn = () => setIsOffline(false);
+    const goOff = () => setIsOffline(true);
+    window.addEventListener('online', goOn);
+    window.addEventListener('offline', goOff);
+    return () => { window.removeEventListener('online', goOn); window.removeEventListener('offline', goOff); };
+  }, []);
 
   useEffect(() => {
     const fallbackList: Product[] = [
@@ -1153,6 +1223,14 @@ function OrderPageContent() {
 
   return (
     <div className="min-h-screen bg-[#FFF4DD] pt-16">
+      {isOffline && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-gray-900 text-white text-center text-xs font-bold py-2 px-4 flex items-center justify-center gap-2">
+          <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 5.636a9 9 0 010 12.728M15.536 8.464a5 5 0 010 7.072M12 12h.01M8.464 15.536a5 5 0 010-7.072M5.636 18.364a9 9 0 010-12.728" />
+          </svg>
+          No internet — please reconnect to continue your order
+        </div>
+      )}
       <Header />
       <main className="py-6 px-4">
         <div className="max-w-md mx-auto">
@@ -1230,7 +1308,14 @@ function OrderPageContent() {
 
 export default function OrderPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-[#C42F2C] font-bold">Loading...</div>}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#FFF4DD] flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <div className="w-10 h-10 rounded-full border-4 border-[#C42F2C]/20 border-t-[#C42F2C] animate-spin mx-auto" />
+          <p className="text-sm font-bold text-[#582A00]/70">Loading order page…</p>
+        </div>
+      </div>
+    }>
       <OrderPageContent />
     </Suspense>
   );

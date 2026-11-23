@@ -95,7 +95,11 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
             />
           </div>
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">{error}</div>
+            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm space-y-1">
+              <p className="font-bold">Login failed</p>
+              <p className="text-xs">{error}</p>
+              <p className="text-xs text-red-600 mt-1">Make sure you are using the correct admin username and password.</p>
+            </div>
           )}
           <button
             type="submit"
@@ -267,15 +271,50 @@ function OrdersTable({ onSelectOrder }: { onSelectOrder: (order: AdminOrder) => 
           </thead>
           <tbody className="divide-y">
             {loading ? (
-              Array(5).fill(0).map((_, i) => (
-                <tr key={i}>
-                  {Array(9).fill(0).map((_, j) => (
-                    <td key={j} className="px-4 py-3"><div className="h-4 shimmer rounded w-20" /></td>
-                  ))}
+              [1,2,3,4,5].map((i) => (
+                <tr key={i} className="animate-pulse">
+                  <td className="px-3 py-3"><div className="h-4 bg-gray-200 rounded w-20" /></td>
+                  <td className="px-3 py-3"><div className="h-4 bg-gray-200 rounded w-24" /></td>
+                  <td className="px-3 py-3"><div className="h-4 bg-gray-200 rounded w-28" /></td>
+                  <td className="px-3 py-3"><div className="h-4 bg-gray-200 rounded w-20" /></td>
+                  <td className="px-3 py-3"><div className="h-4 bg-gray-200 rounded w-16" /></td>
+                  <td className="px-3 py-3"><div className="h-4 bg-gray-200 rounded w-20" /></td>
+                  <td className="px-3 py-3"><div className="h-4 bg-gray-200 rounded w-20" /></td>
+                  <td className="px-3 py-3"><div className="h-4 bg-gray-200 rounded w-16" /></td>
+                  <td className="px-3 py-3"><div className="h-4 bg-gray-200 rounded w-16" /></td>
                 </tr>
               ))
-            ) : data?.orders.length === 0 ? (
-              <tr><td colSpan={9} className="px-4 py-8 text-center text-gray-400">No orders found</td></tr>
+            ) : !loading && data?.orders.length === 0 && (search || status) ? (
+              <tr>
+                <td colSpan={9} className="text-center py-16">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                      <svg className="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div>
+                    <p className="font-black text-gray-500 text-sm">No orders match your search</p>
+                    <p className="text-xs text-gray-400 max-w-xs">Try searching by a different name, phone number, or order ID.</p>
+                    <button onClick={() => { setSearch(''); setStatus(''); }} className="mt-1 text-xs text-[#063D20] font-bold underline">
+                      Clear filters
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ) : !loading && data?.orders.length === 0 ? (
+              <tr>
+                <td colSpan={9} className="text-center py-16">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                      <svg className="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <p className="font-black text-gray-500 text-sm">No orders yet</p>
+                    <p className="text-xs text-gray-400">Orders will appear here once customers start placing them.</p>
+                  </div>
+                </td>
+              </tr>
             ) : (
               data?.orders.map((order) => {
                 const isPickup =
@@ -510,8 +549,6 @@ function ProductConfig({ onRefresh }: { onRefresh: () => void }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Record<string, { price: string; inStock: boolean }>>({});
-  const [qrUrl, setQrUrl] = useState('');
-  const [qrSaving, setQrSaving] = useState(false);
 
   useEffect(() => {
     api.adminProducts().then((prods) => {
@@ -520,7 +557,6 @@ function ProductConfig({ onRefresh }: { onRefresh: () => void }) {
       prods.forEach((p) => { init[p.id] = { price: String(p.price), inStock: p.inStock }; });
       setEditing(init);
     }).catch(() => {}).finally(() => setLoading(false));
-    api.getQrUrl().then((r) => setQrUrl(r.url)).catch(() => {});
   }, []);
 
   const saveProduct = async (id: string) => {
@@ -534,19 +570,19 @@ function ProductConfig({ onRefresh }: { onRefresh: () => void }) {
     }
   };
 
-  const saveQr = async () => {
-    setQrSaving(true);
-    try {
-      await api.adminSetQrUrl(qrUrl);
-      toast.success('QR URL updated!');
-    } catch (err: any) {
-      toast.error(err.message);
-    } finally {
-      setQrSaving(false);
-    }
-  };
-
-  if (loading) return <div className="text-center py-8">Loading...</div>;
+  if (loading) return (
+    <div className="bg-white rounded-2xl shadow p-6 space-y-3 animate-pulse">
+      <div className="h-5 bg-gray-200 rounded w-40 mb-4" />
+      {[1,2,3,4].map((i) => (
+        <div key={i} className="flex items-center gap-3 p-3 border rounded-xl">
+          <div className="h-4 bg-gray-200 rounded w-14" />
+          <div className="h-8 bg-gray-200 rounded w-24" />
+          <div className="h-4 bg-gray-200 rounded w-20" />
+          <div className="h-7 bg-gray-200 rounded w-14 ml-auto" />
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -584,46 +620,41 @@ function ProductConfig({ onRefresh }: { onRefresh: () => void }) {
           ))}
         </div>
       </div>
-
-      <div className="bg-white rounded-2xl shadow p-6">
-        <h3 className="font-black text-[#063D20] text-lg mb-4">GPay QR Image URL</h3>
-        <div className="flex gap-2">
-          <input
-            type="url"
-            value={qrUrl}
-            onChange={(e) => setQrUrl(e.target.value)}
-            placeholder="https://... (leave empty to use /gpayQR.png)"
-            className="flex-1 px-3 py-2 border-2 rounded-xl focus:border-[#063D20] outline-none text-sm"
-          />
-          <button
-            onClick={saveQr}
-            disabled={qrSaving}
-            className="px-4 py-2 bg-[#063D20] text-white rounded-xl font-bold text-sm disabled:opacity-50"
-          >
-            {qrSaving ? '...' : 'Save'}
-          </button>
-        </div>
-        <p className="text-xs text-gray-400 mt-1">
-          If empty, frontend uses <code>/gpayQR.png</code> (replace that file before launch).
-        </p>
-      </div>
     </div>
   );
 }
 
-// Main admin dashboard
+// ── Main Dashboard ─────────────────────────────────────────────
+const tabs = [
+  { key: 'orders', label: 'Orders' },
+  { key: 'products', label: 'Products' },
+  { key: 'analytics', label: 'Analytics' },
+  { key: 'feedback', label: 'Feedback' },
+  { key: 'archives', label: '🗂 Archives' },
+] as const;
+
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
   const [tab, setTab] = useState<'orders' | 'products' | 'analytics' | 'feedback' | 'archives'>('orders');
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
   const [sheetsUrl, setSheetsUrl] = useState<string | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
 
   const refresh = () => setRefreshKey((k) => k + 1);
 
   useEffect(() => {
-    api.adminStats().then(setStats).catch(() => {});
-    api.adminSheetsUrl().then((r) => setSheetsUrl(r.url)).catch(() => {});
+    const load = () => {
+      api.adminStats().then(setStats).catch((err: any) => {
+        if (err.message?.includes('401') || err.message?.toLowerCase().includes('unauthorized')) {
+          toast.error('Session expired — please log in again', { duration: 4000 });
+          setTimeout(() => onLogout(), 2000);
+        }
+      });
+      api.adminSheetsUrl().then((r) => setSheetsUrl(r.url)).catch(() => {});
+    };
+    load();
+    const interval = setInterval(load, 60000);
+    return () => clearInterval(interval);
   }, [refreshKey]);
 
   const handleLogout = async () => {
@@ -631,38 +662,32 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     onLogout();
   };
 
-  const tabs = [
-    { key: 'orders', label: 'Orders' },
-    { key: 'products', label: 'Products' },
-    { key: 'analytics', label: 'Analytics' },
-    { key: 'feedback', label: 'Feedback' },
-    { key: 'archives', label: '🗂 Archives' },
-  ];
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-[#063D20] text-white px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-[#F5B51B] flex items-center justify-center font-black text-[#582A00] text-xs shadow-xs">
-            AM
-          </div>
+      <div className="bg-[#063D20] text-white px-4 md:px-6 py-3 flex items-center justify-between shadow-lg">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-[#F5B51B] rounded-xl flex items-center justify-center font-black text-[#063D20] text-sm">AM</div>
           <div>
-            <div className="font-black text-sm">Mutta Mittai Admin</div>
-            <div className="text-[#F5B51B] text-xs">Appambattu, Villupuram</div>
+            <div className="font-black text-sm leading-tight">Mutta Mittai Admin</div>
+            <div className="text-xs text-emerald-300 leading-tight">Appambattu, Villupuram</div>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {sheetsUrl && (
-            <a href={sheetsUrl} target="_blank" rel="noopener noreferrer"
-              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-green-700 hover:bg-green-800 text-white rounded-lg text-xs font-bold transition-colors">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <span>Google Sheets</span>
+            <a
+              href={sheetsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 rounded-lg text-xs font-bold transition-colors"
+            >
+              Google Sheets
             </a>
           )}
-          <button onClick={handleLogout} className="px-3 py-1.5 bg-[#E95012] hover:bg-[#c7400d] rounded-lg text-sm font-bold">
+          <button
+            onClick={handleLogout}
+            className="px-3 py-1.5 bg-red-600 hover:bg-red-700 rounded-lg text-xs font-bold transition-colors"
+          >
             Logout
           </button>
         </div>
@@ -706,6 +731,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     </div>
   );
 }
+
 
 // ── Feedback Management Tab ────────────────────────────────────
 interface AdminFeedback {
@@ -855,9 +881,31 @@ function FeedbackTab() {
       )}
 
       {loading ? (
-        <div className="text-center py-12 text-gray-400">Loading feedbacks...</div>
+        <div className="space-y-3">
+          {[1,2,3].map((i) => (
+            <div key={i} className="bg-white rounded-xl shadow-sm p-4 animate-pulse flex gap-4 items-center">
+              <div className="w-3 h-3 rounded-full bg-gray-200 shrink-0" />
+              <div className="flex-1 space-y-2">
+                <div className="h-4 bg-gray-200 rounded w-28" />
+                <div className="h-3 bg-gray-100 rounded w-56" />
+              </div>
+              <div className="flex gap-2">
+                <div className="h-7 bg-gray-200 rounded-lg w-16" />
+                <div className="h-7 bg-gray-200 rounded-lg w-16" />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : feedbacks.length === 0 ? (
-        <div className="text-center py-12 text-gray-400">No feedbacks found.</div>
+        <div className="bg-white rounded-2xl shadow p-10 text-center space-y-3">
+          <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+            <svg className="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+          </div>
+          <p className="font-black text-gray-500">No reviews yet</p>
+          <p className="text-xs text-gray-400">Customer reviews will appear here. You can also add one manually using the button above.</p>
+        </div>
       ) : (
         <div className="grid gap-3">
           {feedbacks.map((fb) => (
@@ -909,14 +957,19 @@ function ArchivesTab() {
   const [status, setStatus] = useState<{ lastArchiveDate: string | null; daysSince: number | null; isDue: boolean } | null>(null);
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(false);
+  const [loadError, setLoadError] = useState('');
 
   const load = async () => {
     setLoading(true);
+    setLoadError('');
     try {
       const [a, s] = await Promise.all([api.adminArchives(), api.adminArchiveStatus()]);
       setArchives(a);
       setStatus(s);
-    } catch { toast.error('Failed to load archives'); }
+    } catch (err: any) {
+      setLoadError(err.message || 'Failed to load archives');
+      toast.error('Failed to load archives');
+    }
     finally { setLoading(false); }
   };
 
@@ -980,9 +1033,41 @@ function ArchivesTab() {
 
       {/* Archives list */}
       {loading ? (
-        <div className="text-center py-12 text-gray-400">Loading archives…</div>
+        <div className="space-y-3">
+          {[1,2,3].map((i) => (
+            <div key={i} className="bg-white rounded-xl shadow-sm p-4 animate-pulse flex gap-4 items-center">
+              <div className="flex-1 space-y-2">
+                <div className="h-4 bg-gray-200 rounded w-32" />
+                <div className="h-3 bg-gray-100 rounded w-48" />
+              </div>
+              <div className="h-8 bg-gray-200 rounded-xl w-28 shrink-0" />
+            </div>
+          ))}
+        </div>
+      ) : loadError ? (
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center space-y-3">
+          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+            <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12A9 9 0 113 12a9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p className="font-bold text-red-800">Failed to load archives</p>
+          <p className="text-sm text-red-600">{loadError}</p>
+          <p className="text-xs text-red-500">Check your internet connection or server status.</p>
+          <button onClick={load} className="px-4 py-2 bg-red-600 text-white rounded-xl font-bold text-sm hover:bg-red-700 transition-colors">
+            Retry
+          </button>
+        </div>
       ) : archives.length === 0 ? (
-        <div className="text-center py-12 text-gray-400">No archives yet. First archive runs automatically after 30 days.</div>
+        <div className="bg-white rounded-2xl shadow p-10 text-center space-y-3">
+          <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+            <svg className="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+          </div>
+          <p className="font-black text-gray-500">No archives yet</p>
+          <p className="text-xs text-gray-400 max-w-xs mx-auto">The first archive will run automatically after 30 days, or you can trigger it manually above.</p>
+        </div>
       ) : (
         <div className="grid gap-3">
           {archives.map((arc) => (

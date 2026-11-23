@@ -230,11 +230,28 @@ function SuccessContent() {
               Order Support on WhatsApp
             </a>
 
+            <div className="bg-[#FFF8F0] border border-[#D97706]/25 rounded-xl p-4 text-left space-y-2.5 text-xs">
+              <p className="font-black text-[#582A00] text-sm flex items-center gap-1.5">
+                <span>🎉</span> What happens next?
+              </p>
+              <div className="space-y-2">
+                {[
+                  { step: '1', text: 'Our team prepares your fresh Mutta Mittai batch' },
+                  { step: '2', text: 'You receive a WhatsApp confirmation with delivery time' },
+                  { step: '3', text: 'Your sweet arrives fresh at your door or pickup point' },
+                ].map(({ step, text }) => (
+                  <div key={step} className="flex items-start gap-2.5">
+                    <span className="w-5 h-5 rounded-full bg-[#C42F2C] text-white text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">{step}</span>
+                    <span className="text-[#582A00]/80 font-medium">{text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
             <Link
               href="/"
               className="py-3 border border-[#582A00]/20 text-[#582A00] rounded-xl font-bold text-xs sm:text-sm hover:bg-[#582A00]/5 transition-colors"
             >
-              Return to Home
+              ← Back to Home
             </Link>
           </motion.div>
 
@@ -268,7 +285,14 @@ function SuccessContent() {
 
 export default function SuccessPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-[#C42F2C] font-bold">Loading...</div>}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#FFF4DD] flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <div className="w-10 h-10 rounded-full border-4 border-emerald-200 border-t-emerald-600 animate-spin mx-auto" />
+          <p className="text-sm font-bold text-[#582A00]/70">Loading your order confirmation…</p>
+        </div>
+      </div>
+    }>
       <SuccessContent />
     </Suspense>
   );

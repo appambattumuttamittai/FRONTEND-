@@ -75,10 +75,6 @@ export const api = {
       }
     ),
 
-  // Config
-  getQrUrl: () => request<{ url: string }>('/api/config/qr-url'),
-
-  // Admin
   adminLogin: (username: string, password: string) =>
     request<{ success: boolean }>('/api/auth/login', {
       method: 'POST',
@@ -100,11 +96,6 @@ export const api = {
     request<Product>(`/api/products/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),
-    }),
-  adminSetQrUrl: (url: string) =>
-    request<{ success: boolean; url: string }>('/api/config/qr-url', {
-      method: 'POST',
-      body: JSON.stringify({ url }),
     }),
   adminCharts: () => request<unknown[]>('/api/admin/charts'),
   adminSheetsUrl: () => request<{ url: string | null }>('/api/admin/sheets-url'),
