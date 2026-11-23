@@ -2,6 +2,9 @@
 import { useEffect, useRef, useState } from 'react';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'https://backend-oi9e.onrender.com';
+const GOOGLE_REVIEW_URL =
+  process.env.NEXT_PUBLIC_GOOGLE_REVIEW_URL ||
+  'https://www.google.com/search?q=Appampattu+Mutta+Mittai+Villupuram+reviews';
 
 interface Feedback {
   id: string;
@@ -514,7 +517,7 @@ export default function FeedbackSection() {
                     <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.15)' }} />
                   </div>
                   <a
-                    href="https://search.google.com/local/writereview?placeid=ChIJN1t_tDeuEmsRUsdiY1GsfMA"
+                    href={GOOGLE_REVIEW_URL}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full py-2.5 md:py-3.5 rounded-full font-black text-sm transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2"
