@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { api, DashboardStats, AdminOrder, Product, OrdersResponse } from '@/lib/api';
+import { api, DashboardStats, AdminOrder, Product, OrdersResponse, ArchiveRecord } from '@/lib/api';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell
 } from 'recharts';
@@ -614,7 +614,7 @@ function ProductConfig({ onRefresh }: { onRefresh: () => void }) {
 // Main admin dashboard
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [tab, setTab] = useState<'orders' | 'products' | 'analytics' | 'feedback' | 'content'>('orders');
+  const [tab, setTab] = useState<'orders' | 'products' | 'analytics' | 'feedback' | 'archives'>('orders');
   const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
   const [sheetsUrl, setSheetsUrl] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -636,7 +636,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     { key: 'products', label: 'Products' },
     { key: 'analytics', label: 'Analytics' },
     { key: 'feedback', label: 'Feedback' },
-    { key: 'content', label: 'Site Content' },
+    { key: 'archives', label: '🗂 Archives' },
   ];
 
   return (
@@ -693,7 +693,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         {tab === 'products' && <ProductConfig onRefresh={refresh} />}
         {tab === 'analytics' && <AnalyticsTab />}
         {tab === 'feedback' && <FeedbackTab />}
-        {tab === 'content' && <SiteContentTab />}
+        {tab === 'archives' && <ArchivesTab />}
       </div>
 
       {selectedOrder && (
@@ -716,6 +716,12 @@ function FeedbackTab() {
   const [feedbacks, setFeedbacks] = useState<AdminFeedback[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'approved' | 'pending'>('all');
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newRating, setNewRating] = useState(5);
+  const [newMessage, setNewMessage] = useState('');
+  const [newApproved, setNewApproved] = useState(true);
+  const [adding, setAdding] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -752,20 +758,101 @@ function FeedbackTab() {
     } catch { toast.error('Failed to delete'); }
   };
 
+  const addReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newName.trim() || !newMessage.trim()) return;
+    setAdding(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://backend-oi9e.onrender.com'}/api/admin/feedback`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newName.trim(), rating: newRating, message: newMessage.trim(), isApproved: newApproved }),
+      });
+      if (!res.ok) throw new Error('Failed');
+      toast.success('Review added' + (newApproved ? ' & shown on site!' : ' (pending)'));
+      setNewName(''); setNewRating(5); setNewMessage(''); setNewApproved(true);
+      setShowAddForm(false);
+      load();
+    } catch { toast.error('Failed to add review'); }
+    finally { setAdding(false); }
+  };
+
   return (
     <div className="space-y-4">
-      {/* Filter tabs */}
+      {/* Filter tabs + Add button */}
       <div className="bg-white rounded-2xl shadow p-4 flex gap-2 flex-wrap items-center justify-between">
         <h3 className="font-black text-[#582A00] text-lg">Customer Feedback</h3>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {(['all', 'approved', 'pending'] as const).map((f) => (
             <button key={f} onClick={() => setFilter(f)}
               className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${filter === f ? 'bg-[#C42F2C] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
               {f === 'all' ? 'All' : f === 'approved' ? 'Shown on Site' : 'Pending Approval'}
             </button>
           ))}
+          <button onClick={() => setShowAddForm((v) => !v)}
+            className="px-3 py-1.5 rounded-full text-xs font-bold bg-[#063D20] text-white hover:bg-[#0a5929] transition-all">
+            {showAddForm ? '✕ Cancel' : '+ Add Review'}
+          </button>
         </div>
       </div>
+
+      {/* Add Review Form */}
+      {showAddForm && (
+        <div className="bg-white rounded-2xl shadow p-5">
+          <h4 className="font-black text-[#582A00] mb-4">Add New Review</h4>
+          <form onSubmit={addReview} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-600 mb-1">Customer Name *</label>
+                <input
+                  type="text" required value={newName} onChange={(e) => setNewName(e.target.value)}
+                  placeholder="e.g. Ramesh Kumar"
+                  className="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:border-[#063D20] outline-none text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-600 mb-1">Rating *</label>
+                <div className="flex gap-2 items-center mt-1">
+                  {[1,2,3,4,5].map((s) => (
+                    <button key={s} type="button" onClick={() => setNewRating(s)}>
+                      <svg className="w-6 h-6" viewBox="0 0 24 24" fill={s <= newRating ? '#FFAA2B' : '#E5E7EB'}>
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    </button>
+                  ))}
+                  <span className="text-sm font-bold text-gray-500 ml-1">{newRating}/5</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-600 mb-1">Review Text *</label>
+              <textarea
+                required value={newMessage} onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Write the customer review here..."
+                rows={3}
+                className="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:border-[#063D20] outline-none text-sm resize-none"
+              />
+            </div>
+            <div className="flex items-center gap-3">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={newApproved} onChange={(e) => setNewApproved(e.target.checked)}
+                  className="w-4 h-4 accent-[#063D20]" />
+                <span className="text-sm font-semibold text-gray-700">Show on site immediately</span>
+              </label>
+            </div>
+            <div className="flex gap-3">
+              <button type="submit" disabled={adding}
+                className="px-5 py-2 bg-[#063D20] text-white rounded-xl font-bold text-sm disabled:opacity-50 hover:bg-[#0a5929] transition-all">
+                {adding ? 'Adding...' : 'Add Review'}
+              </button>
+              <button type="button" onClick={() => setShowAddForm(false)}
+                className="px-5 py-2 bg-gray-100 text-gray-600 rounded-xl font-bold text-sm hover:bg-gray-200 transition-all">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {loading ? (
         <div className="text-center py-12 text-gray-400">Loading feedbacks...</div>
@@ -816,103 +903,122 @@ function FeedbackTab() {
   );
 }
 
-// Site Content Tab
-function SiteContentTab() {
-  const productSlots = [
-    { label: '250 gm', file: 'product-p1.png' },
-    { label: '500 gm', file: 'product-p2.png' },
-    { label: '750 gm', file: 'product-p3.jpg' },
-    { label: '1 kg', file: 'product-p4.jpg' },
-  ];
+// ── Archives Tab ───────────────────────────────────────────────
+function ArchivesTab() {
+  const [archives, setArchives] = useState<ArchiveRecord[]>([]);
+  const [status, setStatus] = useState<{ lastArchiveDate: string | null; daysSince: number | null; isDue: boolean } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [running, setRunning] = useState(false);
+
+  const load = async () => {
+    setLoading(true);
+    try {
+      const [a, s] = await Promise.all([api.adminArchives(), api.adminArchiveStatus()]);
+      setArchives(a);
+      setStatus(s);
+    } catch { toast.error('Failed to load archives'); }
+    finally { setLoading(false); }
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const runNow = async () => {
+    if (!confirm('This will export ALL orders to CSV, send to Telegram, and DELETE all orders from the database. Continue?')) return;
+    setRunning(true);
+    try {
+      const res = await api.adminRunArchive();
+      toast.success(res.message);
+      load();
+    } catch { toast.error('Archive failed. Check Telegram credentials.'); }
+    finally { setRunning(false); }
+  };
+
+  const daysUntilNext = status?.daysSince !== null && status?.daysSince !== undefined
+    ? Math.max(0, 30 - status.daysSince)
+    : null;
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-xl font-black" style={{ color: '#582A00' }}>Site Content Management</h2>
-
-      {/* Hero Video */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-amber-100">
-        <h3 className="font-bold text-lg mb-2" style={{ color: '#582A00' }}>Hero Background Video</h3>
-        <p className="text-sm text-gray-500 mb-3">
-          Current hero video: <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">public/videos/hero-bg-main.mp4</code>.
-          Replace this file on the server to change the homepage background video.
-        </p>
-        <div className="rounded-xl overflow-hidden bg-gray-900 relative" style={{ aspectRatio: '16/7', maxHeight: 240 }}>
-          <video
-            src="/videos/hero-bg-main.mp4"
-            className="w-full h-full object-cover opacity-80"
-            muted
-            loop
-            autoPlay
-            playsInline
-          />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="bg-black/50 text-white text-xs font-bold px-3 py-1.5 rounded-full">Live Preview</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Product Images */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-amber-100">
-        <h3 className="font-bold text-lg mb-2" style={{ color: '#582A00' }}>Product Card Images</h3>
-        <p className="text-sm text-gray-500 mb-4">
-          Each product card uses a dedicated image file in <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">public/images/</code>.
-          Replace the file on the server to update the image for that pack size.
-        </p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {productSlots.map((slot) => (
-            <div key={slot.file} className="rounded-xl overflow-hidden border border-amber-100 bg-amber-50">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`/images/${slot.file}`}
-                alt={slot.label}
-                className="w-full aspect-square object-cover"
-                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-              />
-              <div className="p-2 text-center">
-                <div className="font-black text-xs" style={{ color: '#582A00' }}>{slot.label}</div>
-                <div className="text-[10px] text-gray-400 mt-0.5 break-all">{slot.file}</div>
+    <div className="space-y-4">
+      {/* Status card */}
+      <div className="bg-white rounded-2xl shadow p-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h3 className="font-black text-[#582A00] text-lg mb-1">🗂 Auto-Archive (Every 30 Days)</h3>
+            <p className="text-sm text-gray-500">
+              Every 30 days at midnight IST — exports all orders to CSV, sends to Telegram, clears the database automatically.
+            </p>
+            {status && (
+              <div className="mt-3 flex flex-wrap gap-4 text-sm">
+                <span className="text-gray-600">
+                  Last archive:{' '}
+                  <strong className="text-[#582A00]">
+                    {status.lastArchiveDate
+                      ? new Date(status.lastArchiveDate).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric' })
+                      : 'Never'}
+                  </strong>
+                </span>
+                {daysUntilNext !== null && (
+                  <span className={`font-bold ${daysUntilNext <= 3 ? 'text-red-500' : 'text-green-700'}`}>
+                    Next in: {daysUntilNext} days
+                  </span>
+                )}
+                {status.isDue && (
+                  <span className="bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded-full text-xs">⚠ Archive Overdue!</span>
+                )}
               </div>
-            </div>
-          ))}
+            )}
+          </div>
+          <button
+            onClick={runNow}
+            disabled={running}
+            className="shrink-0 px-4 py-2.5 bg-[#C42F2C] hover:bg-[#a02623] text-white rounded-xl font-bold text-sm disabled:opacity-50 transition-all"
+          >
+            {running ? 'Running…' : '▶ Run Archive Now'}
+          </button>
         </div>
       </div>
 
-      {/* Store Info */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-amber-100">
-        <h3 className="font-bold text-lg mb-4" style={{ color: '#582A00' }}>Store Information</h3>
-        <div className="space-y-3 text-sm">
-          {[
-            { label: 'Location', value: 'Villupuram Railway Station, 1st Platform, Villupuram, Tamil Nadu' },
-            { label: 'WhatsApp', value: '+91 78719 49015' },
-            { label: 'Delivery', value: 'Home delivery within Villupuram only. Pickup at Railway Station for all others.' },
-          ].map((row) => (
-            <div key={row.label} className="flex items-start gap-3">
-              <span className="font-semibold w-28 shrink-0 text-gray-500">{row.label}:</span>
-              <span className="text-gray-800">{row.value}</span>
+      {/* Archives list */}
+      {loading ? (
+        <div className="text-center py-12 text-gray-400">Loading archives…</div>
+      ) : archives.length === 0 ? (
+        <div className="text-center py-12 text-gray-400">No archives yet. First archive runs automatically after 30 days.</div>
+      ) : (
+        <div className="grid gap-3">
+          {archives.map((arc) => (
+            <div key={arc.id} className="bg-white rounded-xl shadow-sm p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+              <div className="flex-1">
+                <div className="flex flex-wrap gap-3 items-center mb-1">
+                  <span className="font-black text-[#582A00]">
+                    {new Date(arc.createdAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric' })}
+                  </span>
+                  <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">
+                    {arc.orderCount} orders
+                  </span>
+                  <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">
+                    {arc.paidCount} paid
+                  </span>
+                  {arc.telegramMsgId && (
+                    <span className="bg-purple-100 text-purple-700 text-xs font-bold px-2 py-0.5 rounded-full">
+                      📱 Sent to Telegram
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-gray-400">
+                  Period: {new Date(arc.fromDate).toLocaleDateString('en-IN')} → {new Date(arc.toDate).toLocaleDateString('en-IN')}
+                </p>
+              </div>
+              <a
+                href={api.adminArchiveCsvUrl(arc.id)}
+                download
+                className="shrink-0 px-4 py-2 bg-[#063D20] text-white rounded-xl font-bold text-xs hover:bg-[#0a5929] transition-all"
+              >
+                ⬇ Download CSV
+              </a>
             </div>
           ))}
         </div>
-        <p className="text-xs text-amber-700 mt-4 bg-amber-50 rounded-xl p-3 border border-amber-100">
-          To change store information, update Footer.tsx, PickupSection.tsx and Header.tsx in the frontend source code and redeploy.
-        </p>
-      </div>
-
-      {/* Slider Images */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-amber-100">
-        <h3 className="font-bold text-lg mb-2" style={{ color: '#582A00' }}>Hero Slider Images (Fallback)</h3>
-        <p className="text-sm text-gray-500 mb-4">
-          These images are used as a poster/fallback when the video cannot play. Files: <code className="bg-gray-100 px-1 rounded text-xs">slider-1.png</code>, <code className="bg-gray-100 px-1 rounded text-xs">slider-2.png</code>, <code className="bg-gray-100 px-1 rounded text-xs">slider-3.png</code>
-        </p>
-        <div className="grid grid-cols-3 gap-3">
-          {['slider-1.png', 'slider-2.png', 'slider-3.png'].map((f) => (
-            <div key={f} className="rounded-xl overflow-hidden border border-amber-100">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`/images/${f}`} alt={f} className="w-full aspect-video object-cover" />
-              <div className="p-1.5 text-center text-[10px] text-gray-400">{f}</div>
-            </div>
-          ))}
-        </div>
-      </div>
+      )}
     </div>
   );
 }

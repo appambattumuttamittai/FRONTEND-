@@ -103,24 +103,29 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
   );
 }
 
+const STATIC_PRODUCTS: Product[] = [
+  { id: '250gm', weight: '250gm', weightGrams: 250,  price: 150, inStock: true },
+  { id: '500gm', weight: '500gm', weightGrams: 500,  price: 300, inStock: true },
+  { id: '750gm', weight: '750gm', weightGrams: 750,  price: 450, inStock: true },
+  { id: '1kg',   weight: '1kg',   weightGrams: 1000, price: 600, inStock: true },
+];
+
 export default function ProductsSection() {
   const { setProducts } = useApp();
-  const [products, setLocalProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Start with static products instantly — no skeleton, no waiting
+  const [products, setLocalProducts] = useState<Product[]>(STATIC_PRODUCTS);
   const [error, setError] = useState(false);
 
-  const fallback: Product[] = [
-    { id: '250gm', weight: '250gm', weightGrams: 250,  price: 150, inStock: true },
-    { id: '500gm', weight: '500gm', weightGrams: 500,  price: 300, inStock: true },
-    { id: '750gm', weight: '750gm', weightGrams: 750,  price: 450, inStock: true },
-    { id: '1kg',   weight: '1kg',   weightGrams: 1000, price: 600, inStock: true },
-  ];
-
   useEffect(() => {
+    // Silently fetch live prices in background and update if different
+    setProducts(STATIC_PRODUCTS.map((p) => ({
+      id: p.id, weight: p.weight,
+      weightGrams: p.weightGrams, price: p.price, inStock: p.inStock,
+    })));
+
     api.getProducts()
       .then((data) => {
         setLocalProducts(data);
-        /* store in context so Footer can open modals with correct prices */
         setProducts(data.map((p) => ({
           id: p.id, weight: p.weight,
           weightGrams: p.weightGrams, price: p.price, inStock: p.inStock,
@@ -128,13 +133,7 @@ export default function ProductsSection() {
       })
       .catch(() => {
         setError(true);
-        setLocalProducts(fallback);
-        setProducts(fallback.map((p) => ({
-          id: p.id, weight: p.weight,
-          weightGrams: p.weightGrams, price: p.price, inStock: p.inStock,
-        })));
-      })
-      .finally(() => setLoading(false));
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setProducts]);
 
@@ -151,32 +150,16 @@ export default function ProductsSection() {
             Our Sweet Collection
           </h2>
           <p className="text-base max-w-lg mx-auto" style={{ color: 'rgba(61,30,8,0.6)' }}>
-            Choose your pack size — all prices fetched live from our store
+            Choose your pack size and place your order
           </p>
         </div>
 
-        {/* Product grid */}
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1,2,3,4].map((i) => (
-              <div key={i} className="rounded-[22px] overflow-hidden" style={{ border: '1px solid rgba(196,47,44,0.1)' }}>
-                <div className="aspect-square shimmer" />
-                <div className="p-4">
-                  <div className="h-3 w-24 shimmer rounded mb-2" />
-                  <div className="h-5 w-3/4 shimmer rounded mb-1" />
-                  <div className="h-4 w-1/2 shimmer rounded mb-3" />
-                  <div className="h-7 w-1/3 shimmer rounded" />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {products.map((product, i) => (
-              <ProductCard key={product.id} product={product} index={i} />
-            ))}
-          </div>
-        )}
+        {/* Product grid — renders immediately with static prices, silently updates from API */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {products.map((product, i) => (
+            <ProductCard key={product.id} product={product} index={i} />
+          ))}
+        </div>
 
         {error && (
           <p className="text-center text-sm mt-4" style={{ color: '#C42F2C' }}>

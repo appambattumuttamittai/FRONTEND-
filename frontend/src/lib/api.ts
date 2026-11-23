@@ -110,6 +110,10 @@ export const api = {
   adminSheetsUrl: () => request<{ url: string | null }>('/api/admin/sheets-url'),
   adminExportCsv: (params: Record<string, string>) =>
     `${API_URL}/api/admin/export/csv?${new URLSearchParams(params)}`,
+  adminArchives: () => request<ArchiveRecord[]>('/api/admin/archives'),
+  adminArchiveStatus: () => request<{ lastArchiveDate: string | null; daysSince: number | null; isDue: boolean }>('/api/admin/archives/status'),
+  adminRunArchive: () => request<{ success: boolean; orderCount: number; message: string }>('/api/admin/archives/run', { method: 'POST' }),
+  adminArchiveCsvUrl: (id: string) => `${API_URL}/api/admin/archives/${id}/csv`,
 };
 
 // Types
@@ -180,4 +184,14 @@ export interface OrdersResponse {
   page: number;
   limit: number;
   pages: number;
+}
+
+export interface ArchiveRecord {
+  id: string;
+  createdAt: string;
+  orderCount: number;
+  paidCount: number;
+  fromDate: string;
+  toDate: string;
+  telegramMsgId: number | null;
 }
