@@ -441,11 +441,18 @@ export default function FeedbackSection() {
                 <form onSubmit={handleSubmit} className="flex flex-col gap-3 md:gap-5" noValidate>
 
                   <div>
-                    <label className="block text-xs md:text-sm font-bold mb-1" style={{ color: 'rgba(255,248,240,0.8)' }}>
+                    <label
+                      htmlFor="feedback-name"
+                      className="block text-xs md:text-sm font-bold mb-1"
+                      style={{ color: 'rgba(255,248,240,0.8)' }}
+                    >
                       Your Name *
                     </label>
                     <input
+                      id="feedback-name"
+                      name="name"
                       type="text"
+                      autoComplete="name"
                       value={form.name}
                       onChange={(e) => setForm({ ...form, name: e.target.value.replace(/[0-9]/g, '') })}
                       placeholder="e.g. Ramesh Kumar"
@@ -469,10 +476,16 @@ export default function FeedbackSection() {
                   </div>
 
                   <div>
-                    <label className="block text-xs md:text-sm font-bold mb-1" style={{ color: 'rgba(255,248,240,0.8)' }}>
+                    <label
+                      htmlFor="feedback-message"
+                      className="block text-xs md:text-sm font-bold mb-1"
+                      style={{ color: 'rgba(255,248,240,0.8)' }}
+                    >
                       Your Review *
                     </label>
                     <textarea
+                      id="feedback-message"
+                      name="message"
                       value={form.message}
                       onChange={(e) => setForm({ ...form, message: e.target.value })}
                       placeholder="Tell others about your experience with APPAMPATTU Mutta Mittai..."

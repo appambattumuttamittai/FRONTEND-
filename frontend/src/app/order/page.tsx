@@ -611,11 +611,14 @@ function PickupStep({
       {deliveryMethod === 'delivery' && (
         <div className="space-y-3 pt-1">
           <div>
-            <label className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">
+            <label htmlFor="street" className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">
               Street / Door Address in Villupuram *
             </label>
             <input
+              id="street"
+              name="street"
               type="text"
+              autoComplete="street-address"
               value={street}
               onChange={(e) => { onStreet(e.target.value); setErrors((prev) => ({ ...prev, street: '' })); }}
               placeholder="House/Door No, Street Name, Area Landmark"
@@ -625,9 +628,12 @@ function PickupStep({
           </div>
 
           <div>
-            <label className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">City / Town *</label>
+            <label htmlFor="city" className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">City / Town *</label>
             <input
+              id="city"
+              name="city"
               type="text"
+              autoComplete="address-level2"
               value={city || 'Villupuram'}
               onChange={(e) => { onCity(e.target.value); setErrors((prev) => ({ ...prev, city: '' })); }}
               className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors"

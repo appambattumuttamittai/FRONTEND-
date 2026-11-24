@@ -287,6 +287,9 @@ export default function OrderedItemsDrawer({ open, onClose }: Props) {
             style={{ display: 'flex', gap: 6 }}
           >
             <input
+              id="track-order-id"
+              name="orderId"
+              aria-label="Track by Order ID"
               type="text"
               value={lookupInput}
               onChange={(e) => setLookupInput(e.target.value)}
