@@ -161,11 +161,12 @@ function NameStep({ value, onChange, onNext }: { value: string; onChange: (v: st
 
 // Step 2: Phone OTP
 function PhoneStep({
-  phone, onPhoneChange, sessionId, onSessionChange, verified, onVerified, onNext
+  phone, onPhoneChange, sessionId, onSessionChange, verified, onVerified, onNext, onBack
 }: {
   phone: string; onPhoneChange: (v: string) => void;
   sessionId: string; onSessionChange: (v: string) => void;
   verified: boolean; onVerified: () => void; onNext: () => void;
+  onBack?: () => void;
 }) {
   const { t } = useLanguage();
   const [otpDigits, setOtpDigits] = useState<string[]>(['', '', '', '', '', '']);
@@ -324,6 +325,15 @@ function PhoneStep({
           >
             {loading ? t('common.loading') : t('order.phone.send_otp')}
           </button>
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              className="w-full py-1.5 text-xs font-semibold text-[#582A00]/70 hover:text-[#582A00] transition-colors cursor-pointer text-center"
+            >
+              ← Back to Name
+            </button>
+          )}
         </div>
       ) : (
         /* OTP Verification Card matching image specification */
@@ -1028,6 +1038,18 @@ function PaymentStep({
             </div>
           </div>
 
+          {/* Back button to Step 3 */}
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              disabled={submitting}
+              className="w-full py-2 text-xs sm:text-sm font-bold text-[#582A00]/70 hover:text-[#582A00] transition-colors cursor-pointer text-center"
+            >
+              ← Back to Shipping & Delivery
+            </button>
+          )}
+
       {/* Payment Cancelled Modal matching Image 3 */}
       <AnimatePresence>
         {showCancelModal && (
@@ -1070,8 +1092,29 @@ function OrderPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [step, setStep] = useState(0);
+  const stepRef = useRef(0);
+  stepRef.current = step;
   const [products, setProducts] = useState<Product[]>([]);
   const [isOffline, setIsOffline] = useState(false);
+
+  // Sync step changes with browser/mobile back and forward buttons
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    window.history.replaceState({ orderStep: 0 }, '', window.location.href);
+
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state && typeof event.state.orderStep === 'number') {
+        setStep(event.state.orderStep);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        setStep(0);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
   const [state, setState] = useState<OrderState>({
     name: '',
     phone: '',
@@ -1210,12 +1253,29 @@ function OrderPageContent() {
     setState((s) => ({ ...s, [key]: value }));
 
   const nextStep = () => {
-    setStep((s) => Math.min(s + 1, STEPS.length - 1));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const current = stepRef.current;
+    const next = Math.min(current + 1, STEPS.length - 1);
+    if (next !== current) {
+      if (typeof window !== 'undefined') {
+        window.history.pushState({ orderStep: next }, '', window.location.href);
+      }
+      setStep(next);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
+
   const prevStep = () => {
-    setStep((s) => Math.max(s - 1, 0));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (
+      typeof window !== 'undefined' &&
+      window.history.state &&
+      typeof window.history.state.orderStep === 'number' &&
+      window.history.state.orderStep > 0
+    ) {
+      window.history.back();
+    } else {
+      setStep((s) => Math.max(s - 1, 0));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const slideVariants = {
@@ -1274,6 +1334,7 @@ function OrderPageContent() {
                     verified={state.phoneVerified}
                     onVerified={() => update('phoneVerified', true)}
                     onNext={nextStep}
+                    onBack={prevStep}
                   />
                 )}
                 {step === 2 && (
@@ -1295,7 +1356,7 @@ function OrderPageContent() {
                   <PaymentStep
                     orderState={state}
                     onBack={prevStep}
-                    onSuccess={(id) => router.push(`/order/success?orderId=${id}`)}
+                    onSuccess={(id) => router.replace(`/order/success?orderId=${id}`)}
                     onClearCart={clearCart}
                   />
                 )}

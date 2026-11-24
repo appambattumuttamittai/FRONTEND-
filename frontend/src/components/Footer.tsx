@@ -59,16 +59,17 @@ export default function Footer() {
       ═══════════════════════════════════════════════ */}
       <div
         style={{ background: '#FFFFFF', borderTop: '1px solid rgba(88,42,0,0.08)' }}
-        className="hidden md:block pt-10 pb-16 px-4 text-center"
+        className="block pt-8 md:pt-10 pb-12 md:pb-16 px-4 text-center"
       >
         <p
-          className="font-black leading-tight mx-auto mb-8"
+          className="font-bold tracking-tight mx-auto mb-6 md:mb-8"
           style={{
             color: '#582A00',
-            fontSize: 'clamp(1.4rem, 3.5vw, 2.4rem)',
-            maxWidth: 680,
-            fontFamily: "'Exo 2', sans-serif",
-            lineHeight: 1.3,
+            fontSize: 'clamp(1.25rem, 3.2vw, 2.2rem)',
+            maxWidth: 700,
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            lineHeight: 1.35,
+            letterSpacing: '-0.02em',
           }}
         >
           Order fresh APPAMPATTU Mutta Mittai today — made with milk &amp; egg.
@@ -79,7 +80,7 @@ export default function Footer() {
           <Link
             href="/"
             onClick={(e) => scrollToSection('products', e)}
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-black text-sm text-white transition-all hover:-translate-y-0.5"
+            className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-bold text-sm text-white transition-all hover:-translate-y-0.5"
             style={{ background: '#C42F2C', boxShadow: '0 8px 24px rgba(196,47,44,0.35)' }}
           >
             Order Now
@@ -91,7 +92,7 @@ export default function Footer() {
             href={waLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-bold text-sm border-2 transition-all hover:-translate-y-0.5"
+            className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-bold text-sm border-2 transition-all hover:-translate-y-0.5"
             style={{ borderColor: '#C42F2C', color: '#C42F2C' }}
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -120,7 +121,7 @@ export default function Footer() {
             />
             {/* Mobile: show big brand name beside logo; Desktop: show small name */}
             <div className="hidden md:block">
-              <p className="font-black text-sm leading-tight" style={{ color: '#582A00', fontFamily: "'Exo 2', sans-serif" }}>
+              <p className="font-extrabold text-sm leading-tight tracking-tight" style={{ color: '#582A00', fontFamily: "'Inter', sans-serif" }}>
                 APPAMPATTU
               </p>
               <p className="font-bold text-xs" style={{ color: '#D97706' }}>
@@ -129,11 +130,11 @@ export default function Footer() {
             </div>
             <div className="md:hidden">
               <h2
-                className="font-black leading-none"
+                className="font-black leading-none tracking-tight"
                 style={{
                   color: '#2A1000',
                   fontSize: 'clamp(1.4rem, 7vw, 2rem)',
-                  fontFamily: "'Exo 2', sans-serif",
+                  fontFamily: "'Inter', sans-serif",
                   letterSpacing: '-0.02em',
                 }}
               >
@@ -155,11 +156,11 @@ export default function Footer() {
             <div className="hidden md:block md:col-span-1">
               {/* Giant stacked brand name à la Elevate — desktop only (mobile shows it in logo row) */}
               <h2
-                className="hidden md:block font-black leading-none mb-4"
+                className="hidden md:block font-black leading-none mb-4 tracking-tight"
                 style={{
                   color: '#2A1000',
                   fontSize: 'clamp(1.6rem, 3.5vw, 2.4rem)',
-                  fontFamily: "'Exo 2', sans-serif",
+                  fontFamily: "'Inter', sans-serif",
                   letterSpacing: '-0.02em',
                 }}
               >

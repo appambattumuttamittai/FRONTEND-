@@ -79,12 +79,12 @@ export default function PickupSection() {
         {/* Tagline banner */}
         <div className="text-center mb-12">
           <p
-            className="font-black italic leading-snug mx-auto"
+            className="font-bold italic leading-snug mx-auto"
             style={{
               color: '#582A00',
               fontSize: 'clamp(1.1rem, 2.5vw, 1.5rem)',
               maxWidth: 600,
-              fontFamily: "'Exo 2', sans-serif",
+              fontFamily: "'Inter', sans-serif",
             }}
           >
             &ldquo;A timeless sweet from APPAMPATTU that melts in the mouth of all three generations&rdquo;

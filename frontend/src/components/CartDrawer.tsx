@@ -25,6 +25,30 @@ export default function CartDrawer({ open, onClose }: Props) {
     }
   }, [open]);
 
+  // Support mobile hardware/gesture back button to close drawer
+  useEffect(() => {
+    if (!open || typeof window === 'undefined') return;
+
+    window.history.pushState({ drawer: 'cart' }, '', window.location.href);
+
+    const handlePopState = () => {
+      onClose();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [open, onClose]);
+
+  const handleClose = () => {
+    if (typeof window !== 'undefined' && window.history.state?.drawer === 'cart') {
+      window.history.back();
+    } else {
+      onClose();
+    }
+  };
+
   const grandTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
@@ -32,7 +56,7 @@ export default function CartDrawer({ open, onClose }: Props) {
       {/* ── Backdrop ── */}
       <div
         aria-hidden="true"
-        onClick={onClose}
+        onClick={handleClose}
         style={{
           position: 'fixed',
           inset: 0,
@@ -108,7 +132,7 @@ export default function CartDrawer({ open, onClose }: Props) {
             )}
           </div>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             aria-label="Close cart"
             style={{
               width: 36,
