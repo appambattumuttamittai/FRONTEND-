@@ -40,7 +40,7 @@ function StarDisplay({ rating }: { rating: number }) {
 function StarInput({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   const [hovered, setHovered] = useState(0);
   return (
-    <div className="flex gap-1" role="radiogroup" aria-label="Rating">
+    <div className="flex gap-1" role="radiogroup" aria-labelledby="rating-label">
       {[1,2,3,4,5].map((i) => (
         <button
           key={i} type="button"
@@ -469,9 +469,13 @@ export default function FeedbackSection() {
                   </div>
 
                   <div>
-                    <label className="block text-xs md:text-sm font-bold mb-1" style={{ color: 'rgba(255,248,240,0.8)' }}>
+                    <span
+                      id="rating-label"
+                      className="block text-xs md:text-sm font-bold mb-1"
+                      style={{ color: 'rgba(255,248,240,0.8)' }}
+                    >
                       Rating *
-                    </label>
+                    </span>
                     <StarInput value={form.rating} onChange={(v) => setForm({ ...form, rating: v })} />
                   </div>
 

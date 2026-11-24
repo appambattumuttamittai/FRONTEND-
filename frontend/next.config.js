@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Disable SWC – use Babel fallback (via .babelrc) for environments
-  // where native SWC binaries cannot be compiled.
-  swcMinify: false,
   eslint: {
     ignoreDuringBuilds: true,
   },

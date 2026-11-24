@@ -539,9 +539,9 @@ function PickupStep({
 
       {/* Shipping Method Options matching Image 2 */}
       <div>
-        <label className="block text-xs sm:text-sm font-bold text-[#3A1C10] mb-2">
+        <span className="block text-xs sm:text-sm font-bold text-[#3A1C10] mb-2">
           Select Delivery Option *
-        </label>
+        </span>
         <div className="space-y-2.5">
           {/* Option 1: HOME DELIVERY (Default) */}
           <div
