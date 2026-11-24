@@ -267,23 +267,20 @@ export default function FeedbackSection() {
         <div className="container mx-auto max-w-6xl">
 
           {/* Section header */}
-          <div className="text-center mb-10 md:mb-14">
+          <div className="text-center mb-6 md:mb-8">
             <span
-              className="inline-block text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full mb-4"
+              className="inline-block text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full mb-3"
               style={{ background: 'rgba(255,255,255,0.12)', color: '#FFAA2B', border: '1px solid rgba(255,170,43,0.3)' }}
             >
               What Our Customers Say
             </span>
             <h2
               id="feedback-heading"
-              className="text-3xl md:text-5xl font-black mb-3"
+              className="text-3xl md:text-5xl font-black"
               style={{ color: '#FFFFFF', fontFamily: "'Exo 2', sans-serif", textShadow: '0 2px 20px rgba(0,0,0,0.4)' }}
             >
               Customer Reviews
             </h2>
-            <p className="text-sm md:text-base max-w-md mx-auto" style={{ color: 'rgba(255,248,240,0.6)' }}>
-              Real words from our happy customers across Tamil Nadu
-            </p>
           </div>
 
           {/* ═══════════════════════════════════════════════
@@ -450,7 +447,7 @@ export default function FeedbackSection() {
                     <input
                       type="text"
                       value={form.name}
-                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      onChange={(e) => setForm({ ...form, name: e.target.value.replace(/[0-9]/g, '') })}
                       placeholder="e.g. Ramesh Kumar"
                       maxLength={60}
                       className="w-full px-3 py-2 md:px-4 md:py-3 rounded-xl text-sm outline-none transition-all"

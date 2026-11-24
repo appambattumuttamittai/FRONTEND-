@@ -124,8 +124,14 @@ function NameStep({ value, onChange, onNext }: { value: string; onChange: (v: st
   const [err, setErr] = useState('');
 
   const submit = () => {
-    if (!value.trim()) { setErr(t('common.required')); return; }
-    if (value.trim().length < 2) { setErr('Name must be at least 2 characters'); return; }
+    const trimmed = value.trim();
+    if (!trimmed) { setErr(t('common.required')); return; }
+    if (trimmed.length < 2) { setErr('Name must be at least 2 characters'); return; }
+    if (/[0-9]/.test(trimmed)) { setErr('Name cannot contain numbers. Please enter letters only.'); return; }
+    if (!/^[a-zA-Z\s.'\u0B80-\u0BFF-]+$/.test(trimmed)) {
+      setErr('Please enter letters only (no numbers or special symbols)');
+      return;
+    }
     setErr('');
     onNext();
   };
@@ -141,7 +147,12 @@ function NameStep({ value, onChange, onNext }: { value: string; onChange: (v: st
           id="name"
           type="text"
           value={value}
-          onChange={(e) => { onChange(e.target.value); setErr(''); }}
+          onChange={(e) => {
+            // Strip any numbers automatically on type or paste
+            const clean = e.target.value.replace(/[0-9]/g, '');
+            onChange(clean);
+            setErr('');
+          }}
           onKeyDown={(e) => e.key === 'Enter' && submit()}
           placeholder={t('order.name.placeholder')}
           autoFocus
@@ -218,7 +229,7 @@ function PhoneStep({
       onSessionChange(res.sessionId);
       setOtpSent(true);
       setOtpDigits(['', '', '', '', '', '']);
-      setResendTimer(60);
+      setResendTimer(90); // 1 minute 30 seconds
       toast.success(t('order.phone.otp_sent'));
       setTimeout(() => inputRefs.current[0]?.focus(), 300);
     } catch (err: any) {
