@@ -17,7 +17,7 @@ export function LocalBusinessSchema() {
           'Appampattu Mutta Mittai is the original traditional Tamil Nadu egg sweet (முட்டை மிட்டாய்) made fresh daily in Meenambur, Appampattu, Villupuram. Made with milk, egg, cashew nut paste and sugar. Available for home delivery within Villupuram city and also on Swiggy.',
         url: 'https://appambattumuttamittai.com',
         telephone: '+917871949015',
-        email: 'appambattumuttamittai@gmail.com',
+        email: 'appampattueggsweets@gmail.com',
         image: 'https://appambattumuttamittai.com/images/logo.jpg',
         priceRange: '₹150–₹600',
         servesCuisine: ['Tamil Nadu', 'Indian Traditional', 'Egg Sweet'],

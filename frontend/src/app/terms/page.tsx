@@ -17,7 +17,7 @@ export default function TermsPage() {
             </section>
             <section>
               <h2 className="text-xl font-bold text-[#063D20] mb-2">2. Payment</h2>
-              <p>Payment is via GPay/UPI. Orders are confirmed only after admin verification of payment. The 90-second payment window is strictly enforced by the system.</p>
+              <p>Payment is processed securely through Razorpay gateway supporting UPI, Debit/Credit Cards, and Net Banking. Orders are confirmed immediately upon successful transaction verification.</p>
             </section>
             <section>
               <h2 className="text-xl font-bold text-[#063D20] mb-2">3. Product</h2>
@@ -25,11 +25,15 @@ export default function TermsPage() {
             </section>
             <section>
               <h2 className="text-xl font-bold text-[#063D20] mb-2">4. Availability</h2>
-              <p>Products are subject to availability. We reserve the right to cancel orders if stock is unavailable, with a full refund where applicable.</p>
+              <p>Products are subject to availability. We reserve the right to cancel orders if fresh stock is unavailable, with an immediate full refund to the original payment method.</p>
             </section>
             <section>
-              <h2 className="text-xl font-bold text-[#063D20] mb-2">5. Contact</h2>
-              <p>For any queries: <a href="https://wa.me/917871949015" className="text-[#25D366] font-bold">WhatsApp +91 78719 49015</a></p>
+              <h2 className="text-xl font-bold text-[#063D20] mb-2">5. Contact & Support</h2>
+              <p>
+                Email: <a href="mailto:appampattueggsweets@gmail.com" className="text-[#063D20] font-bold underline">appampattueggsweets@gmail.com</a><br />
+                WhatsApp: <a href="https://wa.me/917871949015" className="text-[#25D366] font-bold">+91 78719 49015</a><br />
+                Address: Villupuram Railway Station, 1st Platform, Villupuram, Tamil Nadu - 605602
+              </p>
             </section>
           </div>
         </div>

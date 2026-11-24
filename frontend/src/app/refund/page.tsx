@@ -13,23 +13,27 @@ export default function RefundPage() {
           <div className="space-y-6 text-[#3A1C10]/80">
             <section>
               <h2 className="text-xl font-bold text-[#063D20] mb-2">Payment Method</h2>
-              <p>We accept payment via GPay / UPI only. All transactions are in Indian Rupees (₹). Payment must be completed within the 90-second window shown at checkout.</p>
+              <p>We accept secure payments via Razorpay supporting UPI (GPay, PhonePe, Paytm), Credit/Debit Cards, Net Banking, and Wallets. All transactions are in Indian Rupees (₹).</p>
             </section>
             <section>
               <h2 className="text-xl font-bold text-[#063D20] mb-2">Order Confirmation</h2>
-              <p>Your order is confirmed only after an admin manually verifies your GPay payment. Clicking &quot;I have Paid&quot; does not automatically confirm your order — it places it under review. You will be notified via WhatsApp once confirmed.</p>
+              <p>Your order is confirmed immediately upon successful payment verification. You will receive an on-screen order summary with order tracking details, and notification via WhatsApp.</p>
             </section>
             <section>
               <h2 className="text-xl font-bold text-[#063D20] mb-2">Refund Policy</h2>
-              <p>Since Mutta Mittai is a perishable food product, we generally do not accept returns. However, if there is an issue with your order (wrong quantity, product quality), please contact us immediately on WhatsApp within 1 hour of pickup. We will review on a case-by-case basis.</p>
+              <p>Since Mutta Mittai is a freshly made perishable food product, we generally do not accept returns. However, if there is an issue with your order (wrong quantity, transit damage, or quality issue), please contact us within 2 hours of delivery/pickup with photographic proof. Verified claims are refunded to the original payment method within 5–7 business days via Razorpay.</p>
             </section>
             <section>
-              <h2 className="text-xl font-bold text-[#063D20] mb-2">Failed/Expired Payments</h2>
-              <p>If your payment window expires before you complete payment, the order is automatically cancelled. If you paid but the window expired, contact us on WhatsApp with your payment screenshot and we will resolve it manually.</p>
+              <h2 className="text-xl font-bold text-[#063D20] mb-2">Failed/Expired Transactions</h2>
+              <p>In case of amount deducted but order not generated due to network timeout, the debited amount will be auto-refunded by Razorpay to your source bank account within 3–5 working days.</p>
             </section>
             <section>
-              <h2 className="text-xl font-bold text-[#063D20] mb-2">Contact for Disputes</h2>
-              <p>WhatsApp: <a href="https://wa.me/917871949015" className="text-[#25D366] font-bold">+91 78719 49015</a><br />Location: Meenambur, Appambattu, Villupuram, Tamil Nadu</p>
+              <h2 className="text-xl font-bold text-[#063D20] mb-2">Contact for Disputes & Support</h2>
+              <p>
+                Email: <a href="mailto:appampattueggsweets@gmail.com" className="text-[#063D20] font-bold underline">appampattueggsweets@gmail.com</a><br />
+                WhatsApp: <a href="https://wa.me/917871949015" className="text-[#25D366] font-bold">+91 78719 49015</a><br />
+                Location: Villupuram Railway Station, 1st Platform, Villupuram, Tamil Nadu - 605602
+              </p>
             </section>
           </div>
         </div>

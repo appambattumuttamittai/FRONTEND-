@@ -286,6 +286,7 @@ export default function OrderedItemsDrawer({ open, onClose }: Props) {
             }}
             style={{ display: 'flex', gap: 6 }}
           >
+            <label htmlFor="track-order-id" className="sr-only">Track Order by ID</label>
             <input
               id="track-order-id"
               name="orderId"

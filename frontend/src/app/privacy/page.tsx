@@ -36,7 +36,11 @@ export default function PrivacyPage() {
 
           <h2 className="text-xl font-bold text-[#063D20] mt-8 mb-3">Contact</h2>
           <p className="text-[#3A1C10]/80">
-            For any privacy concerns, contact us on WhatsApp:{' '}
+            For any privacy concerns, contact us via email at{' '}
+            <a href="mailto:appampattueggsweets@gmail.com" className="text-[#063D20] font-bold underline">
+              appampattueggsweets@gmail.com
+            </a>{' '}
+            or WhatsApp:{' '}
             <a href="https://wa.me/917871949015" className="text-[#25D366] font-bold">+91 78719 49015</a>
           </p>
         </div>

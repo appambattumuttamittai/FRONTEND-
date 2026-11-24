@@ -227,11 +227,11 @@ export default function Footer() {
                 </a>
               </div>
               <a
-                href="mailto:appambattumuttamittai@gmail.com"
+                href="mailto:appampattueggsweets@gmail.com"
                 className="text-sm transition-colors hover:text-[#C42F2C] mt-1 md:mt-2 block break-all"
                 style={{ color: 'rgba(88,42,0,0.6)' }}
               >
-                appambattumuttamittai@gmail.com
+                appampattueggsweets@gmail.com
               </a>
             </div>
 
