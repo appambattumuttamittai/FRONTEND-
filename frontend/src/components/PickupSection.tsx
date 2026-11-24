@@ -87,7 +87,7 @@ export default function PickupSection() {
               fontFamily: "'Inter', sans-serif",
             }}
           >
-            &ldquo;A timeless sweet from APPAMPATTU that melts in the mouth of all three generations&rdquo;
+            &ldquo;A timeless sweet from Appampattu that melts in the mouth of all three generations&rdquo;
           </p>
           <div className="mt-3 w-16 h-1 mx-auto rounded-full" style={{ background: '#D97706' }} />
         </div>

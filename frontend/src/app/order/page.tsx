@@ -551,16 +551,13 @@ function PickupStep({
               />
             </div>
             <div className="flex-1">
-              <div className="flex items-center justify-between">
+              <div>
                 <span className="font-bold text-sm sm:text-base text-[#582A00]">
                   HOME DELIVERY <span className="text-xs font-semibold text-[#D97706]">(Within Villupuram City)</span>
                 </span>
-                <span className="text-xs font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                  FREE
-                </span>
               </div>
               <p className="text-xs text-[#582A00]/70 mt-0.5">
-                Fresh daily batch delivered straight to your doorstep inside Villupuram City limits.
+                Available within Villupuram City Limits
               </p>
             </div>
           </div>
@@ -584,40 +581,20 @@ function PickupStep({
               />
             </div>
             <div className="flex-1">
-              <div className="flex items-center justify-between">
+              <div>
                 <span className="font-bold text-sm sm:text-base text-[#582A00]">
                   Pick Up in Store <span className="text-xs font-semibold text-[#D97706]">(For outside Villupuram)</span>
                 </span>
-                <span className="text-xs font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                  FREE
-                </span>
               </div>
               <p className="text-xs text-[#582A00]/70 mt-0.5">
-                Pickup directly from store at <strong>Villupuram Railway Station (1st Platform)</strong>. Recommended for customers outside Villupuram.
+                Pickup directly from store at Villupuram Railway Station. Recommended for customers outside Villupuram.
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* If Pick up in store: Show confirmed station pickup banner */}
-      {deliveryMethod === 'pickup' && (
-        <div className="bg-[#FAF7F2] border border-[#582A00]/15 rounded-xl p-3.5 space-y-1 text-xs text-[#582A00]">
-          <div className="font-bold text-[#C42F2C] flex items-center gap-1.5 text-xs sm:text-sm">
-            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <span>Confirmed Store Pickup Location</span>
-          </div>
-          <p className="font-semibold">
-            Appampattu Mutta Mittai Outlet · Villupuram Railway Station (1st Platform)
-          </p>
-          <p className="text-[#582A00]/70">
-            Helpline: +91 78719 49015. Your package will be prepared and reserved immediately upon online payment.
-          </p>
-        </div>
-      )}
+
 
       {/* If Home Delivery: Show Street Address & City input fields */}
       {deliveryMethod === 'delivery' && (

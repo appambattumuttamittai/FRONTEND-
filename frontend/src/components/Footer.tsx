@@ -72,7 +72,7 @@ export default function Footer() {
             letterSpacing: '-0.02em',
           }}
         >
-          Order fresh APPAMPATTU Mutta Mittai today — made with milk &amp; egg.
+          Order fresh Appampattu Mutta Mittai today — made with milk &amp; egg.
           Pickup at Villupuram Railway Station or home delivery within Villupuram.
         </p>
 
