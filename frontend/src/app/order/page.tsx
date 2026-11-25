@@ -373,9 +373,6 @@ function PhoneStep({
                   const val = e.target.value.replace(/\D/g, '').slice(0, 10);
                   onPhoneChange(val);
                   setPhoneErr('');
-                  if (val.length === 10 && /^[6-9]\d{9}$/.test(val)) {
-                    api.notifyLead(customerName || '', val, email);
-                  }
                 }}
                 onKeyDown={(e) => e.key === 'Enter' && sendOtp()}
                 placeholder="10-digit mobile number"
@@ -467,6 +464,28 @@ function PhoneStep({
 
           {/* Body with 6 Segmented PIN boxes, countdown and auto-advance */}
           <div className="p-5 sm:p-6 space-y-4 text-center">
+            {/* Direct Email Display with One-Click Copy */}
+            <div className="flex items-center justify-between bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2 text-xs">
+              <div className="flex items-center gap-1.5 truncate">
+                <span className="font-semibold text-stone-500">Sent to:</span>
+                <span className="font-bold text-stone-900 truncate">{email}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(email);
+                  toast.success('Email copied to clipboard!');
+                }}
+                className="shrink-0 ml-2 text-xs font-bold text-[#C42F2C] hover:text-[#a82421] px-2.5 py-1 bg-white rounded-lg border border-stone-200 shadow-xs cursor-pointer flex items-center gap-1 transition-all active:scale-95"
+                title="Copy email to clipboard"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                Copy
+              </button>
+            </div>
+
             {/* 6 Digit Input Boxes */}
             <div className="flex justify-center gap-1.5 sm:gap-2.5">
               {[0, 1, 2, 3, 4, 5].map((idx) => (
@@ -487,6 +506,35 @@ function PhoneStep({
                   }`}
                 />
               ))}
+            </div>
+
+            {/* One-Tap Paste OTP Button */}
+            <div className="flex justify-center pt-0.5">
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    const text = await navigator.clipboard.readText();
+                    const digits = text.replace(/\D/g, '').slice(0, 6);
+                    if (digits.length === 6) {
+                      const newD = digits.split('');
+                      setOtpDigits(newD);
+                      toast.success('OTP pasted!');
+                      verifyOtp(digits);
+                    } else {
+                      toast.error('No 6-digit OTP found in clipboard');
+                    }
+                  } catch {
+                    toast.error('Please allow clipboard access or type the code');
+                  }
+                }}
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+              >
+                <svg className="w-3.5 h-3.5 text-[#C42F2C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Paste OTP
+              </button>
             </div>
 
             {/* Countdown Display e.g. 05:00 */}

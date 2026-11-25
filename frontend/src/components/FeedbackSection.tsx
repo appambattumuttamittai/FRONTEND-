@@ -131,12 +131,20 @@ export default function FeedbackSection() {
   /* mobile carousel active dot */
   const carouselRef = useRef<HTMLDivElement>(null);
   const [activeDot, setActiveDot] = useState(0);
+  const [googleReviewUrl, setGoogleReviewUrl] = useState(GOOGLE_REVIEW_URL);
 
-  /* fetch real reviews */
+  /* fetch real reviews & dynamic Google Review URL */
   useEffect(() => {
     fetch(`${API}/api/feedback`)
       .then((r) => r.json())
       .then((data: Feedback[]) => { if (Array.isArray(data) && data.length > 0) setFeedbacks(data); })
+      .catch(() => {});
+
+    fetch(`${API}/api/feedback/google-review-url`)
+      .then((r) => r.json())
+      .then((data: { url?: string }) => {
+        if (data?.url) setGoogleReviewUrl(data.url);
+      })
       .catch(() => {});
   }, []);
 
@@ -529,7 +537,7 @@ export default function FeedbackSection() {
                     <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.15)' }} />
                   </div>
                   <a
-                    href={GOOGLE_REVIEW_URL}
+                    href={googleReviewUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full py-2.5 md:py-3.5 rounded-full font-black text-sm transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2"
