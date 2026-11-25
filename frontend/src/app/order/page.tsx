@@ -37,6 +37,7 @@ export interface OrderItem {
 interface OrderState {
   name: string;
   phone: string;
+  email: string;
   otpSessionId: string;
   phoneVerified: boolean;
   items: OrderItem[];
@@ -170,13 +171,29 @@ function NameStep({ value, onChange, onNext }: { value: string; onChange: (v: st
   );
 }
 
-// Step 2: Phone OTP
+// Step 2: Phone & Email OTP
 function PhoneStep({
-  phone, onPhoneChange, sessionId, onSessionChange, verified, onVerified, onNext, onBack, customerName
+  phone,
+  onPhoneChange,
+  email,
+  onEmailChange,
+  sessionId,
+  onSessionChange,
+  verified,
+  onVerified,
+  onNext,
+  onBack,
+  customerName,
 }: {
-  phone: string; onPhoneChange: (v: string) => void;
-  sessionId: string; onSessionChange: (v: string) => void;
-  verified: boolean; onVerified: () => void; onNext: () => void;
+  phone: string;
+  onPhoneChange: (v: string) => void;
+  email: string;
+  onEmailChange: (v: string) => void;
+  sessionId: string;
+  onSessionChange: (v: string) => void;
+  verified: boolean;
+  onVerified: () => void;
+  onNext: () => void;
   onBack?: () => void;
   customerName?: string;
 }) {
@@ -185,6 +202,7 @@ function PhoneStep({
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [phoneErr, setPhoneErr] = useState('');
+  const [emailErr, setEmailErr] = useState('');
   const [otpErr, setOtpErr] = useState('');
   const [resendTimer, setResendTimer] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -196,7 +214,7 @@ function PhoneStep({
     }
   }, [resendTimer]);
 
-  // WebOTP API
+  // WebOTP API (if SMS arrives on mobile browser)
   useEffect(() => {
     if (!otpSent) return;
     if (!('OTPCredential' in window)) return;
@@ -218,20 +236,35 @@ function PhoneStep({
   }, [otpSent]);
 
   const sendOtp = async () => {
-    const clean = phone.replace(/\D/g, '');
-    if (!/^[6-9]\d{9}$/.test(clean)) {
+    const cleanPhone = phone.replace(/\D/g, '');
+    const cleanEmail = (email || '').trim().toLowerCase();
+
+    let hasError = false;
+    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
       setPhoneErr('Please enter a valid 10-digit Indian mobile number');
-      return;
+      hasError = true;
+    } else {
+      setPhoneErr('');
     }
-    setPhoneErr('');
+
+    if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      setEmailErr('Please enter a valid email address (e.g. yourname@gmail.com)');
+      hasError = true;
+    } else {
+      setEmailErr('');
+    }
+
+    if (hasError) return;
+
     setLoading(true);
+    setOtpErr('');
     try {
-      const res = await api.sendOtp(clean, customerName);
+      const res = await api.sendOtp(cleanPhone, customerName, cleanEmail);
       onSessionChange(res.sessionId);
       setOtpSent(true);
       setOtpDigits(['', '', '', '', '', '']);
-      setResendTimer(90); // 1 minute 30 seconds
-      toast.success(t('order.phone.otp_sent'));
+      setResendTimer(300); // 5 minutes (300 seconds) countdown
+      toast.success('6-digit OTP sent to your Gmail!');
       setTimeout(() => inputRefs.current[0]?.focus(), 300);
     } catch (err: any) {
       toast.error(err.message || t('common.error'));
@@ -242,15 +275,24 @@ function PhoneStep({
 
   const verifyOtp = async (codeToVerify?: string) => {
     const code = codeToVerify || otpDigits.join('');
-    if (code.length !== 6) { setOtpErr('Please enter the complete 6-digit OTP'); return; }
+    if (code.length !== 6) {
+      setOtpErr('Please enter the complete 6-digit OTP');
+      return;
+    }
     setLoading(true);
+    setOtpErr('');
     try {
-      await api.verifyOtp(phone.replace(/\D/g, ''), code, sessionId);
+      await api.verifyOtp(
+        phone.replace(/\D/g, ''),
+        code,
+        sessionId,
+        (email || '').trim().toLowerCase()
+      );
       onVerified();
-      toast.success('Mobile verified successfully!');
+      toast.success('Verified successfully!');
       onNext();
     } catch (err: any) {
-      setOtpErr(err.message || 'Invalid OTP. Please try again.');
+      setOtpErr(err.message || 'Invalid or expired OTP. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -268,7 +310,6 @@ function PhoneStep({
     }
 
     const fullCode = newDigits.join('');
-    // Automatically advance to the next step once 6 digits are entered
     if (fullCode.length === 6) {
       verifyOtp(fullCode);
     }
@@ -304,11 +345,20 @@ function PhoneStep({
   return (
     <div>
       {!otpSent ? (
-        <div className="space-y-3.5">
-          <h2 className="text-xl sm:text-2xl font-black text-[#582A00]">{t('order.step.phone')}</h2>
+        <div className="space-y-4">
           <div>
-            <label htmlFor="phone" className="block text-xs sm:text-sm font-semibold text-[#3A1C10] mb-1">
-              {t('order.phone.label')} *
+            <h2 className="text-xl sm:text-2xl font-black text-[#582A00]">
+              Mobile & Email Verification
+            </h2>
+            <p className="text-xs sm:text-sm text-[#582A00]/70 mt-0.5">
+              We&apos;ll send a 6-digit OTP code to verify your order.
+            </p>
+          </div>
+
+          {/* Mobile Number Field */}
+          <div>
+            <label htmlFor="phone" className="block text-xs sm:text-sm font-bold text-[#3A1C10] mb-1">
+              Mobile Number *
             </label>
             <div className="flex gap-2">
               <div className="flex items-center px-3.5 py-2.5 bg-stone-100 border-2 border-stone-200 rounded-xl text-xs sm:text-sm font-bold text-stone-700">
@@ -324,26 +374,60 @@ function PhoneStep({
                   onPhoneChange(val);
                   setPhoneErr('');
                   if (val.length === 10 && /^[6-9]\d{9}$/.test(val)) {
-                    api.notifyLead(customerName || '', val);
+                    api.notifyLead(customerName || '', val, email);
                   }
                 }}
                 onKeyDown={(e) => e.key === 'Enter' && sendOtp()}
-                placeholder={t('order.phone.placeholder')}
+                placeholder="10-digit mobile number"
                 className="flex-1 px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors"
                 autoComplete="tel"
                 autoFocus
               />
             </div>
-            {phoneErr && <p className="text-[#C42F2C] text-xs sm:text-sm mt-1">{phoneErr}</p>}
+            {phoneErr && <p className="text-[#C42F2C] text-xs sm:text-sm mt-1 font-semibold">{phoneErr}</p>}
           </div>
 
+          {/* Gmail / Email Address Field */}
+          <div>
+            <label htmlFor="email" className="block text-xs sm:text-sm font-bold text-[#3A1C10] mb-1">
+              Email Address (for OTP) *
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => {
+                onEmailChange(e.target.value);
+                setEmailErr('');
+              }}
+              onKeyDown={(e) => e.key === 'Enter' && sendOtp()}
+              placeholder="e.g. yourname@gmail.com"
+              className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors"
+              autoComplete="email"
+            />
+            {emailErr && <p className="text-[#C42F2C] text-xs sm:text-sm mt-1 font-semibold">{emailErr}</p>}
+            <p className="text-[11px] text-[#582A00]/60 mt-1">
+              🔒 Your 6-digit OTP will be delivered directly to this email.
+            </p>
+          </div>
+
+          {/* Action button */}
           <button
+            type="button"
             onClick={sendOtp}
             disabled={loading}
-            className="w-full py-2.5 sm:py-3 bg-[#C42F2C] text-white rounded-xl font-bold text-sm sm:text-base hover:bg-[#a82421] transition-colors disabled:opacity-50 shadow"
+            className="w-full py-3 bg-[#C42F2C] text-white rounded-xl font-bold text-sm sm:text-base hover:bg-[#a82421] transition-colors disabled:opacity-50 shadow-md cursor-pointer flex items-center justify-center gap-2 mt-2"
           >
-            {loading ? t('common.loading') : t('order.phone.send_otp')}
+            {loading ? (
+              <>
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Sending OTP...
+              </>
+            ) : (
+              'Send OTP'
+            )}
           </button>
+
           {onBack && (
             <button
               type="button"
@@ -355,7 +439,7 @@ function PhoneStep({
           )}
         </div>
       ) : (
-        /* OTP Verification Card matching image specification */
+        /* OTP Verification Card */
         <div className="overflow-hidden rounded-2xl border border-[#582A00]/15 shadow-md bg-white">
           {/* Header with Red Gradient */}
           <div className="bg-gradient-to-r from-[#C42F2C] to-[#8F1D1A] text-white p-4 sm:p-5 relative">
@@ -365,22 +449,26 @@ function PhoneStep({
                 onClick={() => setOtpSent(false)}
                 className="text-white/80 hover:text-white text-xs font-semibold flex items-center gap-1 cursor-pointer"
               >
-                ← Back
+                ← Edit Details
               </button>
-              <span className="text-[10px] font-black tracking-wider uppercase bg-white/20 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-black tracking-wider uppercase bg-white/20 px-2.5 py-0.5 rounded-full">
                 Appampattu Mutta Mittai
               </span>
             </div>
             <h3 className="text-xl sm:text-2xl font-black">OTP Verification</h3>
-            <p className="text-xs sm:text-sm text-white/90 mt-1">
-              OTP has been sent to <strong>+91 {phone}</strong>
+            <p className="text-xs sm:text-sm text-white/95 mt-1 leading-snug">
+              6-digit OTP sent to <strong className="underline decoration-white/40">{email}</strong>
+              <br className="sm:hidden" /> &amp; <strong>+91 {phone}</strong>
+            </p>
+            <p className="text-[11px] text-amber-200 mt-1 font-medium">
+              ⏳ Code is valid for 10 minutes
             </p>
           </div>
 
           {/* Body with 6 Segmented PIN boxes, countdown and auto-advance */}
-          <div className="p-5 sm:p-6 space-y-5 text-center">
+          <div className="p-5 sm:p-6 space-y-4 text-center">
             {/* 6 Digit Input Boxes */}
-            <div className="flex justify-center gap-2 sm:gap-2.5">
+            <div className="flex justify-center gap-1.5 sm:gap-2.5">
               {[0, 1, 2, 3, 4, 5].map((idx) => (
                 <input
                   key={idx}
@@ -401,14 +489,17 @@ function PhoneStep({
               ))}
             </div>
 
-            {/* Countdown Display e.g. 00:57 */}
+            {/* Countdown Display e.g. 05:00 */}
             <div className="pt-1">
               <span className="text-2xl sm:text-3xl font-black tracking-wider text-[#1F242D] block">
                 {formatCountdown(resendTimer)}
               </span>
-              <p className="text-xs text-[#582A00]/65 mt-1">
+              <p className="text-xs text-[#582A00]/70 mt-1">
                 {resendTimer > 0 ? (
-                  `Didn't get it? Wait ${resendTimer}s`
+                  <span>
+                    Didn&apos;t get it? Resend available in{' '}
+                    <strong>{formatCountdown(resendTimer)}</strong>
+                  </span>
                 ) : (
                   <span>
                     Didn&apos;t get it?{' '}
@@ -421,6 +512,13 @@ function PhoneStep({
                     </button>
                   </span>
                 )}
+              </p>
+            </div>
+
+            {/* Mobile Helpful Hint Box */}
+            <div className="bg-[#FFF8EE] border border-[#F3DFC1] rounded-xl p-3 text-left">
+              <p className="text-[11px] sm:text-xs text-[#7A4B1A] leading-relaxed">
+                💡 <strong>Tip:</strong> Please check your Gmail <strong>Inbox</strong>, <strong>Promotions</strong>, or <strong>Spam</strong> folder. The email arrives from <em>Appampattu Mutta Mittai</em>.
               </p>
             </div>
 
@@ -441,6 +539,14 @@ function PhoneStep({
               ) : (
                 'Verify OTP'
               )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setOtpSent(false)}
+              className="text-xs text-[#582A00]/70 hover:text-[#582A00] underline cursor-pointer block mx-auto pt-1"
+            >
+              Want to change email or phone number?
             </button>
           </div>
         </div>
@@ -711,6 +817,7 @@ function PaymentStep({
         const result = await api.createOrder({
           customerName: orderState.name,
           phone: orderState.phone.replace(/\D/g, ''),
+          email: orderState.email || undefined,
           productId: prodId,
           quantity: totalQty,
           items: orderState.items.map((it) => ({ productId: it.id, quantity: it.quantity })),
@@ -756,6 +863,7 @@ function PaymentStep({
         prefill: {
           name: orderState.name,
           contact: orderState.phone.replace(/\D/g, ''),
+          email: orderState.email || undefined,
         },
         theme: {
           color: '#C42F2C',
@@ -1120,6 +1228,7 @@ function OrderPageContent() {
   const [state, setState] = useState<OrderState>({
     name: '',
     phone: '',
+    email: '',
     otpSessionId: '',
     phoneVerified: false,
     items: [],
@@ -1332,6 +1441,8 @@ function OrderPageContent() {
                     customerName={state.name}
                     phone={state.phone}
                     onPhoneChange={(v) => update('phone', v)}
+                    email={state.email}
+                    onEmailChange={(v) => update('email', v)}
                     sessionId={state.otpSessionId}
                     onSessionChange={(v) => update('otpSessionId', v)}
                     verified={state.phoneVerified}

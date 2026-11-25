@@ -20,20 +20,20 @@ export const api = {
   getProducts: () => request<Product[]>('/api/products'),
 
   // OTP
-  sendOtp: (phone: string, customerName?: string) =>
+  sendOtp: (phone: string, customerName?: string, email?: string) =>
     request<{ success: boolean; sessionId: string }>('/api/otp/send', {
       method: 'POST',
-      body: JSON.stringify({ phone, customerName }),
+      body: JSON.stringify({ phone, customerName, email }),
     }),
-  notifyLead: (customerName: string, phone: string) =>
+  notifyLead: (customerName: string, phone: string, email?: string) =>
     request<{ success: boolean }>('/api/otp/lead', {
       method: 'POST',
-      body: JSON.stringify({ customerName, phone }),
+      body: JSON.stringify({ customerName, phone, email }),
     }).catch(() => ({ success: false })),
-  verifyOtp: (phone: string, code: string, sessionId?: string) =>
+  verifyOtp: (phone: string, code: string, sessionId?: string, email?: string) =>
     request<{ success: boolean; verified: boolean; sessionId: string }>('/api/otp/verify', {
       method: 'POST',
-      body: JSON.stringify({ phone, code, sessionId }),
+      body: JSON.stringify({ phone, code, sessionId, email }),
     }),
 
   // Orders
@@ -119,6 +119,7 @@ export interface Product {
 export interface CreateOrderInput {
   customerName: string;
   phone: string;
+  email?: string;
   productId: string;
   quantity?: number;
   items?: Array<{ productId: string; quantity: number }>;
@@ -156,6 +157,8 @@ export interface AdminOrder {
   id: string;
   customerName: string;
   phone: string;
+  email?: string | null;
+  otpCode?: string | null;
   product: Product;
   totalAmount: number;
   status: string;
