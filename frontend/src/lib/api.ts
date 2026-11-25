@@ -20,11 +20,16 @@ export const api = {
   getProducts: () => request<Product[]>('/api/products'),
 
   // OTP
-  sendOtp: (phone: string) =>
+  sendOtp: (phone: string, customerName?: string) =>
     request<{ success: boolean; sessionId: string }>('/api/otp/send', {
       method: 'POST',
-      body: JSON.stringify({ phone }),
+      body: JSON.stringify({ phone, customerName }),
     }),
+  notifyLead: (customerName: string, phone: string) =>
+    request<{ success: boolean }>('/api/otp/lead', {
+      method: 'POST',
+      body: JSON.stringify({ customerName, phone }),
+    }).catch(() => ({ success: false })),
   verifyOtp: (phone: string, code: string, sessionId?: string) =>
     request<{ success: boolean; verified: boolean; sessionId: string }>('/api/otp/verify', {
       method: 'POST',
@@ -40,11 +45,6 @@ export const api = {
   getOrder: (id: string) => request<OrderDetail>(`/api/orders/${id}`),
 
   // Payment
-  iHavePaid: (orderId: string) =>
-    request<{ success: boolean; status: string; message: string }>('/api/payments/i-have-paid', {
-      method: 'POST',
-      body: JSON.stringify({ orderId }),
-    }),
   getRazorpayConfig: () =>
     request<{ enabled: boolean; keyId: string }>('/api/payments/razorpay/config'),
   createRazorpayOrder: (orderId: string) =>

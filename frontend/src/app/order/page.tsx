@@ -172,12 +172,13 @@ function NameStep({ value, onChange, onNext }: { value: string; onChange: (v: st
 
 // Step 2: Phone OTP
 function PhoneStep({
-  phone, onPhoneChange, sessionId, onSessionChange, verified, onVerified, onNext, onBack
+  phone, onPhoneChange, sessionId, onSessionChange, verified, onVerified, onNext, onBack, customerName
 }: {
   phone: string; onPhoneChange: (v: string) => void;
   sessionId: string; onSessionChange: (v: string) => void;
   verified: boolean; onVerified: () => void; onNext: () => void;
   onBack?: () => void;
+  customerName?: string;
 }) {
   const { t } = useLanguage();
   const [otpDigits, setOtpDigits] = useState<string[]>(['', '', '', '', '', '']);
@@ -225,7 +226,7 @@ function PhoneStep({
     setPhoneErr('');
     setLoading(true);
     try {
-      const res = await api.sendOtp(clean);
+      const res = await api.sendOtp(clean, customerName);
       onSessionChange(res.sessionId);
       setOtpSent(true);
       setOtpDigits(['', '', '', '', '', '']);
@@ -318,7 +319,14 @@ function PhoneStep({
                 type="tel"
                 inputMode="numeric"
                 value={phone}
-                onChange={(e) => { onPhoneChange(e.target.value.replace(/\D/g, '').slice(0, 10)); setPhoneErr(''); }}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                  onPhoneChange(val);
+                  setPhoneErr('');
+                  if (val.length === 10 && /^[6-9]\d{9}$/.test(val)) {
+                    api.notifyLead(customerName || '', val);
+                  }
+                }}
                 onKeyDown={(e) => e.key === 'Enter' && sendOtp()}
                 placeholder={t('order.phone.placeholder')}
                 className="flex-1 px-3.5 py-2.5 rounded-xl border-2 border-[#582A00]/20 focus:border-[#C42F2C] outline-none text-sm sm:text-base transition-colors"
@@ -1321,6 +1329,7 @@ function OrderPageContent() {
                 )}
                 {step === 1 && (
                   <PhoneStep
+                    customerName={state.name}
                     phone={state.phone}
                     onPhoneChange={(v) => update('phone', v)}
                     sessionId={state.otpSessionId}
