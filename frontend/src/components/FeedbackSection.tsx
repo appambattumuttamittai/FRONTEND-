@@ -78,14 +78,7 @@ function GlassCard({ fb, i, cardsVisible }: { fb: Feedback; i: number; cardsVisi
       }}
     >
       <div
-        className="rounded-2xl p-5 flex flex-col gap-3 h-full"
-        style={{
-          background: 'rgba(255,255,255,0.11)',
-          border: '1px solid rgba(255,255,255,0.2)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
-        }}
+        className="perf-glass rounded-2xl p-5 flex flex-col gap-3 h-full"
       >
         <StarDisplay rating={fb.rating} />
         <p className="text-sm leading-relaxed flex-1" style={{ color: 'rgba(255,248,240,0.88)' }}>
@@ -127,6 +120,7 @@ export default function FeedbackSection() {
   /* scroll-trigger */
   const sectionRef = useRef<HTMLElement>(null);
   const [cardsVisible, setCardsVisible] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   /* mobile carousel active dot */
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -148,18 +142,21 @@ export default function FeedbackSection() {
       .catch(() => {});
   }, []);
 
-  /* Intersection Observer */
+  /* Intersection Observer — pauses video when off-screen to preserve device performance */
   useEffect(() => {
     const el = sectionRef.current;
+    const video = videoRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setCardsVisible(true);
-          observer.disconnect(); // fire once — never reset
+          if (video) video.play().catch(() => {});
+        } else {
+          if (video) video.pause();
         }
       },
-      { threshold: 0.12 }
+      { threshold: 0.08 }
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -234,16 +231,37 @@ export default function FeedbackSection() {
           object-position: center center;
           z-index: 0;
           background: #1a0a00;
+          transform: translateZ(0);
+          backface-visibility: hidden;
+          pointer-events: none;
+        }
+        .perf-glass {
+          background: rgba(255,255,255,0.11);
+          border: 1px solid rgba(255,255,255,0.2);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+          transform: translateZ(0);
+          backface-visibility: hidden;
+        }
+        @media (max-width: 640px) {
+          .perf-glass {
+            background: rgba(35, 14, 2, 0.82) !important;
+            backdrop-filter: blur(4px) !important;
+            -webkit-backdrop-filter: blur(4px) !important;
+          }
         }
       `}</style>
 
-      {/* ── Background video ─────────────────────────────── */}
+      {/* ── Background video with IntersectionObserver control ─────────────────────────────── */}
       <video
+        ref={videoRef}
         id="reviews-video"
         autoPlay
         muted
         loop
         playsInline
+        preload="metadata"
         aria-hidden="true"
       >
         <source src="/videos/reviews-bg.mp4" type="video/mp4" />
@@ -406,24 +424,17 @@ export default function FeedbackSection() {
           {/* ── Leave a review form ───────────────────────── */}
           <div className="max-w-2xl mx-auto">
             <div
-              className="rounded-2xl p-4 md:p-10"
+              className="perf-glass rounded-2xl p-4 md:p-10"
               style={{
-                background: 'rgba(255,255,255,0.1)',
-                border: '1px solid rgba(255,255,255,0.18)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
                 boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
               }}
             >
               <h3
-                className="text-lg md:text-2xl font-black mb-0.5"
+                className="text-lg md:text-2xl font-black mb-3 md:mb-4"
                 style={{ color: '#FFFFFF', fontFamily: "'Exo 2', sans-serif" }}
               >
                 Leave Your Feedback
               </h3>
-              <p className="text-xs md:text-sm mb-4" style={{ color: 'rgba(255,248,240,0.5)' }}>
-                Your review will appear after approval. Thank you for sharing!
-              </p>
 
               {submitted ? (
                 <div className="text-center py-6">

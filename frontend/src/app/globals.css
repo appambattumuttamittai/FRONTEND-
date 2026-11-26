@@ -21,9 +21,19 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  text-rendering: optimizeSpeed;
+}
+
+/* GPU Hardware Acceleration for smooth 60fps rendering */
+video, img {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
 
 body {
   font-family: 'Inter', 'Noto Sans Tamil', sans-serif;

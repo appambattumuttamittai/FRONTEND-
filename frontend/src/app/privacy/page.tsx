@@ -16,15 +16,15 @@ export default function PrivacyPage() {
           </p>
           <ul className="list-disc pl-6 text-[#3A1C10]/80 space-y-2 mb-4">
             <li>Your full name</li>
-            <li>Your mobile phone number (verified via OTP)</li>
-            <li>Your pickup address (street, city, pincode)</li>
+            <li>Your email address (verified via OTP on Gmail) and mobile phone number</li>
+            <li>Your delivery or pickup address (street, city, pincode)</li>
           </ul>
 
           <h2 className="text-xl font-bold text-[#063D20] mt-8 mb-3">How We Use Your Information</h2>
           <ul className="list-disc pl-6 text-[#3A1C10]/80 space-y-2 mb-4">
             <li>To process and confirm your order</li>
-            <li>To contact you on WhatsApp for order confirmation</li>
-            <li>To manage pickup scheduling</li>
+            <li>To send order verification OTP and official tax invoice receipts to your Gmail</li>
+            <li>To contact you on WhatsApp / phone for delivery or pickup updates</li>
             <li>Internal business analytics and record keeping</li>
           </ul>
 

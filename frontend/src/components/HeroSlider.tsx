@@ -4,29 +4,48 @@ import Link from 'next/link';
 import { scrollToSection } from '@/lib/navigation';
 
 export default function HeroSlider() {
+  const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.play().catch(() => {});
-    }
+    const video = videoRef.current;
+    const section = sectionRef.current;
+    if (!video || !section) return;
+
+    // Use IntersectionObserver to pause video when offscreen to maximize performance on low-end devices
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
   }, []);
 
   return (
     <section
+      ref={sectionRef}
       className="relative overflow-hidden bg-[#582A00]"
       style={{ height: '100vh', minHeight: 560 }}
       aria-label="Welcome to APPAMPATTU Mutta Mittai"
     >
-      {/* Background video — muted, autoplay, loop */}
+      {/* Background video — muted, autoplay, loop with hardware acceleration */}
       <video
         ref={videoRef}
         autoPlay
         muted
         loop
         playsInline
+        preload="metadata"
         poster="/images/slider-1.png"
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
         aria-hidden="true"
       >
         <source src="/videos/hero-bg-main.mp4" type="video/mp4" />
